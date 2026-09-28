@@ -2,7 +2,7 @@
 import networkx as nx
 
 from .graph import Catalog, load_catalog
-from .models import Plan, ScenarioEvent, StudentProfile, TermPlan
+from .models import UNIT_LOAD_RANGE, Plan, ScenarioEvent, StudentProfile, TermPlan
 
 GRADE_POINTS = {"A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0, "B-": 2.7, "C+": 2.3, "C": 2.0, "C-": 1.7,
                 "D+": 1.3, "D": 1.0, "D-": 0.7, "F": 0.0}
@@ -230,8 +230,9 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
         invalid = {c for t in terms[start:] for c in t.courses}
         del terms[start:]
     else:  # Change Unit Load
-        if not event.unit_load:
-            raise ValueError("Change Unit Load needs unit_load")
+        lo, hi = UNIT_LOAD_RANGE
+        if not event.unit_load or not lo <= event.unit_load <= hi:
+            raise ValueError(f"Change Unit Load needs unit_load between {lo} and {hi}")
         if event.term_label not in labels:
             raise ValueError(f"{event.term_label} is not in the plan")
         new.unit_cap = event.unit_load

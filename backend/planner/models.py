@@ -60,6 +60,9 @@ class TermPlan(BaseModel):
     warnings: list[str] = []
 
 
+UNIT_LOAD_RANGE = (3, 21)  # allowed unit cap for Change Unit Load, on every path (API, NL guardrail, engine)
+
+
 class ScenarioEvent(BaseModel):
     event_type: EventType
     course_id: str | None = None

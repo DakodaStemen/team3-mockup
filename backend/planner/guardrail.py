@@ -16,7 +16,7 @@ import structlog
 from pydantic import BaseModel, Field
 
 from .graph import load_catalog
-from .models import Plan, ScenarioEvent
+from .models import UNIT_LOAD_RANGE, Plan, ScenarioEvent
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/v1")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1")
@@ -80,7 +80,8 @@ def validate(event: ScenarioEvent | None, plan: Plan) -> str | None:
     if event.term_label not in labels:
         return f"term {event.term_label} not in plan"
     if event.event_type == "Change Unit Load":
-        return None if event.unit_load and 3 <= event.unit_load <= 21 else "unit_load missing or out of range"
+        lo, hi = UNIT_LOAD_RANGE
+        return None if event.unit_load and lo <= event.unit_load <= hi else "unit_load missing or out of range"
     if event.course_id not in load_catalog().courses:
         return f"unknown course {event.course_id}"
     if not any(event.course_id in t.courses for t in plan.terms if t.term_label == event.term_label):

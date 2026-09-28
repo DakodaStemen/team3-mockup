@@ -162,3 +162,15 @@ def test_calibration_metrics_are_out_of_fold():
         fit = CalibratedClassifierCV(LogisticRegression(), method="sigmoid", cv=3).fit(X, y)
         in_sample = brier_score_loss(y, fit.predict_proba(X)[:, 1])
         assert evaluate(raw, y)["brier_calibrated"] > in_sample
+
+
+@pytest.mark.req("NFR-03", "FR-11")
+@pytest.mark.parametrize("units", [0, 2, 22, 40])
+def test_scenario_api_rejects_out_of_range_unit_load(units):
+    """The typed /scenario path enforces the same 3-21 range as the plain-language guardrail."""
+    c = TestClient(app)
+    plan = c.post("/plan", json={"student_id": "alex"}).json()["plan"]
+    ev = {"event_type": "Change Unit Load", "term_label": plan["terms"][0]["term_label"], "unit_load": units}
+    r = c.post("/scenario", json={"plan": plan, "event": ev})
+    assert r.status_code == 400 and "between 3 and 21" in r.json()["detail"]
+    assert c.post("/scenario", json={"plan": plan, "event": {**ev, "unit_load": 21}}).status_code == 200
