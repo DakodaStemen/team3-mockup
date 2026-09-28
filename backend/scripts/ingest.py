@@ -37,7 +37,27 @@ SOURCES = {
     "program_bs_cs.html": f"{CATALOG}/colleges-schools-departments/natural-sciences/computer-science-engineering/computer-science-bs/",
     "roadmap_bs_cs_freshman.pdf": f"{ROADMAPS}/BS%20-%20Computer%20Science%20-%20First%20Time%20Freshman%20-%20Roadmap_0.pdf",
     "roadmap_bs_cs_transfer.pdf": f"{ROADMAPS}/BS%20-%20Computer%20Science%20-%20Transfer%20-%20Roadmap_1.pdf",
+    "ge_program.html": f"{CATALOG}/general-education-program/",
 }
+# Every current CSE-department roadmap: used only for term-offering evidence (sequence comes from the BS CS ones).
+OTHER_ROADMAPS = {
+    "bs_ce_freshman": "BS%20-%20Computer%20Engineering%20-%20First%20Time%20Freshman%20-%20Roadmap_0.pdf",
+    "bs_ce_transfer": "BS%20-%20Computer%20Engineering%20-%20Transfer%20-%20Roadmap_0.pdf",
+    "bs_bioinf_freshman": "BS%20-%20Bioinformatics%20-%20First%20Time%20Freshman%20-%20Roadmap_0.pdf",
+    "bs_bioinf_transfer": "BS%20-%20Bioinformatics%20-%20Transfer%20-%20Roadmap_0.pdf",
+    "ba_game_freshman": "BA%20-%20Computer%20Systems%20-%20Game%20Development%20Concentration%20-%20First%20Time%20Freshman%20-%20Roadmap.pdf",
+    "ba_game_transfer": "BA%20-%20Computer%20Systems%20-%20Game%20Development%20Concentration%20-%20Transfer%20-%20Roadmap.pdf",
+    "ba_general_freshman": "BA%20-%20Computer%20Systems%20-%20General%20Interdisciplinary%20Concentration%20-%20First%20Time%20Freshman%20-%20Roadmap.pdf",  # noqa: E501
+    "ba_general_transfer": "BA%20-%20Computer%20Systems%20-%20General%20Interdisciplinary%20Concentration%20-%20Transfer%20-%20Roadmap.pdf",
+    "ba_sysadmin_freshman": "BA%20-%20Computer%20Systems%20-%20System%20Administration%20Concentration%20-%20First%20Time%20Freshman%20-%20Roadmap.pdf",  # noqa: E501
+    "ba_sysadmin_transfer": "BA%20-%20Computer%20Systems%20-%20System%20Administration%20Concentration%20-%20Transfer%20-%20Roadmap.pdf",
+}
+SOURCES |= {f"roadmap_{k}.pdf": f"{ROADMAPS}/{v}" for k, v in OTHER_ROADMAPS.items()}
+# BS CS roadmap GE slots -> catalog GE areas. BS CS is exempt from 1B, 4, 5B (program page); MATH 2210 covers 2,
+# PHYS 2500/2500L cover 5A/5C. The 5 remaining lower-division slots are 3A, 3B, 6 and the two American Institutions
+# courses (history; California government). The constitution part is met by either (e.g. HIST 1460, PSCI 2030).
+GE_SLOTS = {"GE 1A": ["1A"], "GE LD": ["3A", "3B", "6", "AI-HIST", "AI-GOV"], "GE 1C": ["1C"], "GE UD": ["UD-2/5", "UD-3", "UD-4"]}
+WORD_UNITS = {"one": 1, "two": 2, "three": 3, "four": 4, "six": 6}
 STANDING = {"freshman": 0, "sophomore": 30, "junior": 60, "senior": 90}
 UD_STANDING = 60  # assumption: upper-division GE needs junior standing (60 units)
 
@@ -147,7 +167,7 @@ WORDS = {"three": 3, "six": 6, "nine": 9, "twelve": 12, "fifteen": 15, "eighteen
 def parse_program(path: Path) -> dict:
     soup = BeautifulSoup(path.read_text(encoding="utf8"), "html.parser")
     text = soup.get_text(" ")
-    groups, current = [], None
+    groups, current, ge_covered = [], None, []
     for tr in soup.select("table.sc_courselist tr"):
         cells = [re.sub(r"\s+", " ", c.get_text(" ")).strip() for c in tr.find_all("td")]
         if not cells or not cells[0]:
@@ -163,6 +183,8 @@ def parse_program(path: Path) -> dict:
             current["all"][-1]["from"].append(m.group(1))
         elif m := re.match(r"([A-Z]{2,4} \d{4}[A-Z]?)$", first):
             current["all"].append(m.group(1))
+            if len(cells) > 1 and "*" in cells[1] and "Upper Division Mathematical" in text:
+                ge_covered.append({"course": m.group(1), "area": "UD-2/5"})
         elif m := re.match(r"(\w+) units chosen from ([A-Z]+) (\d)000-level and above", first, re.I):
             groups.append({"name": f"{m.group(2)} Elective", "choose_units": WORDS[m.group(1).lower()],
                            "subject": m.group(2), "min_level": int(m.group(3)) * 1000})
@@ -178,7 +200,32 @@ def parse_program(path: Path) -> dict:
             final.append(g)
     total = int(re.search(r"Total units required for graduation:\s*(\d+)", text).group(1))
     code = re.search(r"Program Code:\s*(\w+)", text).group(1)
-    return {"code": code, "name": "BS Computer Science", "catalog_total_units": total, "groups": final}
+    return {"code": code, "name": "BS Computer Science", "catalog_total_units": total, "groups": final, "ge_covered_by_major": ge_covered}
+
+
+# ---------- general education ----------
+
+def parse_ge(path: Path) -> dict:
+    """GE areas -> {title, units, min_grade, courses}. American Institutions lists become AI-HIST / AI-GOV / AI-CONST."""
+    soup = BeautifulSoup(path.read_text(encoding="utf8"), "html.parser")
+    areas = {}
+    for table in soup.select("table.sc_courselist"):
+        head = re.sub(r"\s+", " ", table.find_previous(["h2", "h3", "h4"]).get_text(" ")).strip()
+        note = re.sub(r"\s+", " ", (table.find_previous("p") or soup).get_text(" "))
+        rows = [[re.sub(r"\s+", " ", td.get_text(" ")).strip() for td in tr.find_all("td")] for tr in table.select("tr")]
+        ids = [c for r in rows if r for c in re.findall(r"[A-Z]{2,4} \d{4}[A-Z]?", r[0])]
+        choose = next((r[0] for r in rows if r and r[0].lower().startswith("choose")), "")
+        units = WORD_UNITS.get((re.search(r"choose (\w+) unit", choose, re.I) or [None, ""])[1].lower(), 3)
+        if m := re.match(r"(?:Area )?(\d[A-C]?|UD-[\d/]+):\s*(.+)", head):
+            key, title = m.groups()
+        elif head.startswith("History, Constitution"):
+            key = "AI-CONST" if "Constitution" in note[:60] else "AI-HIST" if "U.S. History" in note[:60] else "AI-GOV"
+            title = {"AI-CONST": "U.S. Constitution", "AI-HIST": "U.S. History", "AI-GOV": "California State & Local Government"}[key]
+        else:
+            continue  # foundation seminar and designations overlay other areas
+        area = areas.setdefault(key, {"title": title, "units": units, "min_grade": "C-" if "C-" in note else "D-", "courses": []})
+        area["courses"] += [c for c in ids if c not in area["courses"]]
+    return areas
 
 
 # ---------- roadmaps ----------
@@ -221,52 +268,93 @@ def build(refresh: bool = False) -> dict:
     paths = {name: fetch(name, url, refresh) for name, url in SOURCES.items()}
     courses = {c["id"]: c for n in ("cse", "math", "phys") for c in parse_courses(paths[f"courses_{n}.html"])}
     program = parse_program(paths["program_bs_cs.html"])
+    ge = parse_ge(paths["ge_program.html"])
     roadmaps = {k: parse_roadmap(paths[f"roadmap_bs_cs_{k}.pdf"]) for k in ("freshman", "transfer")}
+    all_roadmaps = {f"bs_cs_{k}": v for k, v in roadmaps.items()} | {k: parse_roadmap(paths[f"roadmap_{k}.pdf"]) for k in OTHER_ROADMAPS}
     discrepancies = []
 
-    # Term offerings come from the roadmaps. If the two roadmaps disagree, take the more restrictive and flag it.
-    offered: dict[str, set] = {}
+    # Term offerings: evidence from every CSE-department roadmap. Sequence, units and prerequisites: BS CS roadmaps only.
+    offered: dict[str, dict[str, str]] = {}
     roadmap_units, roadmap_prereq = {}, {}
-    for rm in roadmaps.values():
+    for key, rm in all_roadmaps.items():
         for t in rm["terms"]:
             for s in t["slots"]:
-                if "course" in s:
-                    offered.setdefault(s["course"], set()).add(s["term_offered"])
+                if "course" not in s:
+                    continue
+                if s["term_offered"] != "Unknown":
+                    offered.setdefault(s["course"], {})[key] = s["term_offered"]
+                if key.startswith("bs_cs"):
                     roadmap_units[s["course"]] = s["units"]
                     roadmap_prereq.setdefault(s["course"], s["prereq_text"])
-    for cid, offs in offered.items():
-        if len(offs) > 1:
-            discrepancies.append(f"{cid} term offering: roadmaps disagree ({' vs '.join(sorted(offs))}); using the more restrictive for planning.")
 
-    # GE / free-elective placeholders from the freshman roadmap, sized to the catalog total (catalog wins).
-    counts: dict[str, int] = {}
-    placeholders = []
+    def offering(cid: str) -> tuple[str, str]:
+        """(pattern, confidence). Conflicting roadmaps -> most restrictive pattern, low confidence."""
+        offs = set(offered.get(cid, {}).values())
+        if not offs:
+            return "Unknown", "unknown"
+        if len(offs) == 1:
+            return offs.pop(), "high"
+        return sorted(offs - {"Both"})[0], "low"
+
+    for cid, by_src in sorted(offered.items()):
+        if len(set(by_src.values())) > 1:
+            detail = "; ".join(f"{o} in {', '.join(sorted(k for k, v in by_src.items() if v == o))}" for o in sorted(set(by_src.values())))
+            discrepancies.append(f"{cid} term offering: roadmaps disagree ({detail}); planning uses the most restrictive, low confidence.")
+
+    # GE: map the BS CS freshman roadmap's GE slots onto catalog GE areas (GE_SLOTS), each satisfiable by the area's courses.
+    covered = {g["area"]: g["course"] for g in program.get("ge_covered_by_major", [])}
+    placeholders, used = [], {k: 0 for k in GE_SLOTS}
     for t in roadmaps["freshman"]["terms"]:
         for s in t["slots"]:
             kind = s.get("kind")
-            if kind in ("GE 1A", "GE 1C", "GE LD", "GE UD"):
-                counts[kind] = counts.get(kind, 0) + 1
-                pid = kind if kind in ("GE 1A", "GE 1C") else f"{kind} {counts[kind]}"
-                placeholders.append({"id": pid, "title": s["text"], "catalog_units": s["units"], "term_offered": "Both",
-                                     "min_standing_units": UD_STANDING if kind == "GE UD" else 0, "placeholder": True})
+            if kind not in GE_SLOTS:
+                continue
+            areas = GE_SLOTS[kind]
+            if used[kind] >= len(areas):
+                discrepancies.append(f"Freshman roadmap has more {kind} slots than mapped GE areas; extra slot ignored.")
+                continue
+            area = areas[used[kind]]
+            used[kind] += 1
+            if area in covered:
+                discrepancies.append(f"Freshman roadmap schedules a {kind} slot for GE {area}, but the catalog says {covered[area]} "
+                                     f"satisfies GE {area} for this major (catalog wins; slot dropped).")
+                continue
+            placeholders.append({"id": f"GE {area}", "title": f"GE {area}: {ge[area]['title']}", "catalog_units": ge[area]["units"],
+                                 "term_offered": "Both", "offering_confidence": "unknown", "placeholder": True,
+                                 "min_standing_units": UD_STANDING if area.startswith("UD") else 0,
+                                 "satisfied_by": ge[area]["courses"], "satisfied_by_min_grade": ge[area]["min_grade"]})
+    for kind, areas in GE_SLOTS.items():
+        if used[kind] != len(areas):
+            discrepancies.append(f"Freshman roadmap has {used[kind]} {kind} slots; {len(areas)} GE areas are mapped.")
 
-    # Elective pool: subject courses at/above min level, not required elsewhere, not consent/GPA-gated,
-    # and not graduate (6000+).
+    # Elective pool: subject courses at/above min level, not required elsewhere, not consent/GPA/proposal-gated,
+    # not variable-unit, not graduate (6000+).
     named = {c for g in program["groups"] for c in g.get("all", []) + g.get("from", [])}
     for g in program["groups"]:
         if "choose_units" in g:
             g["from"] = sorted(
                 cid for cid, c in courses.items()
                 if cid.startswith(g["subject"] + " ") and g["min_level"] <= int(cid.split()[1][:4]) < 6000
-                and cid not in named and (c["_groups"] or c["min_standing_units"]) and not c["variable_units"]
+                and cid not in named and not c["variable_units"]
                 and not re.search(r"consent of the school|grade point|proposal|approval", c["prereq_text"], re.I)
             )
-    # Default-plannable electives only: drop ones gated by courses outside required + pool (e.g. CSE 3350).
+    # Electives gated by a course outside required + pool (e.g. CSE 4030 needs CSE 3350) stay available when that
+    # supporting course is itself plannable from required + pool; the engine schedules it when the elective is chosen.
     required = {c for g in program["groups"] if "choose_units" not in g for c in g.get("all", []) + g.get("from", [])}
+    supporting = set()
     for g in program["groups"]:
-        if "choose_units" in g:
-            ok = required | set(g["from"])
-            g["from"] = [cid for cid in g["from"] if all(any(a["course"] in ok for a in grp) for grp in courses[cid]["_groups"])]
+        if "choose_units" not in g:
+            continue
+        ok = required | set(g["from"])
+        keep = []
+        for cid in g["from"]:
+            need = [grp for grp in courses[cid]["_groups"] if not any(a["course"] in ok for a in grp)]
+            fix = [next((a["course"] for a in grp if a["course"] in courses and all(
+                any(b["course"] in ok for b in grp2) for grp2 in courses[a["course"]]["_groups"])), None) for grp in need]
+            if all(fix):
+                keep.append(cid)
+                supporting |= set(fix)
+        g["from"] = keep
     program_units = (sum(courses[c]["catalog_units"] for g in program["groups"] for c in g.get("all", []))
                      + sum(courses[g["from"][0]]["catalog_units"] for g in program["groups"] if g.get("choose") == 1)
                      + sum(g["choose_units"] for g in program["groups"] if "choose_units" in g))
@@ -274,15 +362,15 @@ def build(refresh: bool = False) -> dict:
     free = program["catalog_total_units"] - program_units - ge_units
     if free > 0:
         placeholders.append({"id": "FREE 1", "title": "Free Elective", "catalog_units": free, "term_offered": "Both",
-                             "min_standing_units": 0, "placeholder": True})
+                             "offering_confidence": "unknown", "min_standing_units": 0, "placeholder": True})
     program["groups"].append({"name": "General Education & Free Electives", "all": [p["id"] for p in placeholders]})
     program["program_units"] = program_units
     if (rt := roadmaps["freshman"]["total_units"]) != program["catalog_total_units"]:
         discrepancies.append(f"Program total units: freshman roadmap says {rt}, catalog says {program['catalog_total_units']} "
-                             f"(catalog wins; free electives sized to {max(free, 0)} units).")
+                             f"(catalog wins: {program_units} major + {ge_units} GE + {max(free, 0)} free elective).")
 
     # Universe = everything the program can schedule. Prereqs outside it are entry-level (placement) assumptions.
-    universe = {c for g in program["groups"] for c in g.get("all", []) + g.get("from", [])}
+    universe = {c for g in program["groups"] for c in g.get("all", []) + g.get("from", [])} | supporting
     edges, entry = [], set()
     for cid in sorted(universe):
         c = courses.get(cid)
@@ -294,12 +382,11 @@ def build(refresh: bool = False) -> dict:
                               "group": gi, "grade_minimum": alt["grade_minimum"], "concurrent_ok": alt["concurrent_ok"]})
                 if alt["course"] not in universe:
                     entry.add(alt["course"])
-    # An OR group satisfied by any in-program course does not need its out-of-program alternatives.
     missing = sorted(e for e in entry if e not in courses)
     if missing:
         discrepancies.append(f"Prerequisites reference courses not in fetched catalog pages: {', '.join(missing)}.")
 
-    # Catalog vs roadmap: units and prerequisite course sets.
+    # Catalog vs BS CS roadmaps: units and prerequisite course sets.
     for cid, units in sorted(roadmap_units.items()):
         if cid in courses and courses[cid]["catalog_units"] != units:
             discrepancies.append(f"{cid} units: roadmap says {units}, catalog says {courses[cid]['catalog_units']} (catalog wins).")
@@ -317,26 +404,31 @@ def build(refresh: bool = False) -> dict:
         c = courses.get(cid)
         if not c:
             continue
-        offs = offered.get(cid, set())
-        term = "Unknown" if not offs else "Both" if offs == {"Both"} else sorted(offs - {"Both", "Unknown"})[0]
+        term, confidence = offering(cid)
+        groups = [g["name"] for g in program["groups"] if cid in g.get("all", []) + g.get("from", [])]
         out_courses.append({
             "id": cid, "title": c["title"], "catalog_units": c["catalog_units"], "roadmap_units": roadmap_units.get(cid),
-            "term_offered": term, "min_standing_units": c["min_standing_units"], "ge": c["ge"],
+            "term_offered": term, "offering_confidence": confidence, "offering_evidence": offered.get(cid, {}),
+            "min_standing_units": c["min_standing_units"], "ge": c["ge"],
             "prereq_text": c["prereq_text"], "coreq_text": c["coreq_text"], "notes": c["notes"],
-            "requirement_groups": [g["name"] for g in program["groups"] if cid in g.get("all", []) + g.get("from", [])],
+            "requirement_groups": groups or (["Supporting prerequisite"] if cid in supporting else []),
         })
     for p in placeholders:
         out_courses.append({**p, "requirement_groups": ["General Education & Free Electives"]})
 
     return {
-        "_source": "Ingested by scripts/ingest.py from public CSUSB catalog and roadmap pages (2026-27). Raw copies in data/raw/.",
-        "sources": SOURCES, "program": program, "roadmaps": roadmaps,
-        "courses": out_courses, "edges": edges, "entry_assumed": sorted(entry),
+        "_source": "Ingested by scripts/ingest.py from public CSUSB catalog, GE, and roadmap pages (2026-27). Raw copies in data/raw/.",
+        "sources": SOURCES, "program": program, "roadmaps": roadmaps, "offering_roadmaps": sorted(all_roadmaps),
+        "courses": out_courses, "edges": edges, "entry_assumed": sorted(entry), "supporting": sorted(supporting),
         "discrepancies": discrepancies,
         "assumptions": [
             f"Upper-division GE requires {UD_STANDING} completed units (junior standing).",
+            "BS CS GE slots map to areas 1A, 1C, 3A, 3B, 6, American Institutions (history; CA government), UD-3, UD-4; "
+            "inferred from the program page exemptions and the roadmap slot count. The U.S. Constitution part is assumed met "
+            "by the history or government course (true for HIST 1460 and PSCI 2030).",
             "Prerequisites outside the program (e.g. CSE 1250, MATH 1401) are entry-level placement assumptions.",
-            "Courses not on a roadmap have Unknown term offering; the planner allows them and warns.",
+            "Courses on no roadmap have Unknown offering (allowed with a warning). Summer offerings are never published: "
+            "summer placements are allowed only when the student adds a summer term, and are flagged unconfirmed.",
             "Units given as a range use the minimum; variable-unit courses are excluded from the elective pool.",
         ],
     }

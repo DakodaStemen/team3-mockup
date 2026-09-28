@@ -73,7 +73,7 @@ Status labels follow the course list: Not started, Drafting, In review, Baseline
 # backend (Python 3.12+, uv)
 cd backend
 uv sync
-uv run pytest                                # 49 tests incl. traceability check
+uv run pytest                                # 55 tests incl. traceability check
 uv run ruff check .
 uv run python scripts/trace.py               # regenerate traceability.md after changing tests or register
 uv run python scripts/ingest.py              # rebuild planner/catalog.json from cached sources (--refresh re-downloads)
@@ -97,8 +97,13 @@ Without Ollama, plain-language queries are **escalated**. The engine never acts 
 - **Program data:** public CSUSB pages, fetched by `backend/scripts/ingest.py`. It checks robots.txt, waits 2 s between requests, and keeps byte-exact raw copies in `backend/data/raw/`. Sources:
   - catalog course pages (CSE, MATH, PHYS);
   - the BS CS program page;
-  - the freshman and transfer roadmap PDFs.
-- **Output:** `backend/planner/catalog.json`, with 63 courses, 69 AND/OR prerequisite edges (grade minimums, corequisites, standing), requirement groups, roadmaps, and 11 catalog-vs-roadmap discrepancies.
+  - the General Education page;
+  - all 12 current CSE-department roadmap PDFs (BS CS for sequence; all 12 for term offerings).
+- **Output:** `backend/planner/catalog.json`, with:
+  - 67 courses and 76 AND/OR prerequisite edges (grade minimums, corequisites, standing);
+  - GE requirements as named slots filled by real catalog courses (89 major + 27 GE + 4 free = 120 units);
+  - offerings with a confidence level (17 courses on no roadmap stay `Unknown`, and are flagged);
+  - 12 logged catalog/roadmap discrepancies.
 - **Test data:**
   - `planner/students.json`: 6 synthetic students.
   - `data/queries.json`: 45 labeled NL queries.

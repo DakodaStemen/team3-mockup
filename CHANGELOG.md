@@ -2,6 +2,17 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Versioning: SemVer (docs/QUALITY_AND_CM.md §2.4).
 
+## [0.4.0] - 2026-09-28
+### Added
+- Term offerings from all 12 CSE-department roadmaps, with confidence (high/low/unknown) and per-term warnings.
+- General Education modeled from the catalog GE page. Named area slots are filled by real courses at the C- minimum. The major total now reconciles: 89 + 27 GE + 4 free = 120.
+- Supporting prerequisites: choosing CSE 4030 or 5300 schedules CSE 3350. CSE 5208 and 5408 are electable.
+- Summer placements flagged as unconfirmed.
+### Fixed
+- Spring-only CSE 5500 was planned in Fall (no offering data).
+- Default electives overshot to 14 units; they now total exactly 12 and prefer the roadmap's 3-unit slots.
+- Pathway-quality scorer compares GE slots by roadmap slot kind.
+
 ## [0.3.0] - 2026-09-28
 ### Added
 - Engineering Dossier structure per CSE 6550 (README is the Dossier Index; `docs/01`–`05` folders).

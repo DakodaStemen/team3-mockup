@@ -72,10 +72,31 @@ This is the AI Assistance and Provenance record required by course policy (SRS C
 - **Corrected values:** priority 0.62, descendant count 0.49, betweenness 0.31. The priority score still predicts measured delay best, but the gap is smaller than first reported.
 - **Lesson:** hand-rolled statistics need a check against a reference implementation.
 
+### AIL-06: Data gap fixes (2026-09-28)
+
+- **Decisions (human):** Dakoda asked whether the data was of proper quality and complete, then approved fixing all the gaps.
+- **Output:**
+  - Term offerings from all 12 CSE roadmaps, with a confidence level.
+  - GE modeled as named catalog areas that real courses fill (C- minimum).
+  - CSE 3350 as a supporting prerequisite, making CSE 4030 and 5300 electable.
+  - Summer placements flagged unconfirmed.
+  - Default electives fill exactly 12 units.
+- **Validation:**
+  - The derived Fall-only/Spring-only lists match the team's independent research (EV-09) for all 16 BS CS courses. A test pins this.
+  - 55 tests pass; 280/280 scenario runs are valid; both roadmaps pass the catalog audit.
+- **Defects found and fixed:**
+  - Before the fix, the planner put Spring-only CSE 5500 in a Fall term.
+  - The first elective fill overshot to 14 units and chose Computer Engineering design courses for a CS student. Fixed with an exact-sum search that prefers the roadmap's 3-unit slot size.
+  - The results scorer compared renamed GE slots incorrectly. Fixed.
+- **Known limitations:**
+  - The GE slot mapping (which 5 lower-division areas) is inferred from the roadmap slot count and program exemptions. Verify with an advisor.
+  - 17 courses have no public offering data.
+  - Summer has no data at all.
+
 ## Open items needing human verification
 
 1. **Team review of CH-02.** Accept or reject each proposed requirement, and decide conflicts C-1 through C-6.
-2. **Assumptions stated by the AI, not by evidence:** UD GE = 60 units; summer cap 8; full-time = 12 units; the elective default rule.
+2. **Assumptions stated by the AI, not by evidence:** UD GE = 60 units; summer cap 8; full-time = 12 units; the elective default rule; the BS CS GE slot mapping (CH-02 C-7).
 3. **References marked "not opened" or "not verified"** in [references.md](../01-product-requirements/references.md), especially the legal basis for scraping (CollegeSource v. AcademyOne).
 4. **Synthetic student profiles** (`backend/planner/students.json`): confirm they are realistic with an advisor (EV-04).
 5. **Guardrail thresholds 0.90 / 0.60:** unvalidated until the calibration run (NFR-13).

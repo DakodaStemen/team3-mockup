@@ -10,14 +10,14 @@ Change a requirement's *text* in the SRS first, then update its summary here.
 
 | ID | Summary | Source | Verify | Baseline | Implementation |
 |---|---|---|---|---|---|
-| FR-01 | Mark each requirement group satisfied, in progress, or remaining when a record loads | EV-01 | Test | SRS v0.1 | Partial: `Catalog.required()` and `baseline()` resolve remaining courses; no per-group status output yet |
+| FR-01 | Mark each requirement group satisfied, in progress, or remaining when a record loads | EV-01 | Test | SRS v0.1 | Partial: `Catalog.required()` and `baseline()` resolve remaining courses, and real GE courses (e.g. ENG 1070A) fill named GE slots; no per-group status output yet |
 | FR-02 | Count a course toward a group or prerequisite only when Passed | EV-01; AS-02 | Test | SRS v0.1 | Partial: pass must meet the catalog grade minimum (C, C-); in-progress courses are assumed passed for *future-term* planning, which conflicts with AS-02 (CH-02 §C-3) |
 | FR-03 | Place a course only after its prerequisites are passed or planned earlier | EV-01 | Test | SRS v0.1 | Implemented: corequisites may share the term (answers OQ-02, CH-02 §B) |
 | FR-04 | On Not passed or Withdrawn, identify every directly or transitively dependent planned course | EV-01 | Test | SRS v0.1 | Implemented |
-| FR-05 | Assign every remaining required course to a future term | EV-01 | Test | SRS v0.1 | Implemented |
+| FR-05 | Assign every remaining required course to a future term | EV-01 | Test | SRS v0.1 | Implemented: default electives sum to exactly 12 units; a chosen elective's supporting prerequisite (e.g. CSE 3350) is added automatically |
 | FR-06 | Never exceed the term's target unit load | EV-01; AS-03 | Test | SRS v0.1 | Implemented |
-| FR-07 | No Summer term unless summer enrollment is selected | EV-01 | Test | SRS v0.1 | Implemented |
-| FR-08 | Place a course only in a term its offering pattern includes | EV-01; AS-04 | Test | SRS v0.1 | Implemented: `Unknown` offering allowed with a warning (CH-02 §C-4) |
+| FR-07 | No Summer term unless summer enrollment is selected | EV-01 | Test | SRS v0.1 | Implemented: summer placements flagged *unconfirmed* (no published summer offerings) |
+| FR-08 | Place a course only in a term its offering pattern includes | EV-01; AS-04 | Test | SRS v0.1 | Implemented: offerings from all 12 CSE-department roadmaps with confidence (high/low/unknown); low and unknown are warned (CH-02 §C-4, C-6) |
 | FR-09 | Recalculate when a planned course is recorded Passed | EV-01 | Test | SRS v0.1 | Implemented |
 | FR-10 | Reschedule a Not passed or Withdrawn course and its downstream courses | EV-01 | Test | SRS v0.1 | Implemented: also re-places courses whose class standing no longer holds |
 | FR-11 | Recalculate when summer is turned on or a term's unit load changes | EV-01 | Test | SRS v0.1 | Implemented |
@@ -39,6 +39,7 @@ Change a requirement's *text* in the SRS first, then update its summary here.
 | DR-06 | Store program-data version and generation date with each saved pathway | EV-01 | Inspection | SRS v0.1 | Not implemented: no persistence yet |
 | DR-07 | Rebuild program data reproducibly from cached public sources | EV-02 | Test | CH-02 (proposed) | Implemented |
 | DR-08 | Catalog authoritative for units and prerequisites; roadmap for sequence and offerings; conflicts stored and flagged | EV-09; EV-10 | Test | CH-02 (proposed) | Implemented |
+| DR-09 | GE requirements as slots filled by any listed catalog course at the area's minimum grade | EV-02 | Test | CH-02 (proposed) | Implemented |
 | NFR-01 | A Student-role user cannot read another student's record, and denials are logged | EV-01; EV-06 | Test | SRS v0.1 | Not implemented: no sign-in (OQ-06) |
 | NFR-02 | No real records, credentials, or keys in repo or logs, checked by secret scan and review | EV-06 | Inspection; Analysis | SRS v0.1 | Partial: synthetic students only; no automated secret scan yet |
 | NFR-03 | Validate every API request; reject malformed or out-of-range input without changing stored data | EV-06 | Test | SRS v0.1 | Implemented: Pydantic 422; stateless API |

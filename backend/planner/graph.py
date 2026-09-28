@@ -16,6 +16,9 @@ class Catalog:
         self.program: dict = raw.get("program", {"groups": [{"name": "All", "all": list(self.courses)}]})
         self.roadmaps: dict = raw.get("roadmaps", {})
         self.entry_assumed: set[str] = set(raw.get("entry_assumed", []))
+        # Unit size of the roadmap's elective slots (BS CS: 3); default elective picks prefer matching courses.
+        slot_units = [s["units"] for rm in self.roadmaps.values() for t in rm["terms"] for s in t["slots"] if s.get("kind") == "ELECTIVE"]
+        self.elective_units = max(set(slot_units), key=slot_units.count) if slot_units else 3
         self.discrepancies: list[str] = list(raw.get("discrepancies", []))
         self.g = nx.DiGraph()
         self.g.add_nodes_from(self.courses)
@@ -45,6 +48,17 @@ class Catalog:
     def universe(self) -> set[str]:
         return {c for g in self.program["groups"] for c in g.get("all", []) + g.get("from", [])}
 
+    def _exact_fill(self, pool: list[str], need: int) -> list[str]:
+        """Most-preferred courses (pool order) whose units sum to exactly `need`; [] if none (caller tops up)."""
+        def dfs(i: int, left: int) -> list[str] | None:
+            if left == 0:
+                return []
+            if left < 0 or i == len(pool):
+                return None
+            take = dfs(i + 1, left - self.units(pool[i]))
+            return [pool[i], *take] if take is not None else dfs(i + 1, left)
+        return dfs(0, need) or [] if need > 0 else []
+
     def required(self, profile: StudentProfile, done: set[str]) -> set[str]:
         """Resolve the program's requirement groups into concrete courses for this student."""
         wanted = profile.remaining_requirement_groups
@@ -56,16 +70,29 @@ class Catalog:
                 out |= set(g["all"])
                 continue
             picks = [c for c in profile.choices.get(g["name"], []) if c in g["from"]]
-            # Default picks: already-completed first, then least-gated, known offering, lowest number.
-            pool = sorted(g["from"], key=lambda c: (c not in done, len(nx.ancestors(self.g, c)),
-                                                    self.courses[c].term_offered == "Unknown", c))
+            # Default picks: already-completed first, then roadmap slot size, least-gated, known offering, number.
+            pool = sorted(g["from"], key=lambda c: (c not in done, self.units(c) != self.elective_units,
+                                                    len(nx.ancestors(self.g, c)), self.courses[c].term_offered == "Unknown", c))
             need_n, need_u = g.get("choose", 0), g.get("choose_units", 0)
+            if need_u:
+                picks += self._exact_fill([c for c in pool if c not in picks], need_u - sum(map(self.units, picks)))
             for c in pool:
                 if len(picks) >= need_n and sum(map(self.units, picks)) >= need_u:
                     break
                 if c not in picks:
                     picks.append(c)
             out |= set(picks)
+        # Add unmet prerequisites of chosen courses (e.g. CSE 3350 for elective CSE 4030); entry-level ones are assumed.
+        stack = list(out)
+        while stack:
+            groups: dict[int, list[str]] = {}
+            for e in self.prereqs(stack.pop()):
+                groups.setdefault(e.group, []).append(e.from_course)
+            for alts in groups.values():
+                if not any(a in out or a in done or a in self.entry_assumed for a in alts):
+                    pick = next(a for a in alts if a in self.courses)
+                    out.add(pick)
+                    stack.append(pick)
         return out
 
 

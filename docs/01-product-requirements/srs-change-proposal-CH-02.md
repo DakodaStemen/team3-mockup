@@ -16,7 +16,7 @@ Nothing below is approved until the team accepts it. Each item keeps stable IDs,
 
 | ID | Evidence record | Date and owner | Contribution | Proposed status |
 |---|---|---|---|---|
-| EV-02 | Published CSUSB 2026-27 catalog (CSE, MATH, PHYS course pages; BS CS program page) and BS CS freshman and transfer roadmaps. Ingested by `backend/scripts/ingest.py`; raw copies in `backend/data/raw/`. | 2026-09-28; Dakoda Stemen | Real units, prerequisites, grade minimums, corequisites, standing, requirement groups, and term offerings (roadmap courses only) | Planned → **Confirmed** |
+| EV-02 | Published CSUSB 2026-27 catalog: CSE, MATH, and PHYS course pages, the BS CS program page, and the General Education page. Plus all 12 current CSE-department roadmaps: BS CS freshman/transfer for sequence; all 12 for term offerings. Ingested by `backend/scripts/ingest.py`; raw copies in `backend/data/raw/`. | 2026-09-28; Dakoda Stemen | Real units, prerequisites, grade minimums, corequisites, standing, requirement groups, GE areas and eligible courses, and term offerings with a confidence level | Planned → **Confirmed** |
 | EV-07 | Scheduler feasibility spike: `backend/scripts/results.py` → `backend/results/summary.md` | 2026-09-28; Dakoda Stemen | Greedy scheduler: 282/282 valid scenario runs, ~1 ms per plan. Graduation term matches both roadmaps; ~0.5 exact-term match per course. Not yet compared to an exhaustive optimum (PR-02 criterion). | Planned → **Provisional** |
 | EV-08 *(new)* | Adaptive Degree Pathway Planner Technical Spec v0.1 ([docx](ADPP_TechnicalSpec_v0.1_2026-09-28.docx)) | 2026-09-28; Dakoda Stemen | Architecture, AI-grounding ADR, guardrail design, measurement plan, prior art | **Confirmed** (team-authored design input, not stakeholder evidence) |
 | EV-09 *(new)* | "Course Offering & Roadmap Data – Team Findings" and "Data Schema Ideas" (team Drive) | 2026-09-24/25; team | Once-a-year courses, catalog/roadmap conflicts, source-of-truth split, grouped prerequisites | **Confirmed** |
@@ -29,7 +29,7 @@ Nothing below is approved until the team accepts it. Each item keeps stable IDs,
 | OQ-01 minimum grade | **Per prerequisite, as stated in the catalog.** Examples: CSE 2010 "C or better" for CSE 2020; MATH 2210 "C- or better" for MATH 2220/2310. Where the catalog states none, any passing grade (D- or better) is assumed. | EV-02 | Confirm the default with an advisor (EV-04) |
 | OQ-02 corequisites | **Yes.** The catalog has "Semester Corequisite" and "pre- or co-requisite" (e.g. PHYS 2500L with PHYS 2500; MATH 2220 for MATH 2310). Modeled as a prerequisite satisfiable in the same term. | EV-02 | None for BS CS |
 | OQ-04 unit load | Still open. Roadmap semesters run 14–18 units; there is no catalog rule. Prototype defaults: profile preference; summer cap 8. | EV-02 | Academic regulations (EV-03) |
-| OQ-07 elective fill | Proposed default: already-completed first, then fewest prerequisites, then known offering, then course number. Student choices override. | Prototype | Advisor review |
+| OQ-07 elective fill | Proposed default: already-completed first; then courses matching the roadmap's elective slot size (3 units); then fewest prerequisites, known offering, course number. The combination must total exactly 12 units. A chosen elective's out-of-program prerequisite (CSE 3350 for CSE 4030/5300) is scheduled automatically. Student choices override. | Prototype; EV-02 roadmap slots | Advisor review |
 
 ## C. Conflicts between SRS v0.1 and current evidence or implementation (need a team decision)
 
@@ -38,9 +38,10 @@ Nothing below is approved until the team accepts it. Each item keeps stable IDs,
 | C-1 | **DR-03** says reject the whole load on a prerequisite cycle. The tech spec (EV-08) and the implementation reject only the cyclic *edge*, log it, and continue. | (a) Keep DR-03 and change the code. (b) Revise DR-03 to "reject the offending record, report it, and continue." | (b): one bad edge shouldn't block planning for a whole program, and it's still reported for advisor review |
 | C-2 | **DR-05 / LIM-02** say only synthetic data. The catalog and roadmaps are real *public* data (not restricted), while student records remain synthetic. | Revise LIM-02 and DR-05 to "student data shall be synthetic; program data may be public institutional data." | Revise. EV-06 restricts protected student data, not public catalogs. |
 | C-3 | **FR-02 / AS-02** say in-progress courses do not satisfy prerequisites. The planner assumes they pass when planning *later* terms (otherwise no future plan is possible mid-term). | Clarify FR-02: an in-progress course counts as satisfied **only for terms after its current term**, and a Not passed outcome triggers FR-10. | Clarify |
-| C-4 | **FR-08** is silent on courses with no offering data (most electives). | Add: "Where a course's offering pattern is Unknown, the software shall allow it in any Fall or Spring term and flag it." Consider EV-09's confidence levels. | Add |
+| C-4 | **FR-08** is silent on courses with no offering data. After ingesting all 12 CSE roadmaps, 17 program courses remain on no roadmap. | Add: "Where a course's offering pattern is Unknown, the software shall allow it in any Fall or Spring term and flag it." Store a confidence per course (EV-09): implemented. | Add |
 | C-5 | **Non-goals (§1.3)** list natural-language questions as a stretch goal. The tech spec (EV-08) and prototype implement them behind a guardrail. | (a) Keep as stretch and baseline FR-19 as Low priority. (b) Promote. | (a): baseline FR-19/FR-21 as Low priority so the guardrail design is traceable |
-| C-6 | Roadmap-vs-roadmap offering disagreements (CSE 4100, 4310, 4880, 5250) | Use the most restrictive (current prototype) or show a low-confidence warning (EV-09) | Keep most restrictive for planning, add a confidence flag to the UI |
+| C-6 | Roadmap-vs-roadmap offering disagreements (CSE 4100, 4310, 4880, 5250: Spring-only only in the newest BS CS transfer roadmap) | Use the most restrictive, or show a low-confidence warning (EV-09) | Both, now implemented: most restrictive for planning plus a per-term warning |
+| C-7 | SRS v0.1 has no GE requirement detail. The catalog GE page lists 43 units by area. The BS CS page exempts 1B, 4, and 5B, and says CSE 4880 satisfies UD-2/5. | Model GE as named slots (1A, 1C, 3A, 3B, 6, American Institutions history + CA government, UD-3, UD-4), each filled by any listed course at C- or better. This gives 89 major + 27 GE + 4 free = 120. | Add as DR-09; confirm the slot mapping with an advisor (it is inferred from the roadmap slot count) |
 
 ## D. Proposed new requirements (EARS form, SRS §5.1)
 
@@ -56,6 +57,7 @@ Nothing below is approved until the team accepts it. Each item keeps stable IDs,
 | NFR-13 | The software shall treat its confidence thresholds as calibrated only when expected calibration error is at most 0.02 on at least 40 labeled queries. | EV-08 | Low | Medium | Analysis |
 | COM-04 | The team shall collect program data only from public pages permitted by robots.txt, at least 2 s apart, with an identifying user agent. | EV-08 | High | Low | Inspection |
 | COM-05 | The team shall merge to `main` only when lint, automated tests, and the traceability check pass. | EV-06 | Medium | Low | Test |
+| DR-09 | The software shall represent each general-education requirement as a slot that any listed catalog course satisfies with a grade at or above the area minimum. | EV-02 | Medium | Medium | Test |
 
 Numerical values in NFR-12 and NFR-13 come from the tech spec (EV-08), not stakeholder evidence. Mark them provisional under AS-08.
 
@@ -67,7 +69,7 @@ Numerical values in NFR-12 and NFR-13 come from the tech spec (EV-08), not stake
 
 ## F. Impact analysis
 
-- **Scope:** adds 3 FR, 2 DR, 3 NFR, and 2 COM, all already implemented and tested. Priorities are Low or Medium except DR-08 and COM-04.
+- **Scope:** adds 3 FR, 3 DR, 3 NFR, and 2 COM, all already implemented and tested. Priorities are Low or Medium except DR-08 and COM-04.
 - **Design:** none; this documents existing design (ADR-1, ADR-2).
 - **Schedule:** none; the work is already done.
 - **Risk:** reduces R-9 (data accuracy) through FR-20, DR-08, and DR-07.

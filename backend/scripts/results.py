@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from planner.engine import apply_scenario, make_plan, timeline, validate_plan  # noqa: E402
 from planner.graph import load_catalog, load_students  # noqa: E402
 from planner.models import Plan, ScenarioEvent, StudentProfile, TermPlan  # noqa: E402
+from scripts.ingest import GE_SLOTS  # noqa: E402
 
 OUT = Path(__file__).parent.parent / "results"
 CAT = load_catalog()
@@ -33,8 +34,10 @@ EXPECTED = {"alex": "freshman", "taylor": "transfer"}  # synthetic profile -> of
 def token(cid: str) -> str:
     """Compare plans and roadmaps at the level the roadmap specifies (slots, not specific electives)."""
     c = CAT.courses[cid]
-    if c.placeholder:
-        return re.sub(r" \d+$", "", cid)
+    if c.placeholder:  # named GE slot -> the roadmap's slot kind (GE_SLOTS in ingest.py)
+        area = cid.removeprefix("GE ")
+        kind = next((k for k, areas in GE_SLOTS.items() if area in areas), None)
+        return kind or re.sub(r" \d+$", "", cid)
     for g in CAT.program["groups"]:
         if cid in g.get("from", []):
             return "CSE ELECTIVE" if "choose_units" in g else "AI CHOICE"

@@ -19,6 +19,9 @@ class Course(BaseModel):
     min_standing_units: int = 0  # e.g. 90 for "Senior standing"
     placeholder: bool = False  # GE / free-elective slot rather than a specific course
     prereq_text: str = ""
+    offering_confidence: Literal["high", "low", "unknown"] = "unknown"  # roadmaps agree / conflict / no roadmap
+    satisfied_by: list[str] = []  # GE slot: catalog courses that fill it (e.g. ENG 1070A for GE 1A)
+    satisfied_by_min_grade: str = "D-"
 
     @model_validator(mode="after")
     def _flag(self):

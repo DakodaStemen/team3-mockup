@@ -168,3 +168,59 @@ def test_no_summer_unless_selected():
 def test_every_prerequisite_endpoint_is_a_catalog_course():
     assert all(u in CAT.courses and v in CAT.courses for u, v in CAT.g.edges)
     assert all(g_course in CAT.courses for g in CAT.program["groups"] for g_course in g.get("all", []) + g.get("from", []))
+
+
+@pytest.mark.req("FR-08", "DR-08")
+def test_once_a_year_offerings_match_team_research():
+    """EV-09 (team findings across all 12 CSE roadmaps) vs what ingest.py derived independently."""
+    fall = ["CSE 3350", "CSE 4050", "CSE 4400", "CSE 5160", "CSE 5208", "CSE 5210", "CSE 5410", "CSE 5700", "CSE 5720"]
+    spring = ["CSE 4200", "CSE 4410", "CSE 4500", "CSE 5408", "CSE 5500", "PHYS 2510", "PHYS 2510L"]
+    assert {c: CAT.courses[c].term_offered for c in fall + spring} == {**dict.fromkeys(fall, "Fall"), **dict.fromkeys(spring, "Spring")}
+    assert CAT.courses["CSE 4100"].term_offered == "Spring" and CAT.courses["CSE 4100"].offering_confidence == "low"
+
+
+@pytest.mark.req("FR-08")
+def test_conflicting_or_unknown_offerings_are_warned():
+    plan = make_plan(STUDENTS["alex"])
+    warnings = " ".join(w for t in plan.terms for w in t.warnings)
+    placed = {c for t in plan.terms for c in t.courses}
+    for c in placed:
+        if CAT.courses[c].term_offered == "Unknown":
+            assert f"{c} term offering unknown" in warnings
+        elif CAT.courses[c].offering_confidence == "low":
+            assert f"{c}: roadmaps disagree" in warnings
+
+
+@pytest.mark.req("FR-07")
+def test_summer_placements_are_flagged_unconfirmed():
+    alex = STUDENTS["alex"]
+    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Add Summer", term_label="Summer 2027"))
+    summer = next(t for t in r["plan"].terms if t.term_label == "Summer 2027")
+    assert summer.courses and all(any(w.startswith(f"{c}: summer offerings are not published") for w in summer.warnings)
+                                  for c in summer.courses)
+
+
+@pytest.mark.req("FR-01", "FR-02", "DR-09")
+def test_real_ge_course_fills_its_slot_with_grade_minimum():
+    from planner.engine import baseline
+    base = STUDENTS["alex"].model_copy(update={"start_term": "Spring 2027"})
+    sat, todo, _ = baseline(base.model_copy(update={"completed_courses": {"ENG 1070A": "B"}}), CAT)
+    assert "GE 1A" in sat and "GE 1A" not in todo
+    sat, todo, _ = baseline(base.model_copy(update={"completed_courses": {"ENG 1070A": "D"}}), CAT)  # GE needs C-
+    assert "GE 1A" in todo
+
+
+@pytest.mark.req("FR-05")
+def test_elective_choice_pulls_in_supporting_prerequisite():
+    riley = STUDENTS["riley"].model_copy(update={"choices": {"CSE Elective": ["CSE 4030", "CSE 5300"]}})
+    plan = make_plan(riley)
+    order = [c for t in plan.terms for c in t.courses]
+    assert "CSE 3350" in order and order.index("CSE 3350") < order.index("CSE 4030")
+    check_valid(plan, riley)
+
+
+@pytest.mark.req("FR-05")
+def test_default_electives_meet_units_exactly():
+    group = next(g for g in CAT.program["groups"] if "choose_units" in g)
+    picks = CAT.required(STUDENTS["alex"], set()) & set(group["from"])
+    assert sum(CAT.units(c) for c in picks) == group["choose_units"]
