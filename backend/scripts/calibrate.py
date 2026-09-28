@@ -21,6 +21,7 @@ from planner.engine import make_plan  # noqa: E402
 from planner.graph import load_students  # noqa: E402
 from planner.guardrail import CALIBRATION, OLLAMA_MODEL, llm_classify  # noqa: E402
 
+MIN_PER_CLASS = 4
 QUERIES = Path(__file__).parent.parent / "data" / "queries.json"  # labeled against Alex's plan
 
 
@@ -44,9 +45,11 @@ def evaluate(raw: np.ndarray, y: np.ndarray, method: str = "sigmoid", folds: int
     """Metrics come from out-of-fold predictions; the saved table comes from a fit on all rows."""
     X = raw.reshape(-1, 1)
     base = CalibratedClassifierCV(LogisticRegression(), method=method, cv=3)
-    k = min(folds, int(np.bincount(y, minlength=2).min()))  # each fold needs both classes
-    if k < 2:
-        raise ValueError("Need at least 2 correct and 2 incorrect labeled queries to calibrate.")
+    minority = int(np.bincount(y, minlength=2).min())
+    if minority < MIN_PER_CLASS:  # outer folds, then the calibrator's own cv=3, each need both classes
+        raise ValueError(f"Need at least {MIN_PER_CLASS} correct and {MIN_PER_CLASS} incorrect labeled queries to calibrate; "
+                         f"the smaller class has {minority}. Label more queries.")
+    k = min(folds, minority)
     cal = cross_val_predict(base, X, y, cv=StratifiedKFold(k, shuffle=True, random_state=0),
                             method="predict_proba")[:, 1]
     model = base.fit(X, y)

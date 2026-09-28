@@ -46,7 +46,7 @@ Change a requirement's *text* in the SRS first, then update its summary here.
 | NFR-04 | ≥ 95% of generation and recalculation requests within 2 s (provisional, AS-08) | EV-01; AS-08 | Test | SRS v0.1 | Implemented: measured median ~1 ms |
 | NFR-05 | ≥ 80% of ≥ 5 students apply a what-if and state the new graduation term within 5 min (provisional) | EV-05; AS-08 | Test | SRS v0.1 | Not implemented: usability study planned (PR-01) |
 | NFR-06 | Keyboard operable; status never conveyed by color alone | EV-06 | Test; Inspection | SRS v0.1 | Unverified: native controls and text labels, but the DAG view uses color only |
-| NFR-07 | Every pathway in a ≥ 30-case scenario suite passes the independent validator | EV-01 | Test; Analysis | SRS v0.1 | Implemented: 282-run sweep in `results/`, plus tests |
+| NFR-07 | Every pathway in a ≥ 30-case scenario suite passes the independent validator | EV-01 | Test; Analysis | SRS v0.1 | Implemented: 280-run sweep in `results/`, plus tests |
 | NFR-08 | Identical inputs give an identical pathway | EV-01 | Test | SRS v0.1 | Implemented |
 | NFR-09 | Groups, prerequisites, offerings, and unit limits defined in data files | EV-01 | Inspection; Demonstration | SRS v0.1 | Partial: `catalog.json`; summer cap and guardrail thresholds are still code constants |
 | NFR-10 | Every pathway screen states it is a planning aid, not an official audit or advising decision | EV-01 | Inspection | SRS v0.1 | Implemented |

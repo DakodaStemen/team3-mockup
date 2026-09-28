@@ -61,6 +61,10 @@ WORD_UNITS = {"one": 1, "two": 2, "three": 3, "four": 4, "six": 6}
 STANDING = {"freshman": 0, "sophomore": 30, "junior": 60, "senior": 90}
 UD_STANDING = 60  # assumption: upper-division GE needs junior standing (60 units)
 
+MAX_BYTES = 20 * 1024 * 1024  # largest raw source is ~1 MB; refuse anything that looks like a bomb or a wrong URL
+MAX_REDIRECTS = 5
+_robots: dict[str, urllib.robotparser.RobotFileParser] = {}
+
 CODE = re.compile(r"\b([A-Z]{2,4})\s(\d{4}[A-Z]?)\b|(?<![\d.])\b(\d{4}[A-Z]?)\b(?!\.\d)")
 GRADE = re.compile(r"with an? (?:minimum )?grade of ([A-D][+-]?)(?:\s*\([\d.]+\))? or better", re.I)
 CONCURRENT = re.compile(r"\(?\s*(?:as a )?pre-?\s*(?:/|or)\s*co-?req(?:uisite)?\s*\)?|\(\s*co-?requisite\s*\)", re.I)
@@ -68,20 +72,63 @@ CONCURRENT = re.compile(r"\(?\s*(?:as a )?pre-?\s*(?:/|or)\s*co-?req(?:uisite)?\
 
 # ---------- fetching ----------
 
+def on_site(url: str) -> bool:
+    """Only CSUSB hosts over HTTPS; redirects elsewhere are refused."""
+    u = urlparse(url)
+    return u.scheme == "https" and (u.hostname == "csusb.edu" or (u.hostname or "").endswith(".csusb.edu"))
+
+
+def robots(url: str) -> urllib.robotparser.RobotFileParser:
+    """robots.txt per host, fetched once with our User-Agent and a timeout (RobotFileParser.read() has neither)."""
+    u = urlparse(url)
+    base = f"{u.scheme}://{u.netloc}"
+    if base not in _robots:
+        rp = urllib.robotparser.RobotFileParser(f"{base}/robots.txt")
+        r = requests.get(rp.url, headers={"User-Agent": UA}, timeout=30)
+        if r.status_code in (401, 403):
+            rp.disallow_all = True
+        elif r.status_code >= 400:
+            rp.allow_all = True  # no robots.txt: the standard default
+        else:
+            rp.parse(r.text.splitlines())
+        _robots[base] = rp
+    return _robots[base]
+
+
 def fetch(name: str, url: str, refresh: bool) -> Path:
     path = RAW / name
     if path.exists() and not refresh:
         return path
-    u = urlparse(url)
-    rp = urllib.robotparser.RobotFileParser(f"{u.scheme}://{u.netloc}/robots.txt")
-    rp.read()
-    if not rp.can_fetch(UA, url):
-        sys.exit(f"robots.txt disallows {url}")
-    r = requests.get(url, headers={"User-Agent": UA}, timeout=30)
-    r.raise_for_status()
-    path.write_bytes(r.content)
+    for _ in range(MAX_REDIRECTS + 1):
+        if not on_site(url):
+            sys.exit(f"refusing to fetch off-site or non-HTTPS URL {url}")
+        if not robots(url).can_fetch(UA, url):
+            sys.exit(f"robots.txt disallows {url}")
+        with requests.get(url, headers={"User-Agent": UA}, timeout=30, stream=True, allow_redirects=False) as r:
+            if r.is_redirect:
+                url = requests.compat.urljoin(url, r.headers["Location"])
+                continue
+            r.raise_for_status()
+            data = bytearray()
+            for chunk in r.iter_content(64 * 1024):
+                data += chunk
+                if len(data) > MAX_BYTES:
+                    sys.exit(f"{url} is larger than {MAX_BYTES // 2**20} MB; refusing")
+        break
+    else:
+        sys.exit(f"too many redirects fetching {name}")
+    tmp = path.with_name(path.name + ".part")  # a failed download never leaves a truncated cache file
+    tmp.write_bytes(data)
+    tmp.replace(path)
     time.sleep(2)
     return path
+
+
+def need(pattern: str, text: str, what: str) -> re.Match:
+    """re.search that fails with a clear message when a source page's layout has changed."""
+    if not (m := re.search(pattern, text)):
+        raise ValueError(f"Source layout changed: could not find {what}. Check data/raw/ against the live page.")
+    return m
 
 
 # ---------- prerequisite text parser ----------
@@ -130,12 +177,15 @@ def parse_courses(path: Path) -> list[dict]:
     soup = BeautifulSoup(path.read_text(encoding="utf8"), "html.parser")
     out = []
     for block in soup.select("div.courseblock"):
-        title = block.select_one(".coursetitle").get_text(" ").replace("\xa0", " ")
+        title_el, hours_el = block.select_one(".coursetitle"), block.select_one(".coursehours")
+        if not title_el or not hours_el:
+            continue
+        title = title_el.get_text(" ").replace("\xa0", " ")
         m = re.match(r"\s*([A-Z]{2,4} \d{4}[A-Z]?)\.\s+(.*?)\.?\s*$", title)
         if not m:
             continue
         cid, name = m.groups()
-        units_text = block.select_one(".coursehours").get_text()
+        units_text = hours_el.get_text()
         units = [int(u) for u in re.findall(r"\d+", units_text)]
         desc = block.select_one(".courseblockdesc")
         segments = [BeautifulSoup(s, "html.parser").get_text(" ") for s in re.split(r"<br\s*/?>", desc.decode_contents())] if desc else []
@@ -177,7 +227,9 @@ def parse_program(path: Path) -> dict:
         if "areaheader" in cls:
             current = {"name": re.sub(r"\s*\(\d+\)", "", first), "all": []}
             groups.append(current)
-        elif m := re.match(r"or ([A-Z]{2,4} \d{4}[A-Z]?)", first):
+        elif current is None:
+            continue  # rows before the first area header
+        elif (m := re.match(r"or ([A-Z]{2,4} \d{4}[A-Z]?)", first)) and current["all"]:
             if isinstance(current["all"][-1], str):
                 current["all"][-1] = {"choose": 1, "from": [current["all"][-1]]}
             current["all"][-1]["from"].append(m.group(1))
@@ -186,7 +238,8 @@ def parse_program(path: Path) -> dict:
             if len(cells) > 1 and "*" in cells[1] and "Upper Division Mathematical" in text:
                 ge_covered.append({"course": m.group(1), "area": "UD-2/5"})
         elif m := re.match(r"(\w+) units chosen from ([A-Z]+) (\d)000-level and above", first, re.I):
-            groups.append({"name": f"{m.group(2)} Elective", "choose_units": WORDS[m.group(1).lower()],
+            n = m.group(1).lower()
+            groups.append({"name": f"{m.group(2)} Elective", "choose_units": int(n) if n.isdigit() else WORDS[n],
                            "subject": m.group(2), "min_level": int(m.group(3)) * 1000})
     # Pull inline choice groups out into their own named groups.
     final = []
@@ -198,8 +251,8 @@ def parse_program(path: Path) -> dict:
             final += [{"name": " / ".join(c["from"]), **c} for c in choices]
         else:
             final.append(g)
-    total = int(re.search(r"Total units required for graduation:\s*(\d+)", text).group(1))
-    code = re.search(r"Program Code:\s*(\w+)", text).group(1)
+    total = int(need(r"Total units required for graduation:\s*(\d+)", text, "total units").group(1))
+    code = need(r"Program Code:\s*(\w+)", text, "program code").group(1)
     return {"code": code, "name": "BS Computer Science", "catalog_total_units": total, "groups": final, "ge_covered_by_major": ge_covered}
 
 
@@ -233,7 +286,8 @@ def parse_ge(path: Path) -> dict:
 def slot(text: str, offered: str, prereq: str, units: str) -> dict:
     text = text.replace("\n", " ").strip()
     off = {"Fall & Spring": "Both", "Fall": "Fall", "Spring": "Spring"}.get(offered.strip(), "Unknown")
-    s = {"text": text, "term_offered": off, "prereq_text": prereq.replace("\n", " ").strip(), "units": int(units)}
+    s = {"text": text, "term_offered": off, "prereq_text": prereq.replace("\n", " ").strip(),
+         "units": int(m.group()) if (m := re.search(r"\d+", units)) else 0}  # a range like "3-4" uses the minimum
     if m := re.match(r"([A-Z]{2,4} \d{4}[A-Z]?)(?:\s|\(|$)", text):
         if "," not in text:
             s["course"] = m.group(1)
@@ -251,11 +305,12 @@ def parse_roadmap(path: Path) -> dict:
         for table in pdf.pages[0].extract_tables():
             fall, spring = [], []
             for row in table:
+                row = [*row, *[None] * (8 - len(row))]  # short rows (merged cells) are padded, not an IndexError
                 if row[0] and re.match(r"[A-Z]{2,4} \d|General|Written|Oral|Free|CSE", row[0]) and row[3]:
                     fall.append(slot(row[0], row[1] or "", row[2] or "", row[3]))
                 if row[4] and re.match(r"[A-Z]{2,4} \d|General|Written|Oral|Free|CSE", row[4]) and row[7]:
                     spring.append(slot(row[4], row[5] or "", row[6] or "", row[7]))
-                if row[5] == "Degree Units Total":
+                if row[5] == "Degree Units Total" and row[7] and row[7].strip().isdigit():
                     total = int(row[7])
             terms += [{"season": "Fall", "slots": fall}, {"season": "Spring", "slots": spring}]
     return {"source": path.name, "terms": terms, "total_units": total}

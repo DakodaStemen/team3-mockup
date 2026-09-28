@@ -7,6 +7,7 @@ dependencies = [
   "uvicorn",
   "pydantic>=2",
   "networkx",
+  "numpy",  # imported directly (guardrail, calibrate); was only a transitive dependency of scikit-learn
   "instructor",
   "openai",
   "structlog",

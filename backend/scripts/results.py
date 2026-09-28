@@ -49,6 +49,12 @@ def roadmap_tokens(rm: dict) -> list[list[str]]:
     return [[s["course"] if "course" in s else kind.get(s["kind"], s["kind"]) for s in t["slots"]] for t in rm["terms"]]
 
 
+def mean(xs, digits: int = 3) -> float | None:
+    """statistics.mean that tolerates an empty sample (reported as None / n/a instead of crashing the run)."""
+    xs = list(xs)
+    return round(statistics.mean(xs), digits) if xs else None
+
+
 def pr(pred: Counter, gold: Counter) -> tuple[float, float]:
     hit = sum((pred & gold).values())
     return hit / max(sum(pred.values()), 1), hit / max(sum(gold.values()), 1)
@@ -77,11 +83,11 @@ def pathway_quality() -> list[dict]:
                 "terms_plan": len(plan.terms), "terms_roadmap": len(gold),
                 "precision_at_term": [round(p, 3) for p, _ in per_term], "recall_at_term": [round(r, 3) for _, r in per_term],
                 "cumulative_recall_at_term": [round(r, 3) for _, r in cumulative],
-                "mean_precision_at_term": round(statistics.mean(p for p, _ in per_term), 3),
-                "mean_recall_at_term": round(statistics.mean(r for _, r in per_term), 3),
-                "exact_term_match": round(sum(d == 0 for d in disp) / len(disp), 3),
-                "mean_abs_displacement_terms": round(statistics.mean(map(abs, disp)), 3),
-                "mean_displacement_terms": round(statistics.mean(disp), 3),
+                "mean_precision_at_term": mean(p for p, _ in per_term),
+                "mean_recall_at_term": mean(r for _, r in per_term),
+                "exact_term_match": mean(d == 0 for d in disp),
+                "mean_abs_displacement_terms": mean(map(abs, disp)),
+                "mean_displacement_terms": mean(disp),
                 "courses_compared": len(shared),
                 "validator_problems": validate_plan(plan, STUDENTS[sid], CAT),
             })
@@ -152,8 +158,17 @@ def bottlenecks(runs: list[dict]) -> list[dict]:
     return sorted(rows, key=lambda r: (-r["priority"], r["course"]))
 
 
+def median(xs) -> float:
+    xs = list(xs)
+    return statistics.median(xs) if xs else float("nan")
+
+
 def spearman(a: list[float], b: list[float]) -> float:
-    return statistics.correlation(a, b, method="ranked")
+    """NaN when undefined (fewer than 2 points, or one side constant) rather than a StatisticsError."""
+    try:
+        return statistics.correlation(a, b, method="ranked")
+    except statistics.StatisticsError:
+        return float("nan")
 
 
 def main():
@@ -164,7 +179,7 @@ def main():
     (OUT / "roadmap_audit.json").write_text(json.dumps(audit, indent=1))
     (OUT / "bottlenecks.json").write_text(json.dumps(bn, indent=1))
     with (OUT / "scenario_runs.csv").open("w", newline="", encoding="utf8") as f:
-        w = csv.DictWriter(f, fieldnames=list(runs[0]))
+        w = csv.DictWriter(f, fieldnames=list(runs[0]) if runs else ["student"])
         w.writeheader()
         w.writerows(runs)
 
@@ -176,6 +191,8 @@ def main():
     sub = CAT.g.subgraph(CAT.universe())
     entry = [r["course"] for r in bn if sub.in_degree(r["course"]) == 0]  # only ever start a path
     assert all(r["betweenness"] == 0 for r in bn if r["course"] in entry)
+    top = sorted((r for r in bn if r["course"] in entry), key=lambda r: -r["descendants"])[:2]
+    gatekeepers = f", including gatekeepers like {' and '.join(r['course'] for r in top)}" if top else ""
     speed = [r["full_plan_ms"] / r["recalc_ms"] for r in runs if r["recalc_ms"]]
     L = ["# Results", "", f"Data: {CAT.program['name']} ({CAT.program['code']}), CSUSB 2026-27 catalog + roadmaps. "
          f"{len(CAT.courses)} courses, {CAT.g.number_of_edges()} prerequisite edges, {len(CAT.discrepancies)} discrepancies.", "",
@@ -191,16 +208,16 @@ def main():
     L += ["", "## Scenario sweep", "",
           f"- {len(runs)} what-if runs across {len(STUDENTS)} students; **{sum(r['valid'] for r in runs)}/{len(runs)} produced valid plans**.",
           f"- Fail/withdraw delay distribution (terms): {dict(sorted(Counter(r['delta_terms'] for r in fails).items()))}",
-          f"- Mean ripple size on Fail: {statistics.mean(r['invalidated'] for r in fails):.1f} courses",
-          f"- Recalc time: median {statistics.median(r['recalc_ms'] for r in runs):.2f} ms "
-          f"(full plan from scratch: median {statistics.median(r['full_plan_ms'] for r in runs):.2f} ms, "
-          f"median ratio {statistics.median(speed):.1f}x)", "",
+          f"- Mean ripple size on Fail: {mean((r['invalidated'] for r in fails), 1)} courses",
+          f"- Recalc time: median {median(r['recalc_ms'] for r in runs):.2f} ms "
+          f"(full plan from scratch: median {median(r['full_plan_ms'] for r in runs):.2f} ms, "
+          f"median ratio {median(speed):.1f}x)", "",
           "## Bottlenecks", "",
           f"Spearman correlation with measured delay-when-failed ({len(measured)} courses): priority score {rho_p:.2f}, "
           f"descendant count {rho_d:.2f}, betweenness centrality {rho_b:.2f}. "
           "Delay is measured by the same greedy engine that schedules by priority, so this correlation is a consistency "
           f"check, not validation. Betweenness is 0 by construction for all {len(entry)} courses with no prerequisites to "
-          f"plan, including gatekeepers like {' and '.join(c for c in ('MATH 2210', 'CSE 2010') if c in entry)}.", "",
+          f"plan{gatekeepers}.", "",
           "| course | priority | descendants | betweenness | mean delay when failed |", "|---|---|---|---|---|"]
     L += [f"| {r['course']} | {r['priority']} | {r['descendants']} | {r['betweenness']} | {r['mean_delay_when_failed']} |" for r in bn[:12]]
     L += ["", "## Discrepancies (catalog vs roadmap)", ""] + [f"- {d}" for d in CAT.discrepancies]

@@ -5,3 +5,6 @@ node_modules/
 dist/
 backend/audit.jsonl
 backend/calibration.json
+backend/data/raw/*.part
+.ruff_cache/
+.DS_Store

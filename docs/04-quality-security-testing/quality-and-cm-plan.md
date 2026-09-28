@@ -10,7 +10,7 @@ Of Sommerville's quality attributes (Fig 24.2), these are prioritized for this p
 
 | Priority | Attribute | Why it matters here | How it's assured |
 |---|---|---|---|
-| 1 | Correctness / dependability | A wrong plan can cost a student a year | Validator (FR-14), 282-run scenario sweep, requirements-based tests |
+| 1 | Correctness / dependability | A wrong plan can cost a student a year | Validator (FR-14), 280-run scenario sweep, requirements-based tests |
 | 2 | Understandability (explainability) | Advisors must be able to defend a plan | Templated explanations (FR-12); discrepancy log (FR-20); audit trail (FR-21) |
 | 3 | Security / privacy | FERPA; LLM misuse | [threat-analysis.md](threat-analysis.md); COM-03, IF-04 |
 | 4 | Maintainability | 5-person team, 10 weeks, handoffs | Standards (§1.2), reviews (§1.3), traceability |

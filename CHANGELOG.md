@@ -17,6 +17,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versioning: SemVer (doc
 - `./dev.sh` one-command start; Playwright end-to-end tests (`npm run test:e2e`), also run in CI.
 ### Changed
 - The results summary labels the bottleneck correlation a consistency check, not validation.
+### Security
+- `ingest.py` fetches only HTTPS CSUSB hosts, follows at most 5 redirects and checks each hop, caps downloads at 20 MB, reads robots.txt with our User-Agent and a timeout, and writes cache files atomically.
+- CI runs with read-only `permissions`, pins third-party actions to commit SHAs, and runs `npm audit` plus lint.
+### Fixed (tooling)
+- Ingest parsers fail with a clear "source layout changed" message instead of an `AttributeError`/`IndexError` when a page changes shape.
+- `results.py` tolerates empty samples and constant data (n/a instead of a crash). `calibrate.py` requires at least 4 examples of each class and says so, instead of a scikit-learn error.
+- `dev.sh` checks the Node version and busy ports, reinstalls when the lockfile changes, and shuts both servers down cleanly.
+- `numpy` is declared as a direct dependency.
 
 ## [0.4.0] - 2026-09-28
 ### Added

@@ -88,7 +88,7 @@ Tests: `cd backend && uv run pytest -q` (engine, API, traceability) and `cd fron
 # backend (Python 3.12+, uv)
 cd backend
 uv sync
-uv run pytest                                # 74 tests incl. traceability check
+uv run pytest                                # engine, API, scripts, ingest, and traceability tests
 uv run ruff check .
 uv run python scripts/trace.py               # regenerate traceability.md after changing tests or register
 uv run python scripts/ingest.py              # rebuild planner/catalog.json from cached sources (--refresh re-downloads)
@@ -99,7 +99,7 @@ uv run uvicorn planner.api:app --port 8000   # OpenAPI contract at /openapi.json
 cd frontend
 npm install
 npm run dev                                  # http://localhost:5173 (proxies /api -> :8000)
-npm run test:e2e                             # Playwright end-to-end tests (starts both servers)
+npm run test:e2e                             # Playwright end-to-end tests (starts both servers; stop ./dev.sh first)
 
 # optional: natural-language queries (self-hosted LLM)
 ollama pull llama3.1 && ollama serve
