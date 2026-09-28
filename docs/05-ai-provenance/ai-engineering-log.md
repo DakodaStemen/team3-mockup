@@ -100,3 +100,19 @@ This is the AI Assistance and Provenance record required by course policy (SRS C
 3. **References marked "not opened" or "not verified"** in [references.md](../01-product-requirements/references.md), especially the legal basis for scraping (CollegeSource v. AcademyOne).
 4. **Synthetic student profiles** (`backend/planner/students.json`): confirm they are realistic with an advisor (EV-04).
 5. **Guardrail thresholds 0.90 / 0.60:** unvalidated until the calibration run (NFR-13).
+
+### AIL-07: Review fixes and demo-ready UI (2026-09-28)
+
+- **Decisions (human):** Dakoda wrote the fix plan (*ADPP Mockup: Fix Plan and Demo Prep*), then asked for every finding to be fixed and the UI made ready to explore.
+- **Output:**
+  - The Pass-ordering fix and the independent DAG-order test.
+  - Out-of-fold calibration metrics.
+  - Unit-load bounds on every path; credit grades (CR/P/TR) count as C.
+  - `moved` diff (FR-12) and per-course blocking reasons (FR-13).
+  - `/health`, the UI rework, `dev.sh`, and Playwright e2e tests.
+- **Deviations from the plan, with reasons:**
+  - The unit-load bound lives in the engine, not on `ScenarioEvent`: a model bound would turn an out-of-range LLM answer into a parse failure that trips the circuit breaker.
+  - The entry-course count in the summary is computed from the graph: 6 real courses, not 16. The 16 included 10 GE slots.
+  - A passed course's units were double-counted toward standing after the Fix 1 patch. Fixed; only within-term order changed.
+- **Validation:** 74 backend tests, 8 e2e tests, and 280/280 valid scenario runs. The new regression tests failed on the old code.
+- **Needs a human decision:** CH-02 C-8 (credit-grade equivalence) and C-9 (the rationale for incremental recalculation).
