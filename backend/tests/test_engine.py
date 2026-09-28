@@ -224,3 +224,22 @@ def test_default_electives_meet_units_exactly():
     group = next(g for g in CAT.program["groups"] if "choose_units" in g)
     picks = CAT.required(STUDENTS["alex"], set()) & set(group["from"])
     assert sum(CAT.units(c) for c in picks) == group["choose_units"]
+
+
+@pytest.mark.req("FR-03", "FR-09")
+@pytest.mark.parametrize("sid", STUDENTS)
+def test_pass_never_pulls_dependents_into_same_term(sid):
+    """Regression: a Pass event used to credit the course before the plan began."""
+    profile = STUDENTS[sid]
+    plan = make_plan(profile)
+    term_of = lambda p: {c: i for i, t in enumerate(p.terms) for c in t.courses}  # noqa: E731
+    for t in plan.terms:
+        for cid in [c for c in t.courses if not CAT.courses[c].placeholder]:
+            r = apply_scenario(profile, plan, ScenarioEvent(event_type="Pass", course_id=cid, term_label=t.term_label))
+            where = term_of(r["plan"])
+            assert where.get(cid) is not None, f"{cid} vanished from its term"
+            for d in nx.descendants(CAT.g, cid) & where.keys():
+                edge = CAT.g.edges.get((cid, d), {}).get("edge")
+                same_term_ok = edge is not None and edge.concurrent_ok
+                assert where[d] > where[cid] or (same_term_ok and where[d] == where[cid]), f"{d} scheduled with/before {cid}"
+            check_valid(r["plan"], profile, cap=plan.unit_cap)

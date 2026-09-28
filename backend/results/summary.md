@@ -23,7 +23,7 @@ Data: BS Computer Science (CSCI), CSUSB 2026-27 catalog + roadmaps. 67 courses, 
 - 280 what-if runs across 6 students; **280/280 produced valid plans**.
 - Fail/withdraw delay distribution (terms): {0: 33, 1: 46, 2: 27, 3: 3}
 - Mean ripple size on Fail: 2.7 courses
-- Recalc time: median 1.10 ms (full plan from scratch: median 1.02 ms, median ratio 0.9x)
+- Recalc time: median 0.40 ms (full plan from scratch: median 0.38 ms, median ratio 1.0x)
 
 ## Bottlenecks
 

@@ -144,7 +144,9 @@ def validate_plan(plan: Plan, profile: StudentProfile, cat: Catalog | None = Non
                   cap: int | None = None, complete: bool = True) -> list[str]:
     """Check any plan (engine-made, hand-edited, or an official roadmap) against catalog rules."""
     cat = cat or load_catalog()
-    sat, todo, earned = baseline(profile, cat, plan.credited)
+    planned = {c for t in plan.terms for c in t.courses}
+    # A credited course still in the plan counts from its own term on, not from before the plan starts.
+    sat, todo, earned = baseline(profile, cat, [c for c in plan.credited if c not in planned])
     seen, problems = set(sat), []
     for t in plan.terms:
         here = set(t.courses)
@@ -214,13 +216,12 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
         planned_after = {c for t in terms[idx:] for c in t.courses}
         invalid = (nx.descendants(cat.g, cid) | {cid}) & planned_after
         if event.event_type == "Pass":
+            # The course stays in the term it was passed in; only later terms can use it.
             new.credited.append(cid)
-            invalid.discard(cid)
-            start = idx
-        else:
-            start = idx + 1
+            invalid = {c for c in invalid if c != cid and c not in terms[idx].courses}
+        start = idx + 1
         for t in terms[idx:]:
-            t.courses = [c for c in t.courses if c not in invalid and c != cid]
+            t.courses = [c for c in t.courses if c not in invalid and (c != cid or event.event_type == "Pass")]
     elif event.event_type == "Add Summer":
         if not event.term_label.startswith("Summer"):
             raise ValueError("Add Summer needs a term_label like 'Summer 2027'")
@@ -238,7 +239,8 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
         invalid = {c for t in terms[start:] for c in t.courses}
         del terms[start:]
 
-    sat, _, earned = baseline(profile, cat, new.credited)
+    planned = {c for t in terms for c in t.courses}
+    sat, _, earned = baseline(profile, cat, [c for c in new.credited if c not in planned])  # kept courses count via place()
     # Losing units can also break class-standing gates (e.g. senior standing) on kept later courses.
     run = earned
     for i, t in enumerate(terms):
