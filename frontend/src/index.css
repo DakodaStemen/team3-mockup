@@ -31,6 +31,7 @@ button:disabled { opacity: .5; cursor: default; }
 .banner { padding: 10px 12px; border-radius: 8px; border: 1px solid; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 details.banner { display: block; }
 .banner ul { margin: 6px 0 0; }
+.banner.notice { border-color: var(--border); color: var(--muted); font-size: .85rem; }
 .banner.ok { border-color: var(--ok); } .banner.warn { border-color: var(--warn); } .banner.bad { border-color: var(--bad); }
 .actions { margin-left: auto; display: flex; gap: 6px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }

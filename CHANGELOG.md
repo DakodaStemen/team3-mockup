@@ -4,13 +4,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versioning: SemVer (doc
 
 ## [0.3.0] - 2026-09-28
 ### Added
-- SE documentation set per Sommerville 10e: SRS (Fig 4.17), DESIGN (models, 4+1 views, ADRs), TEST_PLAN, PROJECT_PLAN (Scrum), RISKS, QUALITY_AND_CM, SECURITY.
-- Requirement IDs on every test (`@pytest.mark.req`) and a generated traceability matrix enforced in CI.
-- CI workflow; change-request, bug, and backlog issue forms; PR template with inspection checklist.
-- Boundary tests (confidence thresholds, unit-load limits), API error tests, audit-line completeness, what-if non-mutation, performance, and ingest-rebuild reproducibility.
-- Project lint standard (`ruff` E, F, I, B).
+- Engineering Dossier structure per CSE 6550 (README is the Dossier Index; `docs/01`–`05` folders).
+- Requirement attribute register keyed to the team SRS v0.1; the SRS change proposal CH-02; references; AI Engineering Log.
+- Design (models, 4+1 views, ADRs, interface spec), verification strategy, agile engineering plan, risk register, quality/CM plan, and threat analysis, following Sommerville 10e.
+- Requirement-tagged tests (`@pytest.mark.req`, strict markers) and a generated traceability matrix enforced in CI.
+- `POST /validate` (FR-14). `POST /plan` now returns 422 naming unplaceable courses (FR-13, partial). Planning-aid notice in the UI (NFR-10). Affected courses labeled in text, not only color.
+- CI workflow; change-request, bug, and backlog issue forms; PR template with the inspection checklist; ruff lint standard.
 ### Removed
-- `docs/PLAN.md`: initial build plan, superseded by PROJECT_PLAN.md.
+- `docs/PLAN.md` (superseded) and a draft `docs/SRS.md` that duplicated SRS v0.1 with conflicting IDs (see AI Engineering Log AIL-04).
 
 ## [0.2.0] - 2026-09-28
 ### Added

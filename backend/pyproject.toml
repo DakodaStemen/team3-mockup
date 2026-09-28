@@ -17,13 +17,15 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["pytest", "httpx"]
+dev = ["pytest", "httpx", "ruff"]
 
 [tool.uv]
 package = false
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+addopts = "--strict-markers"
+markers = ["req(*ids): SRS requirement IDs this test verifies (docs/01-product-requirements/traceability.md)"]
 
 [tool.ruff]
 line-length = 150

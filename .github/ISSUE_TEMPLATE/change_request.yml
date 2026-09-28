@@ -1,4 +1,4 @@
-# Change request form (Sommerville Fig 25.15). Required for requirement/ADR changes after the SRS v1.0 baseline.
+# Change request form (Sommerville Fig 25.15). Required for requirement/ADR changes after the SRS v0.1 baseline; decision recorded as CH-nn in SRS Appendix A.
 name: Change request
 description: Propose a change to a requirement, design decision, or released behavior
 labels: [change-request]
@@ -13,7 +13,7 @@ body:
     validations: { required: true }
   - type: input
     id: reqs
-    attributes: { label: Affected SRS IDs, placeholder: "FR-4, NFR-2" }
+    attributes: { label: Affected SRS IDs, placeholder: "FR-10, NFR-11" }
   - type: input
     id: components
     attributes: { label: Components affected, placeholder: "planner/engine.py, frontend/src/App.tsx" }
@@ -22,7 +22,7 @@ body:
     attributes: { label: Associated components (may need retest) }
   - type: textarea
     id: assessment
-    attributes: { label: Change assessment (area owner), description: "Impact via TRACEABILITY.md; benefits; users affected; cost; release cycle" }
+    attributes: { label: Change assessment (area owner), description: "Impact via docs/01-product-requirements/traceability.md; benefits; users affected; cost; release cycle" }
   - type: dropdown
     id: priority
     attributes: { label: Priority, options: [Low, Medium, High] }

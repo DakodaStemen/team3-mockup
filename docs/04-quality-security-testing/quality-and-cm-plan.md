@@ -10,21 +10,21 @@ Of Sommerville's quality attributes (Fig 24.2), these are prioritized for this p
 
 | Priority | Attribute | Why it matters here | How it's assured |
 |---|---|---|---|
-| 1 | Correctness / dependability | A wrong plan can cost a student a year | Validator (FR-13), 282-run scenario sweep, requirements-based tests |
-| 2 | Understandability (explainability) | Advisors must be able to defend a plan | Templated explanations (FR-5); discrepancy log (FR-10); audit trail (FR-11) |
-| 3 | Security / privacy | FERPA; LLM misuse | [SECURITY.md](SECURITY.md); NFR-6, NFR-12 |
+| 1 | Correctness / dependability | A wrong plan can cost a student a year | Validator (FR-14), 282-run scenario sweep, requirements-based tests |
+| 2 | Understandability (explainability) | Advisors must be able to defend a plan | Templated explanations (FR-12); discrepancy log (FR-20); audit trail (FR-21) |
+| 3 | Security / privacy | FERPA; LLM misuse | [threat-analysis.md](threat-analysis.md); COM-03, IF-04 |
 | 4 | Maintainability | 5-person team, 10 weeks, handoffs | Standards (§1.2), reviews (§1.3), traceability |
-| 5 | Efficiency | Interactive what-ifs | NFR-1 (< 200 ms; measured ~1 ms) |
-| 6 | Usability | Students, not engineers | NFR-11 usability sessions |
+| 5 | Efficiency | Interactive what-ifs | NFR-04 (≤ 2 s, provisional; measured ~1 ms) |
+| 6 | Usability | Students, not engineers | NFR-05 usability sessions |
 
 ### 1.2 Standards (Sommerville Fig 24.4)
 
 | Product standards | Process standards |
 |---|---|
-| Requirements document structure: [SRS.md](SRS.md) (Fig 4.17) | Requirements change: CR form, §2.3 |
+| Requirements document: SRS v0.1 (course template, ISO/IEC/IEEE 29148 tailored; Sommerville Ch 4) plus the [attribute register](../01-product-requirements/requirements-register.md) | Requirements change: CR form, §2.3 |
 | Python style: `ruff` rules E, F, I, B (line length 150), in `backend/pyproject.toml` | Code submission: branch → PR → CI green → non-author review → squash merge (§2.1) |
 | TypeScript: `tsc` strict build; `oxlint` | Version release process: §2.4 |
-| Test format: setup / call / assert, tagged `@pytest.mark.req(...)` | Test recording: [TEST_PLAN.md §6](TEST_PLAN.md#6-test-recording-and-defect-handling) |
+| Test format: setup / call / assert, tagged `@pytest.mark.req(...)` | Test recording: [verification-strategy.md §6](verification-strategy.md#6-test-recording-and-defect-handling) |
 | Change request form: `.github/ISSUE_TEMPLATE/change_request.yml` (Fig 25.15) | Project plan review: at each milestone (PROJECT_PLAN §5) |
 | Commit messages: imperative summary ≤ 72 chars; body explains *why*; references issue `#n` | Design review: ADR table in DESIGN §1 updated in the same PR as the decision |
 
@@ -55,13 +55,13 @@ Adapted from Sommerville Fig 24.8 for Python/TypeScript and this domain. It's em
 
 | Fault class | Check |
 |---|---|
-| Data | Constants named (e.g. `SUMMER_CAP`, `ACCEPT`), not magic numbers. Files read and written as UTF-8. No mutation of inputs (FR-8). |
+| Data | Constants named (e.g. `SUMMER_CAP`, `ACCEPT`), not magic numbers. Files read and written as UTF-8. No mutation of inputs (FR-15). |
 | Control | Every loop terminates (see the stall guard in `place()`). All `event_type` / `term_offered` cases handled. |
 | Input/output | External input validated at the trust boundary: API bodies via Pydantic, LLM output via `validate()`, scraped text via the parser. |
-| Interface | API shapes match SRS Appendix A. Frontend types updated with backend models. |
-| Exception management | LLM and network errors escalate or log; they never crash or guess (NFR-4). Scraping failures are logged with the raw source. |
-| Domain rules | The catalog wins for units and prerequisites (ADR-1). **AI never schedules** (ADR-2). Discrepancies are logged, never auto-resolved. |
-| Traceability | New behavior has a tagged test. The SRS was updated if a requirement changed. `TRACEABILITY.md` regenerated. |
+| Interface | API shapes match design.md §6 (IF-02). Frontend types updated with backend models. |
+| Exception management | LLM and network errors escalate or log; they never crash or guess (NFR-12). Scraping failures are logged with the raw source. |
+| Domain rules | The catalog wins for units and prerequisites (ADR-02). **AI never schedules** (ADR-03). Discrepancies are logged, never auto-resolved. |
+| Traceability | New behavior has a tagged test. The SRS was updated if a requirement changed. `traceability.md` regenerated. |
 | Privacy / security | No PII, transcripts, or keys committed. No new outbound network calls beyond the documented sources and Ollama. |
 
 ### 1.5 Quality metrics
@@ -86,7 +86,7 @@ Reported at each sprint review (Sommerville §24.5: static and dynamic metrics):
 - **Rules:**
   - No direct pushes or force-pushes to `main`.
   - Commits reference their issue.
-  - Generated artifacts (`catalog.json`, `TRACEABILITY.md`, `results/`) are committed together with the change that produced them.
+  - Generated artifacts (`catalog.json`, `traceability.md`, `results/`) are committed together with the change that produced them.
   - `backend/data/raw/*` is stored byte-exact (`.gitattributes` `-text`).
 - **Enforcement:** GitHub branch protection or rulesets on `main` (required checks + 1 review) need a paid plan for private repos. Until then these rules are a team standard, checked at review.
 
@@ -96,15 +96,15 @@ Reported at each sprint review (Sommerville §24.5: static and dynamic metrics):
 - **CI build** (`.github/workflows/ci.yml`, on every push and PR):
   1. Backend: `uv sync` → `ruff check` → `pytest`. Pytest includes the traceability check and the rebuild-from-cache ingestion check.
   2. Frontend: `npm ci` → `tsc -b && vite build`.
-- **Local build:** the same commands, in the [README](../README.md#run).
+- **Local build:** the same commands, in the [README](../../README.md#setup-and-run).
 - **Data build:** `scripts/ingest.py` (from cache; `--refresh` to re-fetch). `scripts/results.py` regenerates `results/`.
 
 ### 2.3 Change management
 
-Sommerville §25.3 and §4.6. Before the **SRS v1.0 baseline (milestone M1)**, changes are handled informally through issues and daily scrums. After the baseline, any change to a requirement, an ADR, or released behavior goes through this process:
+Sommerville §25.3 and §4.6. The SRS v0.1 baseline (course Week 5) starts change control. Course rule for important artifacts: identify the reason, assess impact, update, keep stable IDs, record the revision, update traceability. After the baseline, any change to a requirement, an ADR, or released behavior goes through this process:
 
 1. **Change request:** open an issue with the *Change request* form. Its fields follow Fig 25.15: requester, requested change, reason, affected SRS IDs, components affected, associated components, assessment, priority, estimated effort.
-2. **Analysis and costing:** the area owner assesses impact using [TRACEABILITY.md](TRACEABILITY.md) (requirements → tests) and DESIGN (components).
+2. **Analysis and costing:** the area owner assesses impact using [traceability.md](../01-product-requirements/traceability.md) (requirements → tests) and DESIGN (components).
 3. **CCB decision:** the Product Owner, the ScrumMaster, and the affected area owner decide. They weigh the five factors from Sommerville p748:
    - The consequences of *not* making the change.
    - The benefits.
@@ -113,7 +113,10 @@ Sommerville §25.3 and §4.6. Before the **SRS v1.0 baseline (milestone M1)**, c
    - The release cycle.
 
    The decision and target release are recorded on the issue.
-4. **Implementation:** a branch and PR linked to the CR. The SRS version history row, affected tests, and CHANGELOG are updated in the same PR.
+4. **Record and implement:**
+   - Add a CH-nn row to **SRS Appendix A** (the requirements change log) and update the SRS text first.
+   - Then open a branch and PR linked to the CR. It updates the register, the affected tests, `traceability.md`, and the CHANGELOG.
+   - A worked example is [CH-02](../01-product-requirements/srs-change-proposal-CH-02.md).
 
 Bug fixes that don't change a requirement skip the CCB: use the *Bug report* form and go straight to a PR.
 
@@ -128,8 +131,8 @@ Bug fixes that don't change a requirement skip the CCB: use the *Bug report* for
   - `docs/` at that tag.
 - **Process:**
   1. Release candidate tag `vX.Y.Z-rc.N` on `main`.
-  2. Release testing per TEST_PLAN §4, recorded in the release PR.
+  2. Release testing per verification-strategy §4, recorded in the release PR.
   3. CHANGELOG entry.
   4. Tag `vX.Y.Z`.
   5. GitHub Release with notes copied from the CHANGELOG.
-- **History:** [CHANGELOG.md](../CHANGELOG.md).
+- **History:** [CHANGELOG.md](../../CHANGELOG.md).

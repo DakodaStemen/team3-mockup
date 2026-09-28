@@ -86,6 +86,10 @@ export default function App() {
         </label>
       </header>
 
+      <p className="banner notice" role="note">
+        Planning aid only: this is not an official degree audit or advising decision. Confirm your plan with an advisor.
+      </p>
+
       {error && <div className="banner bad" role="alert">{error}</div>}
 
       {catalog && <details className="banner warn">
@@ -170,7 +174,7 @@ export default function App() {
             <h3>{t.term_label} <span className="muted">{t.total_units}u</span></h3>
             {t.courses.map(c => (
               <div key={c} className={`course ${invalid.has(c) ? 'invalid' : ''}`} title={courses[c]?.title}>
-                <span>{c}</span>
+                <span>{c}{invalid.has(c) && ' (affected)'}</span>
                 <span className="muted">
                   {['Fall', 'Spring'].includes(courses[c]?.term_offered) && `${courses[c]?.term_offered} only · `}{courses[c]?.catalog_units}u
                   {courses[c]?.discrepancy_flag && <span className="flag" title={`Roadmap says ${courses[c].roadmap_units}u`}> ⚑</span>}
