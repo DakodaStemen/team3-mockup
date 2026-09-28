@@ -116,3 +116,11 @@ This is the AI Assistance and Provenance record required by course policy (SRS C
   - A passed course's units were double-counted toward standing after the Fix 1 patch. Fixed; only within-term order changed.
 - **Validation:** 74 backend tests, 8 e2e tests, and 280/280 valid scenario runs. The new regression tests failed on the old code.
 - **Needs a human decision:** CH-02 C-8 (credit-grade equivalence) and C-9 (the rationale for incremental recalculation).
+
+### AIL-08: Parallel bug, outlier, and security sweep (2026-09-28)
+
+- **Decisions (human):** Dakoda asked for a full sweep for outliers, bugs, and security flaws, fixed in parallel.
+- **Method:** four AI agents with disjoint file ownership. Engine: fuzzing across students, chained events, caps, and random profiles. API: security review. Frontend: Playwright-driven review. Scripts/deps/CI/docs: review plus pip-audit and npm audit. The coordinating agent reviewed each diff, fixed two gaps itself (Content-Length parsing, CI server reuse), regenerated the matrix and results, and ran every suite.
+- **Output:** per-term unit caps; credit revocation on retakes; strict API input models; LLM output validated like typed input; audit, calibration, and breaker hardening; stale-response and stale-form fixes in the UI; WCAG AA contrast; hardened ingest and CI.
+- **Validation:** 135 backend tests, 16 e2e tests, 280/280 valid scenario runs, fuzz harness with 0 over-cap or validator problems. New regression tests failed before their fixes.
+- **Known limitations:** no authentication, and `/audit` is readable by any client; audit log has no retention policy (fine for synthetic students, not for real records); body-size limit relies on Content-Length; circuit breaker is per process.
