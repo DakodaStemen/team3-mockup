@@ -1,4 +1,6 @@
 """Deterministic planning engine. The only code that assigns courses to terms."""
+import re
+
 import networkx as nx
 
 from .graph import Catalog, load_catalog
@@ -12,6 +14,8 @@ SUMMER_CAP = 8
 NO_LETTER_PASS = {"CR", "P", "TR", "CRT"}
 NO_LETTER_EQUIV = "C"
 SEASON_ORDER = {"Spring": 0, "Summer": 1, "Fall": 2}
+HORIZON = 30  # terms place() will try before declaring courses unplaceable
+TERM_LABEL = re.compile(r"^(Spring|Summer|Fall) \d{4}$")
 
 
 def grade_ok(grade: str, minimum: str) -> bool:
@@ -78,7 +82,7 @@ def offered(cid: str, label: str, cat: Catalog) -> bool:
     return off in ("Both", "Unknown", season)
 
 
-def unplaceable(todo: set[str], sat: dict[str, str], earned: int, cat: Catalog) -> str:
+def unplaceable(todo: set[str], sat: dict[str, str], earned: int, cat: Catalog, cap: int) -> str:
     """FR-13: name the courses that block the rest, and the constraint that blocks each one."""
     roots, waiting = [], 0
     for c in sorted(todo):
@@ -92,14 +96,21 @@ def unplaceable(todo: set[str], sat: dict[str, str], earned: int, cat: Catalog) 
             roots.append(f"{c} needs {' or '.join(missing[0])}, which is neither completed nor plannable")
         elif earned < cat.courses[c].min_standing_units:
             roots.append(f"{c} needs {cat.courses[c].min_standing_units} units of standing")
-        else:
-            roots.append(f"{c} is never offered in an allowed term ({cat.courses[c].term_offered})")
+        else:  # offered() allows every course in some regular term, so it simply ran out of terms
+            roots.append(f"{c} did not fit within {HORIZON} terms at a {cap}-unit cap")
     more = f"; {waiting} more course(s) wait on these" if waiting else ""
     return f"Cannot schedule {len(todo)} course(s): {'; '.join(roots) or 'prerequisite cycle'}{more}."
 
 
+def _cap_at(label: str, caps: list[tuple[tuple[int, int], int]]) -> int | None:
+    """Cap in force at a term: the last regular term's cap at or before it (caps sorted by term)."""
+    prior = [c for k, c in caps if k <= term_key(label)]
+    return prior[-1] if prior else None
+
+
 def place(terms: list[TermPlan], todo: set[str], start: int, cap: int, summers: list[str],
-          sat: dict[str, str], first_label: str, cat: Catalog, earned: int = 0) -> list[TermPlan]:
+          sat: dict[str, str], first_label: str, cat: Catalog, earned: int = 0,
+          caps: list[tuple[tuple[int, int], int]] = ()) -> list[TermPlan]:
     """Constrained greedy topological sort: fill terms[start:] (and new terms) with todo."""
     terms = [t.model_copy(deep=True) for t in terms]
     todo = set(todo)
@@ -112,14 +123,16 @@ def place(terms: list[TermPlan], todo: set[str], start: int, cap: int, summers: 
         raise ValueError(f"A {cap}-unit cap can't fit {c} ({cat.units(c)} units); use a cap of at least {cat.units(c)}.")
     i = start
     while todo:
-        if i - start > 30:
-            raise ValueError(unplaceable(todo, sat, earned, cat))
+        if i - start > HORIZON:
+            raise ValueError(unplaceable(todo, sat, earned, cat, cap))
         if i == len(terms):
             label = next_label(terms[-1].term_label, summers) if terms else first_label
-            terms.append(TermPlan(term_label=label))
+            terms.append(TermPlan(term_label=label, unit_cap=_cap_at(label, caps)))
         t = terms[i]
         warnings = {}
-        term_cap = SUMMER_CAP if t.term_label.startswith("Summer") else cap
+        # A term keeps the cap it was planned under; terms from a Change Unit Load on arrive unstamped.
+        term_cap = t.unit_cap or cap
+        term_cap = t.unit_cap = min(SUMMER_CAP, term_cap) if t.term_label.startswith("Summer") else term_cap
         used = sum(map(cat.units, t.courses))
         added = True
         while added:  # repeat so a corequisite placed this term can unlock its partner
@@ -177,6 +190,16 @@ def validate_plan(plan: Plan, profile: StudentProfile, cat: Catalog | None = Non
     # A credited course still in the plan counts from its own term on, not from before the plan starts.
     sat, todo, earned = baseline(profile, cat, [c for c in plan.credited if c not in planned])
     seen, problems = set(sat), []
+    labels = [t.term_label for t in plan.terms]
+    problems += [f"{lbl} is not a term label like 'Fall 2027'" for lbl in labels if not TERM_LABEL.match(lbl)]
+    ok = [lbl for lbl in labels if TERM_LABEL.match(lbl)]
+    if ok != sorted(ok, key=term_key) or len(set(ok)) != len(ok):
+        problems.append(f"terms are out of order or repeated: {', '.join(labels)}")
+    counts: dict[str, int] = {}
+    for c in (c for t in plan.terms for c in t.courses):
+        counts[c] = counts.get(c, 0) + 1
+    problems += [f"{c} is planned more than once" for c, n in sorted(counts.items()) if n > 1]
+    problems += [f"credited course {c} is not in the catalog" for c in sorted(plan.credited) if c not in cat.courses]
     for t in plan.terms:
         here = set(t.courses)
         for c in t.courses:
@@ -190,8 +213,10 @@ def validate_plan(plan: Plan, profile: StudentProfile, cat: Catalog | None = Non
             if not prereqs_met(c, {s: "A" for s in seen} | sat, here, cat):
                 problems.append(f"{t.term_label}: {c} prerequisites not met")
         units = max(t.total_units, sum(map(cat.units, t.courses)))  # stated total covers unnamed slots
-        if units > (cap or plan.unit_cap):
-            problems.append(f"{t.term_label}: {units} units exceeds cap {cap or plan.unit_cap}")
+        limit = t.unit_cap or cap or plan.unit_cap
+        limit = min(SUMMER_CAP, limit) if t.term_label.startswith("Summer") else limit
+        if units > limit:
+            problems.append(f"{t.term_label}: {units} units exceeds cap {limit}")
         seen |= here
         earned += units
     if complete and (missing := todo - seen):
@@ -224,6 +249,16 @@ def _ordinal(label: str) -> int:
     return 2 * year + (1 if season == 2 else 0)
 
 
+def _rebuild_from(terms: list[TermPlan], start: int, credited: dict[str, str]) -> set[str]:
+    """Clear terms[start:] for re-placement, but keep each passed course in the term it was passed in."""
+    last = max((i for i in range(start, len(terms)) if any(c in credited for c in terms[i].courses)), default=start - 1)
+    invalid = {c for t in terms[start:] for c in t.courses if c not in credited}
+    for t in terms[start:last + 1]:
+        t.courses = [c for c in t.courses if c in credited]
+    del terms[last + 1:]
+    return invalid
+
+
 def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, cat: Catalog | None = None) -> dict:
     """Recalculate only the part of the plan the event invalidates."""
     cat = cat or load_catalog()
@@ -232,6 +267,8 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
     labels = [t.term_label for t in terms]
     cid = event.course_id
     old_cap = plan.unit_cap
+    # Caps already in force by term, so re-created terms keep them instead of taking the latest cap.
+    caps = [(term_key(t.term_label), t.unit_cap) for t in terms if t.unit_cap and not t.term_label.startswith("Summer")]
 
     if event.event_type in ("Fail", "Withdraw", "Pass"):
         if cid not in cat.courses:
@@ -247,17 +284,25 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
         if event.event_type == "Pass":
             # The course stays in the term it was passed in; only later terms can use it.
             new.credited[cid] = event.term_label
-            invalid = {c for c in invalid if c != cid and c not in terms[idx].courses}
+            invalid = {c for c in invalid if c != cid and c not in terms[idx].courses and c not in new.credited}
+        else:  # a retake revokes any Pass of the course or of anything that depended on it
+            for c in invalid:
+                new.credited.pop(c, None)
         start = idx + 1
         for t in terms[idx:]:
             t.courses = [c for c in t.courses if c not in invalid and (c != cid or event.event_type == "Pass")]
     elif event.event_type == "Add Summer":
-        if not event.term_label.startswith("Summer"):
+        if not TERM_LABEL.match(event.term_label) or not event.term_label.startswith("Summer"):
             raise ValueError("Add Summer needs a term_label like 'Summer 2027'")
+        if event.term_label in new.summers:
+            raise ValueError(f"{event.term_label} is already in the plan")
+        if terms and term_key(event.term_label) < term_key(terms[0].term_label):
+            raise ValueError(f"{event.term_label} is before the plan starts ({terms[0].term_label})")
         new.summers.append(event.term_label)
         start = next((i for i, lbl in enumerate(labels) if term_key(lbl) > term_key(event.term_label)), len(terms))
-        invalid = {c for t in terms[start:] for c in t.courses}
-        del terms[start:]
+        invalid = _rebuild_from(terms, start, new.credited)
+        if len(terms) > start:  # passed courses pinned later terms in place, so insert the summer explicitly
+            terms.insert(start, TermPlan(term_label=event.term_label, unit_cap=_cap_at(event.term_label, caps)))
     else:  # Change Unit Load
         lo, hi = UNIT_LOAD_RANGE
         if not event.unit_load or not lo <= event.unit_load <= hi:
@@ -266,8 +311,10 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
             raise ValueError(f"{event.term_label} is not in the plan")
         new.unit_cap = event.unit_load
         start = labels.index(event.term_label)
-        invalid = {c for t in terms[start:] for c in t.courses}
-        del terms[start:]
+        invalid = _rebuild_from(terms, start, new.credited)
+        for t in terms[start:]:
+            t.unit_cap = None  # pinned passed-course terms take the new cap
+        caps = [(k, c) for k, c in caps if k < term_key(event.term_label)] + [(term_key(event.term_label), event.unit_load)]
 
     planned = {c for t in terms for c in t.courses}
     sat, _, earned = baseline(profile, cat, [c for c in new.credited if c not in planned])  # kept courses count via place()
@@ -278,10 +325,12 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
             lost = {c for c in t.courses if run < cat.courses[c].min_standing_units}
             lost |= {d for c in lost for d in nx.descendants(cat.g, c)} & {c for u in terms[i:] for c in u.courses}
             invalid |= lost
+            for c in lost:  # a pass that needed standing the new plan no longer reaches is revoked
+                new.credited.pop(c, None)
             for u in terms[i:]:
                 u.courses = [c for c in u.courses if c not in lost]
         run += sum(map(cat.units, t.courses))
-    new.terms = place(terms, invalid, start, new.unit_cap, new.summers, sat, profile.start_term, cat, earned)
+    new.terms = place(terms, invalid, start, new.unit_cap, new.summers, sat, profile.start_term, cat, earned, caps)
     before, after = timeline(plan, cat), timeline(new, cat)
     delta = _ordinal(after["graduation_term"]) - _ordinal(before["graduation_term"]) if new.terms and plan.terms else 0
 
@@ -305,6 +354,9 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
     if delta == 0:
         slack = "" if event.event_type == "Pass" else ", but existing slack absorbs it"
         explanation = f"Graduation unchanged ({after['graduation_term']}): {cause}{slack}."
+    elif delta < 0 and event.event_type in ("Fail", "Withdraw"):
+        explanation = (f"Graduation moved up by {-delta} term(s) ({before['graduation_term']} → {after['graduation_term']}): "
+                       f"{cause}, and re-placing them filled slack the earlier plan left.")
     else:
         verb = f"delayed by {delta}" if delta > 0 else f"moved up by {-delta}"
         explanation = f"Graduation {verb} term(s) ({before['graduation_term']} → {after['graduation_term']}) because {cause}."

@@ -4,7 +4,7 @@ import time
 import networkx as nx
 import pytest
 
-from planner.engine import alternatives, apply_scenario, grade_ok, make_plan, timeline, validate_plan
+from planner.engine import alternatives, apply_scenario, grade_ok, make_plan, term_key, timeline, validate_plan
 from planner.graph import DATA, Catalog, load_catalog, load_students
 from planner.models import ScenarioEvent
 
@@ -297,3 +297,165 @@ def test_pass_records_term_and_marks_nothing_affected():
     r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Pass", course_id="CSE 2010", term_label="Fall 2026"))
     assert r["plan"].credited == {"CSE 2010": "Fall 2026"}
     assert r["invalidated"] == [] and r["moved"] == []
+
+
+def _order_ok(plan):
+    """Independent oracle: every planned prerequisite sits in an earlier term (or the same term if concurrent)."""
+    where = {c: i for i, t in enumerate(plan.terms) for c in t.courses}
+    for u, v, d in CAT.g.edges(data=True):
+        if u in where and v in where and len([e for e in CAT.prereqs(v) if e.group == d["edge"].group]) == 1:
+            assert where[u] < where[v] or (d["edge"].concurrent_ok and where[u] == where[v]), f"{v} not after {u}"
+
+
+@pytest.mark.req("FR-03", "FR-09", "FR-11")
+@pytest.mark.parametrize("second", [
+    ScenarioEvent(event_type="Change Unit Load", term_label="Fall 2027", unit_load=21),
+    ScenarioEvent(event_type="Add Summer", term_label="Summer 2027"),
+])
+def test_passed_course_stays_put_when_its_term_is_rebuilt(second):
+    alex = STUDENTS["alex"]
+    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Pass", course_id="CSE 2130", term_label="Fall 2027"))
+    r = apply_scenario(alex, r["plan"], second)
+    assert "CSE 2130" in next(t for t in r["plan"].terms if t.term_label == "Fall 2027").courses
+    _order_ok(r["plan"])
+    check_valid(r["plan"], alex, cap=21)
+
+
+@pytest.mark.req("FR-03", "FR-10")
+def test_failing_a_passed_course_revokes_the_credit():
+    alex = STUDENTS["alex"]
+    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Pass", course_id="CSE 2010", term_label="Fall 2026"))
+    r = apply_scenario(alex, r["plan"], ScenarioEvent(event_type="Fail", course_id="CSE 2010", term_label="Fall 2026"))
+    assert "CSE 2010" not in r["plan"].credited
+    _order_ok(r["plan"])
+    check_valid(r["plan"], alex)
+
+
+@pytest.mark.req("FR-13")
+def test_long_plan_blames_the_horizon_not_offerings():
+    with pytest.raises(ValueError, match="30 terms at a 4-unit cap") as e:
+        make_plan(STUDENTS["alex"], unit_cap=4)
+    assert "never offered" not in str(e.value)
+
+
+@pytest.mark.req("FR-07", "FR-11")
+@pytest.mark.parametrize("label,msg", [("Summer 2026", "before the plan starts"), ("Summer 2020", "before the plan starts"),
+                                       ("Summer 20x7", "like 'Summer 2027'"), ("Summer", "like 'Summer 2027'")])
+def test_add_summer_rejects_bad_terms(label, msg):
+    alex = STUDENTS["alex"]
+    with pytest.raises(ValueError, match=msg):
+        apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Add Summer", term_label=label))
+
+
+@pytest.mark.req("FR-11")
+def test_add_summer_twice_is_rejected():
+    alex = STUDENTS["alex"]
+    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Add Summer", term_label="Summer 2027"))
+    with pytest.raises(ValueError, match="already"):
+        apply_scenario(alex, r["plan"], ScenarioEvent(event_type="Add Summer", term_label="Summer 2027"))
+
+
+@pytest.mark.req("FR-10")
+def test_retake_that_shortens_the_plan_says_why():
+    jordan = STUDENTS["jordan"]
+    plan = apply_scenario(jordan, make_plan(jordan), ScenarioEvent(event_type="Fail", course_id="CSE 4400", term_label="Fall 2029"))["plan"]
+    r = apply_scenario(jordan, plan, ScenarioEvent(event_type="Withdraw", course_id="CSE 2010", term_label="Fall 2027"))
+    assert r["delta_terms"] < 0 and "re-placing" in r["explanation"] and "because" not in r["explanation"]
+
+
+@pytest.mark.req("FR-14")
+def test_validator_flags_duplicates_bad_labels_and_order():
+    alex = STUDENTS["alex"]
+    plan = make_plan(alex).model_copy(deep=True)
+    plan.terms[1].courses.append("MATH 2265")  # also in Fall 2026
+    plan.terms[2].term_label, plan.terms[3].term_label = plan.terms[3].term_label, plan.terms[2].term_label
+    plan.terms[4].term_label = "Autumn 2028"
+    problems = "\n".join(validate_plan(plan, alex, CAT))
+    assert "MATH 2265 is planned more than once" in problems
+    assert "out of order" in problems and "Autumn 2028 is not a term label" in problems
+
+
+@pytest.mark.req("FR-04", "FR-10")
+def test_retaking_a_prerequisite_revokes_credit_downstream():
+    alex = STUDENTS["alex"]
+    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Pass", course_id="CSE 5000", term_label="Fall 2027"))
+    r = apply_scenario(alex, r["plan"], ScenarioEvent(event_type="Withdraw", course_id="CSE 2020", term_label="Spring 2027"))
+    assert "CSE 5000" not in r["plan"].credited  # its pass depended on the course being retaken
+    _order_ok(r["plan"])
+    check_valid(r["plan"], alex)
+
+
+@pytest.mark.req("FR-14", "DR-01")
+def test_validator_flags_credit_for_unknown_course():
+    alex = STUDENTS["alex"]
+    plan = make_plan(alex).model_copy(update={"credited": {"FOO 1": "Fall 2026"}})
+    assert "credited course FOO 1 is not in the catalog" in validate_plan(plan, alex, CAT)
+
+
+@pytest.mark.req("FR-06", "FR-07")
+def test_summer_never_exceeds_a_lower_unit_cap():
+    alex = STUDENTS["alex"]
+    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Add Summer", term_label="Summer 2027"))
+    r = apply_scenario(alex, r["plan"], ScenarioEvent(event_type="Change Unit Load", term_label="Spring 2027", unit_load=6))
+    summer = next(t for t in r["plan"].terms if t.term_label == "Summer 2027")
+    assert 0 < summer.total_units <= 6
+    check_valid(r["plan"], alex, cap=16)
+
+
+@pytest.mark.req("FR-10", "FR-11")
+def test_passed_course_that_loses_standing_is_replaced():
+    alex = STUDENTS["alex"]
+    plan = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Withdraw", course_id="CSE 4400", term_label="Fall 2028"))["plan"]
+    r = apply_scenario(alex, plan, ScenarioEvent(event_type="Pass", course_id="CSE 5500", term_label="Spring 2030"))
+    r = apply_scenario(alex, r["plan"], ScenarioEvent(event_type="Change Unit Load", term_label="Fall 2028", unit_load=9))
+    assert "CSE 5500" not in r["plan"].credited  # senior standing no longer holds in the term it was passed
+    check_valid(r["plan"], alex, cap=16)
+
+
+@pytest.mark.req("FR-09")
+def test_pass_does_not_move_an_already_passed_dependent():
+    alex = STUDENTS["alex"]
+    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Pass", course_id="CSE 5720", term_label="Fall 2027"))
+    r = apply_scenario(alex, r["plan"], ScenarioEvent(event_type="Change Unit Load", term_label="Fall 2028", unit_load=12))
+    r = apply_scenario(alex, r["plan"], ScenarioEvent(event_type="Pass", course_id="CSE 2020", term_label="Spring 2027"))
+    assert "CSE 5720" in next(t for t in r["plan"].terms if t.term_label == "Fall 2027").courses
+    check_valid(r["plan"], alex, cap=16)
+
+
+@pytest.mark.req("FR-06", "FR-11")
+def test_each_term_keeps_the_cap_it_was_planned_under():
+    sam = STUDENTS["sam"]  # 15-unit preference
+    plan = make_plan(sam)
+    raised = next(t.term_label for t in plan.terms[3:])
+    plan = apply_scenario(sam, plan, ScenarioEvent(event_type="Change Unit Load", term_label=raised, unit_load=18))["plan"]
+    for ev in [ScenarioEvent(event_type="Withdraw", course_id=c, term_label=t.term_label)
+               for t in plan.terms for c in t.courses if term_key(t.term_label) < term_key(raised)][:12]:
+        r = apply_scenario(sam, plan, ev)
+        for t in r["plan"].terms:
+            limit = 15 if term_key(t.term_label) < term_key(raised) else 18
+            assert t.unit_cap == (min(8, limit) if t.term_label.startswith("Summer") else limit), t.term_label
+            assert t.total_units <= t.unit_cap, f"{ev.course_id}: {t.term_label} {t.total_units} > {t.unit_cap}"
+        check_valid(r["plan"], sam)  # no cap override: each term is checked against its own cap
+
+
+@pytest.mark.req("FR-06", "FR-14")
+def test_validator_checks_each_term_against_its_own_cap():
+    alex = STUDENTS["alex"]
+    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Change Unit Load", term_label="Fall 2027", unit_load=12))
+    check_valid(r["plan"], alex)  # earlier 16-unit terms were planned under 16
+    over = r["plan"].model_copy(deep=True)
+    over.terms[0].unit_cap = 12  # hand-edited: Fall 2026 now exceeds its own cap
+    assert any(p.startswith("Fall 2026:") and "exceeds cap 12" in p for p in validate_plan(over, alex, CAT))
+
+
+@pytest.mark.req("FR-06", "FR-07", "FR-11")
+def test_rebuilt_terms_inherit_the_cap_in_force_there():
+    alex = STUDENTS["alex"]
+    plan = make_plan(alex)
+    plan = apply_scenario(alex, plan, ScenarioEvent(event_type="Change Unit Load", term_label="Spring 2028", unit_load=6))["plan"]
+    later = plan.terms[-3].term_label
+    plan = apply_scenario(alex, plan, ScenarioEvent(event_type="Change Unit Load", term_label=later, unit_load=18))["plan"]
+    r = apply_scenario(alex, plan, ScenarioEvent(event_type="Add Summer", term_label="Summer 2028"))
+    caps = {t.term_label: t.unit_cap for t in r["plan"].terms}
+    assert caps["Summer 2028"] == 6 and caps["Fall 2028"] == 6 and caps[later] == 18
+    check_valid(r["plan"], alex)

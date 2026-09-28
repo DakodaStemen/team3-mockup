@@ -40,6 +40,9 @@ class PrerequisiteEdge(BaseModel):
     concurrent_ok: bool = False  # corequisite / "pre- or co-requisite": same term is fine
 
 
+UNIT_LOAD_RANGE = (3, 21)  # allowed unit cap for Change Unit Load, on every path (API, NL guardrail, engine)
+
+
 class StudentProfile(BaseModel):
     id: str
     name: str
@@ -48,7 +51,7 @@ class StudentProfile(BaseModel):
     remaining_requirement_groups: list[str] | None = None  # None = every program group
     choices: dict[str, list[str]] = {}  # requirement group -> chosen courses (else engine picks)
     transfer_units: int = 0  # units counted toward standing but not tied to catalog courses
-    unit_load_preference: int = 15
+    unit_load_preference: int = Field(15, ge=UNIT_LOAD_RANGE[0], le=UNIT_LOAD_RANGE[1])
     start_term: str = "Fall 2026"
     notes: str = ""
 
@@ -58,9 +61,7 @@ class TermPlan(BaseModel):
     courses: list[str] = []
     total_units: int = 0
     warnings: list[str] = []
-
-
-UNIT_LOAD_RANGE = (3, 21)  # allowed unit cap for Change Unit Load, on every path (API, NL guardrail, engine)
+    unit_cap: int | None = None  # cap in force when the engine filled this term (summer: at most 8); None = plan's
 
 
 class ScenarioEvent(BaseModel):
