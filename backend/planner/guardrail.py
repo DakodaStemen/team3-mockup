@@ -122,4 +122,4 @@ def read_audit(limit: int = 50) -> list[dict]:
     if not AUDIT.exists():
         return []
     lines = AUDIT.read_text(encoding="utf8").splitlines()[-limit:]
-    return [json.loads(l) for l in reversed(lines)]
+    return [json.loads(line) for line in reversed(lines)]

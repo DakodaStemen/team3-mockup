@@ -1,88 +1,130 @@
-# Adaptive Degree Pathway Planner (mock)
+# Adaptive Degree Pathway Planner (ADPP): Engineering Dossier
 
-CSE 6550 Project 3 pre-team prototype. Spec: [`docs/spec.docx`](docs/spec.docx). Build plan: [`docs/PLAN.md`](docs/PLAN.md).
+CSE 6550 Software Engineering · Fall 2026 · CSUSB · Project 3. This README is the **Engineering Dossier Index** (course: *Engineering Dossier Workspace and Repository Structure*).
 
-**Core rule:** the deterministic engine makes every scheduling decision. The LLM only turns a plain-language question into a typed `ScenarioEvent`. Each LLM decision gets a confidence score and a threshold gate, and is logged to an audit trail.
+## Project summary
 
-## Run
+| | |
+|---|---|
+| **Problem** | CSUSB planning is split across PAWS, myCAP, roadmap PDFs, and Schedule Planner. None of them show how a failed course, a withdrawal, a lighter load, or a missed once-a-year offering ripples through a student's path to graduation. myCAP even allows a Fall-only course in Spring without warning. |
+| **Product** | A web planner that builds a valid term-by-term pathway from a student's history and the BS CS requirements, recalculates it when something changes, and explains the graduation impact. A deterministic engine makes every scheduling decision; an optional AI guardrail only interprets plain-language questions. |
+| **Stakeholders** | Students (primary), academic advisors (validators), program coordinator (data), instructor (acquirer), development team |
+| **Current scope** | BS Computer Science, CSUSB 2026-27 catalog; public program data; synthetic student records |
+| **Non-goals** | SIS, PAWS, or registration integration; real student records; autonomous advising or enrollment; every program and catalog year |
+| **Status** | Week 5. SRS v0.1 drafted and in team review. Working prototype `v0.3` on real catalog data. CH-02 proposed. |
+
+**This is a planning aid, not an official degree audit or advising decision.**
+
+## Team
+
+| Team member | Current responsibilities | GitHub |
+|---|---|---|
+| Dakoda Stemen | Team lead; requirements owner; prototype | `DakodaStemen` |
+| *Member 2* | *TBD at team meeting* | |
+| *Member 3* | *TBD* | |
+| *Member 4* | *TBD* | |
+| *Member 5* | *TBD* | |
+
+Lanes and backups: [agile engineering plan §2](docs/03-planning-risk/agile-engineering-plan.md#2-team-organization).
+
+## Current milestone
+
+| Milestone | Status | Responsible | Due | Blockers / decisions |
+|---|---|---|---|---|
+| **SRS v0.1: Requirements Baseline** (graded, Week 5) | Draft, in team review | Dakoda Stemen + team | Week 5 | Team must accept or reject [CH-02](docs/01-product-requirements/srs-change-proposal-CH-02.md) and decide conflicts C-1 through C-6. The instructor and team members must be added to this repo. |
+
+## Engineering Dossier Index
+
+| Artifact | Version | Owner | Status | Authoritative location | Last updated |
+|---|---|---|---|---|---|
+| Project Confirmation Card | 0.1 | Dakoda Stemen | Confirmed | *Add link (not yet in repo or Drive index)* | |
+| Software Requirements Specification | 0.1 | Dakoda Stemen | In review | [Google Doc: SRS v0.1](https://docs.google.com/document/d/1h-cgCt8wF0NcHRoyRzOdYJiq81ip6GJhvYBi4g2LHtY/edit) (snapshot to `docs/01-product-requirements/` when baselined) | 2026-09-27 |
+| Evidence Register | 0.1 | Dakoda Stemen | Drafting | SRS §5.2, plus proposed updates in [CH-02 §A](docs/01-product-requirements/srs-change-proposal-CH-02.md#a-evidence-register-updates-srs-52) | 2026-09-28 |
+| SRS change proposal CH-02 | 0.1 | Dakoda Stemen | In review | [srs-change-proposal-CH-02.md](docs/01-product-requirements/srs-change-proposal-CH-02.md) | 2026-09-28 |
+| Requirement attribute register | 0.3 | Dakoda Stemen | Active | [requirements-register.md](docs/01-product-requirements/requirements-register.md) | 2026-09-28 |
+| Traceability (verification side) | generated | CI | Active | [traceability.md](docs/01-product-requirements/traceability.md) | per commit |
+| Technical spec (design input, EV-08) | 0.1 | Dakoda Stemen | Baselined | [ADPP_TechnicalSpec_v0.1_2026-09-28.docx](docs/01-product-requirements/ADPP_TechnicalSpec_v0.1_2026-09-28.docx) | 2026-09-28 |
+| References | 0.1 | Dakoda Stemen | Drafting | [references.md](docs/01-product-requirements/references.md) | 2026-09-28 |
+| Team research: offering and roadmap findings (EV-09) | 1.0 | Team | Confirmed | Team Drive: *Course Offering & Roadmap Data – Team Findings* | 2026-09-24 |
+| System models, architecture views, ADRs | 0.3 | *TBD* | In review | [design.md](docs/02-models-architecture/design.md) | 2026-09-28 |
+| Agile Engineering Plan (incl. Definition of Done) | 0.3 | *TBD (ScrumMaster)* | Drafting | [agile-engineering-plan.md](docs/03-planning-risk/agile-engineering-plan.md) | 2026-09-28 |
+| Risk register | 0.3 | *TBD (ScrumMaster)* | Active | [risk-register.md](docs/03-planning-risk/risk-register.md) | 2026-09-28 |
+| Backlog | live | Product Owner | Active | GitHub Issues, label `backlog` | live |
+| Weekly stand-ups and retrospectives | — | ScrumMaster | Not started | `docs/03-planning-risk/standups/` (created at the first stand-up) | |
+| Verification strategy (STP elements) | 0.3 | *TBD (quality lane)* | Drafting | [verification-strategy.md](docs/04-quality-security-testing/verification-strategy.md) | 2026-09-28 |
+| Quality gates and CM plan (SQAP elements) | 0.3 | *TBD (quality lane)* | Drafting | [quality-and-cm-plan.md](docs/04-quality-security-testing/quality-and-cm-plan.md) | 2026-09-28 |
+| Threat and misuse analysis; ethics | 0.3 | *TBD* | Drafting | [threat-analysis.md](docs/04-quality-security-testing/threat-analysis.md) | 2026-09-28 |
+| CI evidence | live | CI | Active | GitHub Actions: `.github/workflows/ci.yml` | per commit |
+| Evaluation results (EV-07) | 0.2 | *TBD* | Provisional | [backend/results/summary.md](backend/results/summary.md) | 2026-09-28 |
+| AI Engineering Log (AI provenance) | 0.3 | Dakoda Stemen | Active | [ai-engineering-log.md](docs/05-ai-provenance/ai-engineering-log.md) | 2026-09-28 |
+| Release notes | 0.3.0 | Dakoda Stemen | Active | [CHANGELOG.md](CHANGELOG.md), git tags | 2026-09-28 |
+
+Status labels follow the course list: Not started, Drafting, In review, Baselined, Revision required, Revised, Superseded.
+
+**Process in brief:**
+- Branch, then a PR using the template checklist. CI must be green and a non-author must review.
+- Requirement changes go into the SRS first, as CH-nn in Appendix A.
+- Significant AI help is logged in the AI Engineering Log.
+- Methods follow Sommerville 10e (Ch 3–8, 13, 22–25) as tailored in each document.
+
+## Setup and run
 
 ```sh
 # backend (Python 3.12+, uv)
 cd backend
 uv sync
-uv run pytest                                # engine, guardrail, and parser tests
-uv run python scripts/ingest.py              # rebuild planner/catalog.json from cached sources (--refresh to re-download)
-uv run python scripts/results.py             # write results/ (pathway quality, scenario sweep, bottlenecks)
-uv run uvicorn planner.api:app --port 8000
+uv run pytest                                # 55 tests incl. traceability check
+uv run ruff check .
+uv run python scripts/trace.py               # regenerate traceability.md after changing tests or register
+uv run python scripts/ingest.py              # rebuild planner/catalog.json from cached sources (--refresh re-downloads)
+uv run python scripts/results.py             # regenerate results/
+uv run uvicorn planner.api:app --port 8000   # OpenAPI contract at /openapi.json
 
 # frontend
 cd frontend
 npm install
 npm run dev                                  # http://localhost:5173 (proxies /api -> :8000)
 
-# optional: natural-language queries
-ollama pull llama3.1 && ollama serve         # OLLAMA_MODEL / OLLAMA_URL env vars override
-uv run python scripts/calibrate.py           # fits confidence calibration -> backend/calibration.json
+# optional: natural-language queries (self-hosted LLM)
+ollama pull llama3.1 && ollama serve
+uv run python scripts/calibrate.py           # confidence calibration (NFR-13)
 ```
 
-Without Ollama running, NL queries are **escalated** to human review. The engine is never called with a guess.
+Without Ollama, plain-language queries are **escalated**. The engine never acts on a guess.
 
 ## Data
 
-These come from public CSUSB pages. No login is involved, `robots.txt` is checked, requests are 2s apart, and raw copies are kept in `backend/data/raw/`:
+- **Program data:** public CSUSB pages, fetched by `backend/scripts/ingest.py`. It checks robots.txt, waits 2 s between requests, and keeps byte-exact raw copies in `backend/data/raw/`. Sources:
+  - catalog course pages (CSE, MATH, PHYS);
+  - the BS CS program page;
+  - the General Education page;
+  - all 12 current CSE-department roadmap PDFs (BS CS for sequence; all 12 for term offerings).
+- **Output:** `backend/planner/catalog.json`, with:
+  - 67 courses and 76 AND/OR prerequisite edges (grade minimums, corequisites, standing);
+  - GE requirements as named slots filled by real catalog courses (89 major + 27 GE + 4 free = 120 units);
+  - offerings with a confidence level (17 courses on no roadmap stay `Unknown`, and are flagged);
+  - 12 logged catalog/roadmap discrepancies.
+- **Test data:**
+  - `planner/students.json`: 6 synthetic students.
+  - `data/queries.json`: 45 labeled NL queries.
+  - `data/labeled_records.json`: 80 labeled good and bad catalog records.
 
-| Source | Used for |
-|---|---|
-| catalog.csusb.edu `coursesaz/{cse,math,phys}` | units, titles, prerequisite text (the catalog is authoritative) |
-| catalog.csusb.edu BS Computer Science page | degree requirements: required courses, choose-1 AI group, 12 elective units, 120 total |
-| csusb.edu freshman + transfer roadmap PDFs | term offerings and the recommended sequence (used as the expected pathways) |
+## Repository layout
 
-`scripts/ingest.py` parses all of this into `backend/planner/catalog.json`: 63 courses, 69 prerequisite edges with AND/OR groups, grade minimums, corequisites and standing, plus requirement groups and the roadmaps. Every catalog-vs-roadmap disagreement it finds is logged. From the source alone it reproduces the spec's audit (CSE 4010 and CSE 4550 units, 125 vs 120 total units, CSE 4600 prerequisites) and finds 7 more.
-
-Datasets for tests and results:
-- `planner/students.json`: 6 synthetic profiles (freshman, transfer, retake, missed Spring-only course, part-time, senior).
-- `data/queries.json`: 45 labeled natural-language queries (scenario, ambiguous, off-topic, one prompt injection) for `calibrate.py`.
-- `data/labeled_records.json`: 80 good and deliberately broken catalog records, labeled with the defect, for a future intake guardrail.
-
-## Results
-
-`backend/results/summary.md` holds the latest run. What it measures:
-- **Pathway quality** against the official roadmaps: precision and recall per term, and how many terms each course lands from where the roadmap puts it.
-- **Roadmap audit**: the official roadmaps checked against catalog rules.
-- **Scenario sweep**: 282 what-if runs.
-- **Bottleneck analysis**: the priority score vs betweenness centrality vs the delay actually measured when a course is failed.
-
-## The 8 required capabilities
-
-| Capability | Where |
-|---|---|
-| Starting point | `students.json` profiles; grade minimums force retakes (Jordan's D in CSE 2010) |
-| Prerequisite / sequencing logic | `graph.py` NetworkX DAG, AND/OR edges, grade minimums, cycle rejection |
-| Term-by-term generation | `engine.place()`: constrained greedy topological sort under a unit cap |
-| Adaptive recalculation | `engine.apply_scenario()`: re-places only `nx.descendants()` of the changed course |
-| Graduation timeline impact | term delta plus a templated one-sentence explanation (no LLM) |
-| Alternative pathways | `alternatives()`: fastest (18u) vs balanced (12u) |
-| Course availability awareness | Fall-only / Spring-only filtering plus per-term warnings |
-| What-if mode | UI previews any scenario; you choose to keep it or discard it |
-
-## API
-
-`GET /catalog` · `GET /students` · `POST /plan {student_id, unit_cap?}` · `POST /scenario {plan, event}` · `POST /query {text, plan}` · `GET /audit`
-
-## Layout
+The course's recommended `src/`, `tests/`, and `prototype/` are adapted as backend/frontend packages; the dossier folders follow the course layout.
 
 ```
-backend/planner/  models.py  graph.py  engine.py  guardrail.py  api.py  catalog.json  students.json
-backend/tests/    test_engine.py  test_guardrail.py  test_ingest.py
-backend/scripts/  ingest.py  results.py  calibrate.py
-backend/data/     raw/  queries.json  labeled_records.json
-backend/results/  summary.md  *.json  scenario_runs.csv
-frontend/src/     App.tsx  index.css
+README.md                         Dossier Index (this file)
+CHANGELOG.md                      release notes
+docs/01-product-requirements/     register, traceability, CH-02, references, tech spec
+docs/02-models-architecture/      design.md: models, 4+1 views, ADRs, interface spec
+docs/03-planning-risk/            agile engineering plan, risk register
+docs/04-quality-security-testing/ verification strategy, quality and CM plan, threat analysis
+docs/05-ai-provenance/            AI Engineering Log
+backend/planner/                  models, graph, engine, guardrail, api, catalog.json, students.json
+backend/scripts/                  ingest, results, calibrate, trace
+backend/tests/                    requirement-tagged tests
+backend/data/, backend/results/   raw sources and datasets; evaluation outputs
+frontend/src/                     React client
+.github/                          CI, PR template, issue forms (change request, bug, backlog)
 ```
-
-## Known limits / deferred
-
-- Only the BS CS program is ingested. Courses that aren't on a roadmap have `Unknown` term offering: the planner allows them and warns.
-- Upper-division GE is assumed to need 60 units. Prerequisites outside the program (CSE 1250, MATH 1401/1403) are treated as placement.
-- Deferred until needed: SQLite persistence, MLflow (results are plain CSV/JSON for now), transcript PDF parsing, and the intake-record guardrail (`MalformedRecordCheck`; its labeled data is ready).
-- Guardrail thresholds of 0.90 / 0.60 are placeholders until `calibrate.py` runs on real model output.

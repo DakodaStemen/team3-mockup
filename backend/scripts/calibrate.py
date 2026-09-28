@@ -72,6 +72,6 @@ if __name__ == "__main__":
     (out_dir / "calibration.json").write_text(json.dumps({
         "model": OLLAMA_MODEL, "n": len(y), "accuracy": float(np.mean(y)),
         **{k: v for k, v in r.items() if k != "table"},
-        "runs": [{"query": i["query"], "raw_confidence": c, "correct": bool(k)} for i, c, k in zip(labeled, raw, y)],
+        "runs": [{"query": i["query"], "raw_confidence": c, "correct": bool(k)} for i, c, k in zip(labeled, raw, y, strict=True)],
     }, indent=1))
     print(f"wrote {CALIBRATION}")

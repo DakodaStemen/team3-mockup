@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from . import guardrail
-from .engine import alternatives, apply_scenario, make_plan, timeline
+from .engine import alternatives, apply_scenario, make_plan, timeline, validate_plan
 from .graph import load_catalog, load_students
 from .models import Plan, ScenarioEvent
 
@@ -17,6 +17,10 @@ class PlanRequest(BaseModel):
 class ScenarioRequest(BaseModel):
     plan: Plan
     event: ScenarioEvent
+
+
+class ValidateRequest(BaseModel):
+    plan: Plan
 
 
 class QueryRequest(BaseModel):
@@ -50,8 +54,12 @@ def students():
 @app.post("/plan")
 def plan(req: PlanRequest):
     s = student(req.student_id)
-    p = make_plan(s, req.unit_cap)
-    return {"plan": p, "timeline": timeline(p), "alternatives": alternatives(s)}
+    try:
+        p = make_plan(s, req.unit_cap)
+        alts = alternatives(s)
+    except ValueError as e:  # SRS FR-13: report unplaceable courses instead of a pathway
+        raise HTTPException(422, str(e)) from e
+    return {"plan": p, "timeline": timeline(p), "alternatives": alts}
 
 
 @app.post("/scenario")
@@ -59,7 +67,13 @@ def scenario(req: ScenarioRequest):
     try:
         return apply_scenario(student(req.plan.student_id), req.plan, req.event)
     except ValueError as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(400, str(e)) from e
+
+
+@app.post("/validate")
+def validate(req: ValidateRequest):
+    """SRS FR-14: check any pathway (engine-made, edited, or a roadmap) against catalog rules."""
+    return {"problems": validate_plan(req.plan, student(req.plan.student_id))}
 
 
 @app.post("/query")

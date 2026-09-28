@@ -35,6 +35,14 @@ def baseline(profile: StudentProfile, cat: Catalog, credited: list[str] = ()) ->
     sat = {c: "A" for c in cat.entry_assumed}  # entry-level placement assumptions
     earned = profile.transfer_units
     for cid, grade in profile.completed_courses.items():
+        if cid not in cat.courses:
+            # A real GE course (e.g. ENG 1070A) fills the first open GE slot that lists it.
+            slot = next((s.id for s in cat.courses.values() if cid in s.satisfied_by and s.id not in sat
+                         and s.id not in profile.completed_courses and grade_ok(grade, s.satisfied_by_min_grade)), None)
+            if slot:
+                sat[slot] = grade
+                earned += cat.units(slot)
+            continue
         mins = [d["edge"].grade_minimum for _, _, d in cat.g.out_edges(cid, data=True)]
         # A grade below what a downstream course requires means a retake (e.g. D in CSE 2010 for CSE 2020).
         if grade_ok(grade, "D-") and all(grade_ok(grade, m) for m in mins):
@@ -107,8 +115,12 @@ def place(terms: list[TermPlan], todo: set[str], start: int, cap: int, summers: 
                             used += cat.units(d)
                             todo.discard(d)
         for c in t.courses:
-            if cat.courses[c].term_offered == "Unknown":
-                warnings[f"{c} term offering unknown; confirm with department."] = 1
+            if t.term_label.startswith("Summer"):
+                warnings[f"{c}: summer offerings are not published; confirm it runs in {t.term_label}."] = 1
+            elif cat.courses[c].term_offered == "Unknown":
+                warnings[f"{c} term offering unknown (on no roadmap); confirm with department."] = 1
+            elif cat.courses[c].offering_confidence == "low":
+                warnings[f"{c}: roadmaps disagree on its offering; planned as {cat.courses[c].term_offered}-only."] = 1
         t.warnings = list(warnings)
         sat |= {c: "A" for c in t.courses}
         earned += used
@@ -213,7 +225,7 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
         if not event.term_label.startswith("Summer"):
             raise ValueError("Add Summer needs a term_label like 'Summer 2027'")
         new.summers.append(event.term_label)
-        start = next((i for i, l in enumerate(labels) if term_key(l) > term_key(event.term_label)), len(terms))
+        start = next((i for i, lbl in enumerate(labels) if term_key(lbl) > term_key(event.term_label)), len(terms))
         invalid = {c for t in terms[start:] for c in t.courses}
         del terms[start:]
     else:  # Change Unit Load

@@ -4,7 +4,8 @@
   "name": "Alex (first-time freshman)",
   "start_term": "Fall 2026",
   "unit_load_preference": 16,
-  "notes": "Clean start; compare against the freshman roadmap."
+  "notes": "Clean start; compare against the freshman roadmap.",
+  "completed_courses": {}
  },
  {
   "id": "taylor",
@@ -24,17 +25,17 @@
    "PHYS 2500L": "B",
    "PHYS 2510": "B",
    "PHYS 2510L": "B",
-   "GE 1A": "A",
-   "GE 1C": "A",
    "FREE 1": "A",
-   "GE LD 1": "B",
-   "GE LD 2": "B",
-   "GE LD 3": "B",
-   "GE LD 4": "B",
-   "GE LD 5": "B"
+   "ENG 1070A": "B",
+   "COMM 1006": "B",
+   "ART 1200": "B",
+   "ARAB 1112": "B",
+   "ES 1000": "B",
+   "HIST 1460": "B",
+   "PSCI 2030": "B"
   },
   "transfer_units": 0,
-  "notes": "Compare against the transfer roadmap."
+  "notes": "Transfer with lower division done; GE recorded as real catalog courses. Compare against the transfer roadmap."
  },
  {
   "id": "jordan",
@@ -71,16 +72,16 @@
    "MATH 2310": "B-",
    "PHYS 2500": "C+",
    "PHYS 2500L": "A",
-   "GE LD 1": "A",
+   "GE 3A": "A",
    "CSE 3100": "B",
    "CSE 4310": "B",
    "MATH 2265": "B+",
-   "GE LD 2": "A-",
+   "GE 3B": "A-",
    "CSE 4010": "B",
    "CSE 4550": "A-",
    "CSE 4600": "B",
-   "GE LD 3": "A",
-   "GE LD 4": "B+"
+   "GE 6": "A",
+   "GE AI-HIST": "B+"
   },
   "notes": "PHYS 2510/2510L are Spring-only; a Fall start must wait."
  },
@@ -119,13 +120,13 @@
    "MATH 2310": "B-",
    "PHYS 2500": "C+",
    "PHYS 2500L": "A",
-   "GE LD 1": "A",
+   "GE 3A": "A",
    "CSE 3100": "B",
    "CSE 4310": "B",
    "MATH 2265": "B+",
    "PHYS 2510": "C",
    "PHYS 2510L": "B+",
-   "GE LD 2": "A-",
+   "GE 3B": "A-",
    "CSE 4010": "B",
    "CSE 4550": "B",
    "CSE 4600": "B",
@@ -135,11 +136,11 @@
    "CSE 5160": "A",
    "CSE 4050": "A",
    "CSE 4400": "B",
-   "GE LD 3": "A",
-   "GE LD 4": "A",
-   "GE LD 5": "A",
-   "GE UD 1": "A",
-   "GE UD 2": "A"
+   "GE 6": "A",
+   "GE AI-HIST": "A",
+   "GE AI-GOV": "A",
+   "GE UD-3": "A",
+   "GE UD-4": "A"
   },
   "in_progress_courses": [
    "CSE 5430"
@@ -155,6 +156,6 @@
     "CSE 5460"
    ]
   },
-  "notes": "Remaining: CSE 5700 and 5720 (Fall-only), CSE 4880 (senior standing, Spring), one elective, one UD GE."
+  "notes": "Remaining: CSE 5700 and 5720 (Fall-only), CSE 4880 (senior standing; also satisfies GE UD-2/5), one elective."
  }
 ]
