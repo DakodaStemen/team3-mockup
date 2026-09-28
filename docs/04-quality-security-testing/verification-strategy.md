@@ -19,7 +19,7 @@ Verification and validation combines **inspection** and **testing** (Sommerville
 |---|---|---|
 | Unit | Grades, prerequisite groups, requisite-text parser, calibration math | `tests/test_engine.py`, `tests/test_ingest.py`, `tests/test_guardrail.py` |
 | Component | Engine as a whole (plan / scenario / validator); guardrail with a fake LLM; ingestion pipeline rebuilt from cache | same files |
-| System | REST API end to end (`TestClient`); 282-run scenario sweep with validity checks | `test_guardrail.py::test_api_end_to_end`, `scripts/results.py` |
+| System | REST API end to end (`TestClient`); 280-run scenario sweep with validity checks | `test_guardrail.py::test_api_end_to_end`, `scripts/results.py` |
 
 Every automated test follows **setup → call → assert** (Sommerville §8.1.1) and is tagged with the requirement(s) it verifies:
 

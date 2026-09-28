@@ -60,3 +60,70 @@ def test_rebuild_from_cached_sources_matches_committed_catalog():
     from scripts.ingest import OUT, build
     assert Path(OUT).exists()
     assert build(refresh=False) == json.loads(Path(OUT).read_text(encoding="utf8"))
+
+
+class FakeResponse:
+    def __init__(self, status=200, body=b"ok", headers=None, text=""):
+        self.status_code, self.body, self.headers, self.text = status, body, headers or {}, text
+
+    @property
+    def is_redirect(self):
+        return self.status_code in (301, 302, 303, 307, 308)
+
+    def raise_for_status(self):
+        if self.status_code >= 400:
+            raise RuntimeError(self.status_code)
+
+    def iter_content(self, n):
+        for i in range(0, len(self.body), n):
+            yield self.body[i:i + n]
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        return False
+
+
+@pytest.fixture
+def fake_net(monkeypatch, tmp_path):
+    """Route ingest's HTTP through a dict of url -> FakeResponse; no network, no 2 s sleeps."""
+    from scripts import ingest
+    routes: dict[str, FakeResponse] = {}
+    monkeypatch.setattr(ingest, "RAW", tmp_path)
+    monkeypatch.setattr(ingest, "_robots", {})
+    monkeypatch.setattr(ingest.time, "sleep", lambda s: None)
+    monkeypatch.setattr(ingest.requests, "get", lambda url, **kw: routes.get(url, FakeResponse(404)))
+    return ingest, routes, tmp_path
+
+
+@pytest.mark.req("DR-07")
+def test_fetch_caches_atomically(fake_net):
+    ingest, routes, raw = fake_net
+    routes["https://catalog.csusb.edu/x/"] = FakeResponse(body=b"page")
+    assert ingest.fetch("x.html", "https://catalog.csusb.edu/x/", refresh=True).read_bytes() == b"page"
+    assert not list(raw.glob("*.part"))
+
+
+@pytest.mark.req("DR-07")
+@pytest.mark.parametrize("routes_extra,msg", [
+    ({"https://catalog.csusb.edu/x/": FakeResponse(302, headers={"Location": "https://evil.example/x"})}, "off-site"),
+    ({"https://catalog.csusb.edu/x/": FakeResponse(302, headers={"Location": "http://catalog.csusb.edu/x/"})}, "non-HTTPS"),
+    ({"https://catalog.csusb.edu/x/": FakeResponse(body=b"x" * (21 * 2**20))}, "larger than"),
+    ({"https://catalog.csusb.edu/robots.txt": FakeResponse(text="User-agent: *\nDisallow: /x/")}, "robots.txt disallows"),
+])
+def test_fetch_refuses_unsafe_sources(fake_net, routes_extra, msg):
+    ingest, routes, raw = fake_net
+    routes.update(routes_extra)
+    with pytest.raises(SystemExit, match=msg):
+        ingest.fetch("x.html", "https://catalog.csusb.edu/x/", refresh=True)
+    assert not (raw / "x.html").exists() and not list(raw.glob("*.part"))
+
+
+@pytest.mark.req("DR-07")
+def test_changed_layout_fails_with_a_clear_message(tmp_path):
+    from scripts.ingest import parse_program
+    page = tmp_path / "p.html"
+    page.write_text("<html><body><p>Page redesigned</p></body></html>", encoding="utf8")
+    with pytest.raises(ValueError, match="Source layout changed: could not find total units"):
+        parse_program(page)

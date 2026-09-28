@@ -86,11 +86,17 @@ class Catalog:
         stack = list(out)
         while stack:
             groups: dict[int, list[str]] = {}
-            for e in self.prereqs(stack.pop()):
+            c = stack.pop()
+            for e in self.prereqs(c):
                 groups.setdefault(e.group, []).append(e.from_course)
             for alts in groups.values():
                 if not any(a in out or a in done or a in self.entry_assumed for a in alts):
-                    pick = next(a for a in alts if a in self.courses)
+                    pick = next((a for a in alts if a in self.courses), None)
+                    if pick is None:  # data error: leave the course unplaceable so the planner reports it (FR-13)
+                        note = f"No catalog course satisfies a prerequisite of {c}: {' / '.join(alts)}."
+                        if note not in self.discrepancies:
+                            self.discrepancies.append(note)
+                        continue
                     out.add(pick)
                     stack.append(pick)
         return out

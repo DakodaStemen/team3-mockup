@@ -69,7 +69,7 @@ This is the AI Assistance and Provenance record required by course policy (SRS C
 
 - **What was wrong:** AIL-03's results used a hand-written Spearman correlation that did not average tied ranks. Many courses have betweenness 0, so the reported values (priority 0.54, betweenness 0.04) were wrong.
 - **Fix:** replaced with `statistics.correlation(..., method="ranked")`, found by the over-engineering audit.
-- **Corrected values:** priority 0.62, descendant count 0.49, betweenness 0.31. The priority score still predicts measured delay best, but the gap is smaller than first reported.
+- **Corrected values:** see the Bottlenecks section of `backend/results/summary.md`, which `scripts/results.py` regenerates; numbers are not restated here so they cannot drift. The priority score still ranks highest, but the gap is smaller than first reported, and the summary explains why that comparison is a consistency check rather than validation (delay is measured by the same engine; betweenness is 0 for courses with no prerequisites).
 - **Lesson:** hand-rolled statistics need a check against a reference implementation.
 
 ### AIL-06: Data gap fixes (2026-09-28)
@@ -100,3 +100,27 @@ This is the AI Assistance and Provenance record required by course policy (SRS C
 3. **References marked "not opened" or "not verified"** in [references.md](../01-product-requirements/references.md), especially the legal basis for scraping (CollegeSource v. AcademyOne).
 4. **Synthetic student profiles** (`backend/planner/students.json`): confirm they are realistic with an advisor (EV-04).
 5. **Guardrail thresholds 0.90 / 0.60:** unvalidated until the calibration run (NFR-13).
+
+### AIL-07: Review fixes and demo-ready UI (2026-09-28)
+
+- **Decisions (human):** Dakoda wrote the fix plan (*ADPP Mockup: Fix Plan and Demo Prep*), then asked for every finding to be fixed and the UI made ready to explore.
+- **Output:**
+  - The Pass-ordering fix and the independent DAG-order test.
+  - Out-of-fold calibration metrics.
+  - Unit-load bounds on every path; credit grades (CR/P/TR) count as C.
+  - `moved` diff (FR-12) and per-course blocking reasons (FR-13).
+  - `/health`, the UI rework, `dev.sh`, and Playwright e2e tests.
+- **Deviations from the plan, with reasons:**
+  - The unit-load bound lives in the engine, not on `ScenarioEvent`: a model bound would turn an out-of-range LLM answer into a parse failure that trips the circuit breaker.
+  - The entry-course count in the summary is computed from the graph: 6 real courses, not 16. The 16 included 10 GE slots.
+  - A passed course's units were double-counted toward standing after the Fix 1 patch. Fixed; only within-term order changed.
+- **Validation:** 74 backend tests, 8 e2e tests, and 280/280 valid scenario runs. The new regression tests failed on the old code.
+- **Needs a human decision:** CH-02 C-8 (credit-grade equivalence) and C-9 (the rationale for incremental recalculation).
+
+### AIL-08: Parallel bug, outlier, and security sweep (2026-09-28)
+
+- **Decisions (human):** Dakoda asked for a full sweep for outliers, bugs, and security flaws, fixed in parallel.
+- **Method:** four AI agents with disjoint file ownership. Engine: fuzzing across students, chained events, caps, and random profiles. API: security review. Frontend: Playwright-driven review. Scripts/deps/CI/docs: review plus pip-audit and npm audit. The coordinating agent reviewed each diff, fixed two gaps itself (Content-Length parsing, CI server reuse), regenerated the matrix and results, and ran every suite.
+- **Output:** per-term unit caps; credit revocation on retakes; strict API input models; LLM output validated like typed input; audit, calibration, and breaker hardening; stale-response and stale-form fixes in the UI; WCAG AA contrast; hardened ingest and CI.
+- **Validation:** 135 backend tests, 16 e2e tests, 280/280 valid scenario runs, fuzz harness with 0 over-cap or validator problems. New regression tests failed before their fixes.
+- **Known limitations:** no authentication, and `/audit` is readable by any client; audit log has no retention policy (fine for synthetic students, not for real records); body-size limit relies on Content-Length; circuit breaker is per process.

@@ -23,11 +23,11 @@ Data: BS Computer Science (CSCI), CSUSB 2026-27 catalog + roadmaps. 67 courses, 
 - 280 what-if runs across 6 students; **280/280 produced valid plans**.
 - Fail/withdraw delay distribution (terms): {0: 33, 1: 46, 2: 27, 3: 3}
 - Mean ripple size on Fail: 2.7 courses
-- Recalc time: median 1.10 ms (full plan from scratch: median 1.02 ms, median ratio 0.9x)
+- Recalc time: median 0.42 ms (full plan from scratch: median 0.41 ms, median ratio 0.9x)
 
 ## Bottlenecks
 
-Spearman correlation with measured delay-when-failed (29 courses): priority score 0.65, descendant count 0.51, betweenness centrality 0.32.
+Spearman correlation with measured delay-when-failed (29 courses): priority score 0.65, descendant count 0.51, betweenness centrality 0.32. Delay is measured by the same greedy engine that schedules by priority, so this correlation is a consistency check, not validation. Betweenness is 0 by construction for all 6 courses with no prerequisites to plan, including gatekeepers like CSE 2010 and MATH 2372.
 
 | course | priority | descendants | betweenness | mean delay when failed |
 |---|---|---|---|---|

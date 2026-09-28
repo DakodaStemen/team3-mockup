@@ -67,13 +67,28 @@ Status labels follow the course list: Not started, Drafting, In review, Baseline
 - Significant AI help is logged in the AI Engineering Log.
 - Methods follow Sommerville 10e (Ch 3–8, 13, 22–25) as tailored in each document.
 
+## Quick start
+
+```sh
+./dev.sh    # installs deps if needed, starts API :8000 + UI :5173; Ctrl+C stops both
+```
+
+Open http://localhost:5173. Things to try:
+
+- Click any course (term grid, bottleneck table, or graph) to load it into the what-if form, then **Run what-if**.
+- **Keep this plan** stacks changes in *Plan history*; **Undo last** / **Reset to baseline** walk them back.
+- Change the base **Unit cap** or **Student** in the header to replan from scratch.
+- *Ask in plain language* needs Ollama (`ollama serve` + `ollama pull llama3.1`). Without it the header shows *AI parser offline* and every question is escalated; that is the guardrail working.
+
+Tests: `cd backend && uv run pytest -q` (engine, API, traceability) and `cd frontend && npm run test:e2e` (Playwright drives the real app; first run may need `npx playwright install chromium`).
+
 ## Setup and run
 
 ```sh
 # backend (Python 3.12+, uv)
 cd backend
 uv sync
-uv run pytest                                # 55 tests incl. traceability check
+uv run pytest                                # engine, API, scripts, ingest, and traceability tests
 uv run ruff check .
 uv run python scripts/trace.py               # regenerate traceability.md after changing tests or register
 uv run python scripts/ingest.py              # rebuild planner/catalog.json from cached sources (--refresh re-downloads)
@@ -84,6 +99,7 @@ uv run uvicorn planner.api:app --port 8000   # OpenAPI contract at /openapi.json
 cd frontend
 npm install
 npm run dev                                  # http://localhost:5173 (proxies /api -> :8000)
+npm run test:e2e                             # Playwright end-to-end tests (starts both servers; stop ./dev.sh first)
 
 # optional: natural-language queries (self-hosted LLM)
 ollama pull llama3.1 && ollama serve

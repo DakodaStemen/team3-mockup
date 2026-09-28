@@ -228,7 +228,7 @@ flowchart LR
 | Field | Content |
 |---|---|
 | Action | Not passed/Withdrawn: remove the course and its planned descendants from the event term on; re-place from the next term. Passed: credit it; re-place descendants. Add Summer: insert the term; re-place later courses. Change Unit Load: new cap from the event term. Then re-place any kept course whose standing no longer holds (ADR-11). |
-| Outputs | `{plan, timeline, invalidated, delta_terms, explanation}`. The explanation is templated, never LLM-generated. |
+| Outputs | `{plan, timeline, invalidated, delta_terms, moved, explanation}`. `moved` lists each course whose term changed (`course`, `from`, `to`); for Pass, `invalidated` is the moved set. The explanation is templated, never LLM-generated. |
 | Postcondition | The input plan is unchanged (FR-15); courses outside the removed set keep their term (NFR-11) |
 
 **Classify query:** `guardrail.classify(text, plan)` (FR-19, FR-21, NFR-12)
@@ -250,10 +250,11 @@ The machine-readable contract is served at `GET /openapi.json` (FastAPI). All bo
 
 | Method, path | Request | Response |
 |---|---|---|
+| `GET /health` | none | `{engine, ollama, model, unit_load_range}`: whether the optional LLM parser is reachable (NFR-12) |
 | `GET /catalog` | none | `{courses[], edges[], priority{}, discrepancies[]}` |
 | `GET /students` | none | `StudentProfile[]` (synthetic) |
-| `POST /plan` | `{"student_id": "alex", "unit_cap": 15}` | `{plan, timeline, alternatives{fastest, balanced}}`; 404 unknown student; 422 unschedulable |
-| `POST /scenario` | `{"plan": Plan, "event": {"event_type": "Fail", "course_id": "CSE 2020", "term_label": "Spring 2027"}}` | `{plan, timeline, invalidated[], delta_terms, explanation}`; 400 if the event doesn't fit the plan |
+| `POST /plan` | `{"student_id": "alex", "unit_cap": 15}` | `{plan, timeline, alternatives{fastest, balanced}}`; 404 unknown student; 422 if `unit_cap` is outside 3–21 or the plan is unschedulable (names each blocking course and why, FR-13) |
+| `POST /scenario` | `{"plan": Plan, "event": {"event_type": "Fail", "course_id": "CSE 2020", "term_label": "Spring 2027"}}` | `{plan, timeline, invalidated[], delta_terms, moved[], explanation}`; 400 if the event doesn't fit the plan or the unit load is outside 3–21 |
 | `POST /validate` | `{"plan": Plan}` | `{"problems": [...]}`: empty if valid (FR-14) |
 | `POST /query` | `{"text": "...", "plan": Plan}` | `{guardrail{outcome, confidence, reason, parsed_event}, result or null}` |
 | `GET /audit?limit=50` | none | audit lines, newest first |

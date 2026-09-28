@@ -2,6 +2,30 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Versioning: SemVer (docs/QUALITY_AND_CM.md §2.4).
 
+## [0.5.0] - 2026-09-28
+### Fixed
+- A Pass event could schedule a course in the same term as its own prerequisite, and the validator missed it because it shared the engine's assumption. The Pass course now stays in its term, and a DAG-based test checks order independently.
+- Calibration metrics are reported from out-of-fold predictions (Platt scaling by default; ECE with 5 bins).
+- CR/P/TR grades count as C instead of failing (CH-02 C-8, pending advisor confirmation).
+- Unit loads outside 3–21 are rejected on every path (`/plan`, `/scenario`, plain language). A cap below a course's units gets one clear message.
+- A prerequisite with no catalog alternative is logged instead of returning a 500.
+- Pass explanations no longer claim courses were re-sequenced, and only moved courses are marked affected.
+### Added
+- Scenario results include `moved` (course, from, to) (FR-12). Unplaceable plans name each blocking course and its constraint (FR-13).
+- `GET /health` reports whether the LLM parser is reachable.
+- UI: click-to-load courses, plan history with undo/reset, base unit-cap picker, AI parser status, a moved-course list, a department-confirmation panel, bottleneck table, faded off-plan DAG nodes, phone layout.
+- `./dev.sh` one-command start; Playwright end-to-end tests (`npm run test:e2e`), also run in CI.
+### Changed
+- The results summary labels the bottleneck correlation a consistency check, not validation.
+### Security
+- `ingest.py` fetches only HTTPS CSUSB hosts, follows at most 5 redirects and checks each hop, caps downloads at 20 MB, reads robots.txt with our User-Agent and a timeout, and writes cache files atomically.
+- CI runs with read-only `permissions`, pins third-party actions to commit SHAs, and runs `npm audit` plus lint.
+### Fixed (tooling)
+- Ingest parsers fail with a clear "source layout changed" message instead of an `AttributeError`/`IndexError` when a page changes shape.
+- `results.py` tolerates empty samples and constant data (n/a instead of a crash). `calibrate.py` requires at least 4 examples of each class and says so, instead of a scikit-learn error.
+- `dev.sh` checks the Node version and busy ports, reinstalls when the lockfile changes, and shuts both servers down cleanly.
+- `numpy` is declared as a direct dependency.
+
 ## [0.4.0] - 2026-09-28
 ### Added
 - Term offerings from all 12 CSE-department roadmaps, with confidence (high/low/unknown) and per-term warnings.
