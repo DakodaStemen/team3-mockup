@@ -59,7 +59,7 @@ def scenario(req: ScenarioRequest):
     try:
         return apply_scenario(student(req.plan.student_id), req.plan, req.event)
     except ValueError as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(400, str(e)) from e
 
 
 @app.post("/query")

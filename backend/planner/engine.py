@@ -213,7 +213,7 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
         if not event.term_label.startswith("Summer"):
             raise ValueError("Add Summer needs a term_label like 'Summer 2027'")
         new.summers.append(event.term_label)
-        start = next((i for i, l in enumerate(labels) if term_key(l) > term_key(event.term_label)), len(terms))
+        start = next((i for i, lbl in enumerate(labels) if term_key(lbl) > term_key(event.term_label)), len(terms))
         invalid = {c for t in terms[start:] for c in t.courses}
         del terms[start:]
     else:  # Change Unit Load

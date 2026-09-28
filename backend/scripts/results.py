@@ -150,7 +150,9 @@ def bottlenecks(runs: list[dict]) -> list[dict]:
 
 
 def spearman(a: list[float], b: list[float]) -> float:
-    rank = lambda v: {i: r for r, i in enumerate(sorted(range(len(v)), key=v.__getitem__))}
+    def rank(v):
+        return {i: r for r, i in enumerate(sorted(range(len(v)), key=v.__getitem__))}
+
     ra, rb = rank(a), rank(b)
     return statistics.correlation([ra[i] for i in range(len(a))], [rb[i] for i in range(len(b))])
 

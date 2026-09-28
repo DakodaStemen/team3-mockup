@@ -227,7 +227,7 @@ def build(refresh: bool = False) -> dict:
     # Term offerings come from the roadmaps. If the two roadmaps disagree, take the more restrictive and flag it.
     offered: dict[str, set] = {}
     roadmap_units, roadmap_prereq = {}, {}
-    for key, rm in roadmaps.items():
+    for rm in roadmaps.values():
         for t in rm["terms"]:
             for s in t["slots"]:
                 if "course" in s:

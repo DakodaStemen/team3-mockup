@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from planner import guardrail
@@ -18,6 +19,14 @@ def fake(conf, **event):
 FAIL_2020 = dict(event_type="Fail", course_id="CSE 2020", term_label="Spring 2027")
 
 
+@pytest.fixture(autouse=True)
+def raw_confidence(monkeypatch, tmp_path):
+    """Tests reason about raw confidence; ignore any local calibration.json and reset the breaker."""
+    monkeypatch.setattr(guardrail, "CALIBRATION", tmp_path / "none.json")
+    guardrail._breaker.update(fails=0, opened_at=0.0)
+
+
+@pytest.mark.req("FR-9", "NFR-3")
 def test_threshold_bands():
     assert classify("q", PLAN, fake(0.95, **FAIL_2020))["outcome"] == "auto_accepted"
     assert classify("q", PLAN, fake(0.70, **FAIL_2020))["outcome"] == "accepted_low_confidence"
@@ -25,15 +34,16 @@ def test_threshold_bands():
     assert classify("q", PLAN, fake(0.99))["outcome"] == "escalated"  # unsupported intent
 
 
+@pytest.mark.req("FR-9")
 def test_hallucinated_course_escalated():
     r = classify("q", PLAN, fake(0.99, event_type="Fail", course_id="CSE 9999", term_label="Spring 2027"))
     assert r["outcome"] == "escalated" and "CSE 9999" in r["reason"]
 
 
+@pytest.mark.req("NFR-4")
 def test_circuit_breaker_opens_after_repeated_failures():
     def down(text, plan):
         raise ConnectionError("ollama down")
-    guardrail._breaker.update(fails=0, opened_at=0.0)
     for _ in range(guardrail.BREAKER_FAILS):
         assert classify("q", PLAN, down)["outcome"] == "escalated"
     r = classify("q", PLAN, fake(0.99, **FAIL_2020))  # would succeed, but breaker is open
@@ -41,6 +51,7 @@ def test_circuit_breaker_opens_after_repeated_failures():
     guardrail._breaker.update(fails=0, opened_at=0.0)
 
 
+@pytest.mark.req("FR-14", "FR-11")
 def test_api_end_to_end():
     c = TestClient(app)
     plan = c.post("/plan", json={"student_id": "alex"}).json()["plan"]
@@ -50,8 +61,10 @@ def test_api_end_to_end():
     assert c.get("/audit").json()[0]["event"] == "guardrail_decision"
 
 
+@pytest.mark.req("NFR-5")
 def test_calibration_math():
     import numpy as np
+
     from scripts.calibrate import evaluate
     rng = np.random.default_rng(0)
     raw = rng.uniform(0.5, 1.0, 60)  # overconfident model: real accuracy well below stated confidence
@@ -60,11 +73,47 @@ def test_calibration_math():
     assert r["brier_calibrated"] < r["brier_raw"] and len(r["table"]["x"]) == 21
 
 
+@pytest.mark.req("FR-9")
 def test_labeled_queries_match_current_plan():
     """data/queries.json is labeled against Alex's plan; if the engine changes the plan, relabel."""
     import json
     from pathlib import Path
+
     from planner.guardrail import validate
     items = json.loads((Path(__file__).parent.parent / "data" / "queries.json").read_text(encoding="utf8"))
     bad = [i["query"] for i in items if i["expected"] and validate(ScenarioEvent(**i["expected"]), PLAN)]
     assert bad == []
+
+
+@pytest.mark.req("FR-9", "NFR-3")
+@pytest.mark.parametrize("conf,outcome", [(0.59, "escalated"), (0.60, "accepted_low_confidence"),
+                                          (0.89, "accepted_low_confidence"), (0.90, "auto_accepted")])
+def test_threshold_boundaries(conf, outcome):
+    assert classify("q", PLAN, fake(conf, **FAIL_2020))["outcome"] == outcome
+
+
+@pytest.mark.req("FR-9")
+@pytest.mark.parametrize("units,ok", [(2, False), (3, True), (21, True), (22, False)])
+def test_unit_load_bounds(units, ok):
+    from planner.guardrail import validate
+    ev = ScenarioEvent(event_type="Change Unit Load", term_label=PLAN.terms[0].term_label, unit_load=units)
+    assert (validate(ev, PLAN) is None) == ok
+
+
+@pytest.mark.req("FR-11", "NFR-3")
+def test_every_decision_writes_a_complete_audit_line():
+    classify("what if I fail CSE 2020", PLAN, fake(0.7, **FAIL_2020))
+    line = guardrail.read_audit(1)[0]
+    for key in ("timestamp", "student_id", "input", "parsed_event", "raw_confidence", "confidence", "thresholds", "outcome", "reason"):
+        assert key in line
+    assert line["outcome"] == "accepted_low_confidence" and line["raw_confidence"] == 0.7
+
+
+@pytest.mark.req("FR-14")
+def test_api_rejects_invalid_requests():
+    c = TestClient(app)
+    assert c.post("/plan", json={"student_id": "nobody"}).status_code == 404
+    plan = c.post("/plan", json={"student_id": "alex"}).json()["plan"]
+    wrong_term = {**FAIL_2020, "term_label": "Fall 2026"}  # CSE 2020 is not planned in Fall 2026
+    assert c.post("/scenario", json={"plan": plan, "event": wrong_term}).status_code == 400
+    assert c.post("/scenario", json={"plan": plan, "event": {**FAIL_2020, "term_label": "Fall 2099"}}).status_code == 400

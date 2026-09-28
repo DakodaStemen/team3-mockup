@@ -1,6 +1,23 @@
 # Adaptive Degree Pathway Planner (mock)
 
-CSE 6550 Project 3 pre-team prototype. Spec: [`docs/spec.docx`](docs/spec.docx). Build plan: [`docs/PLAN.md`](docs/PLAN.md).
+CSE 6550 Project 3 pre-team prototype. Spec: [`docs/spec.docx`](docs/spec.docx).
+
+## Documentation
+
+The process and documents follow Sommerville, *Software Engineering* 10e.
+
+| Document | Textbook basis |
+|---|---|
+| [SRS](docs/SRS.md): requirements, use cases, API contract | Ch 4 (Fig 4.17 structure) |
+| [Design](docs/DESIGN.md): system models, 4+1 views, patterns, ADRs | Ch 5, 6, 7 |
+| [Test plan](docs/TEST_PLAN.md) and [traceability matrix](docs/TRACEABILITY.md) | Ch 8, §4.6 |
+| [Project plan](docs/PROJECT_PLAN.md): Scrum roles, sprints, milestones | Ch 3, 23 |
+| [Risk register](docs/RISKS.md) | Ch 22 |
+| [Quality and CM plan](docs/QUALITY_AND_CM.md): standards, reviews, branching, change and release management | Ch 24, 25 |
+| [Security and ethics](docs/SECURITY.md) | Ch 13, §1.2 |
+| [Changelog](CHANGELOG.md) | §25.4 |
+
+Contributing: branch → PR (template checklist) → CI green → non-author review. Requirement changes use the *Change request* issue form.
 
 **Core rule:** the deterministic engine makes every scheduling decision. The LLM only turns a plain-language question into a typed `ScenarioEvent`. Each LLM decision gets a confidence score and a threshold gate, and is logged to an audit trail.
 
