@@ -93,11 +93,11 @@ test('backend down gives a clear message', async ({ page }) => {
   await expect(alert(page)).toContainText('planner API')
 })
 
-test('a full walkthrough logs no console errors, in light and dark mode', async ({ page }) => {
-  const errors: string[] = []
-  page.on('console', m => { if (m.type() === 'error') errors.push(m.text()) })
-  page.on('pageerror', e => errors.push(String(e)))
-  for (const scheme of ['light', 'dark'] as const) {
+for (const scheme of ['light', 'dark'] as const) {
+  test(`a full walkthrough logs no console errors in ${scheme} mode`, async ({ page }) => {
+    const errors: string[] = []
+    page.on('console', m => { if (m.type() === 'error') errors.push(m.text()) })
+    page.on('pageerror', e => errors.push(String(e)))
     await page.emulateMedia({ colorScheme: scheme })
     await page.goto('/')
     await expect(stat(page, 'Graduation')).toHaveText('Spring 2030')
@@ -111,6 +111,6 @@ test('a full walkthrough logs no console errors, in light and dark mode', async 
     await expect(stat(page, 'Graduation')).toHaveText('Spring 2030')
     await page.getByLabel('Student').selectOption('sam')
     await expect(page.getByTestId('terms')).toBeVisible()
-  }
-  expect(errors.filter(e => !e.includes('THREE.'))).toEqual([])
-})
+    expect(errors.filter(e => !e.includes('THREE.'))).toEqual([])
+  })
+}
