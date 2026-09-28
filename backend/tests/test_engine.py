@@ -243,3 +243,13 @@ def test_pass_never_pulls_dependents_into_same_term(sid):
                 same_term_ok = edge is not None and edge.concurrent_ok
                 assert where[d] > where[cid] or (same_term_ok and where[d] == where[cid]), f"{d} scheduled with/before {cid}"
             check_valid(r["plan"], profile, cap=plan.unit_cap)
+
+
+@pytest.mark.req("DR-01", "FR-13", "FR-20")
+def test_prerequisite_outside_catalog_is_logged_not_crashed():
+    raw = json.loads((DATA / "catalog.json").read_text(encoding="utf8"))
+    raw["edges"].append({"from_course": "MATH 9999", "to_course": "CSE 2020", "group": 9})
+    cat = Catalog(raw)
+    with pytest.raises(ValueError, match="CSE 2020"):  # API turns this into 422, not a 500
+        make_plan(STUDENTS["alex"], cat=cat)
+    assert sum("MATH 9999" in d and "CSE 2020" in d for d in cat.discrepancies) == 1
