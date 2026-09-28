@@ -257,10 +257,13 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
     delta = _ordinal(after["graduation_term"]) - _ordinal(before["graduation_term"]) if new.terms and plan.terms else 0
 
     k = len(invalid - {cid})
+    was = {c: t.term_label for t in plan.terms for c in t.courses}
+    moved = sum(1 for t in new.terms for c in t.courses if c in was and was[c] != t.term_label)
     cause = {
         "Fail": f"{cid} must be retaken and gates {k} planned course(s)",
         "Withdraw": f"{cid} must be retaken and gates {k} planned course(s)",
-        "Pass": f"credit for {cid} lets {k} downstream course(s) be re-sequenced",
+        "Pass": f"{cid} passed in {event.term_label}; later terms re-checked, "
+                + (f"{moved} course(s) moved" if moved else "no course moved"),
         "Add Summer": f"{event.term_label} adds up to {SUMMER_CAP} units of capacity",
         "Change Unit Load": f"the unit cap changed from {old_cap} to {new.unit_cap}",
     }[event.event_type]
@@ -268,7 +271,8 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
     if delta > 0 and seasonal:
         cause += f"; {', '.join(seasonal)} only run{'s' if len(seasonal) == 1 else ''} once a year"
     if delta == 0:
-        explanation = f"Graduation unchanged ({after['graduation_term']}): {cause}, but existing slack absorbs it."
+        slack = "" if event.event_type == "Pass" else ", but existing slack absorbs it"
+        explanation = f"Graduation unchanged ({after['graduation_term']}): {cause}{slack}."
     else:
         verb = f"delayed by {delta}" if delta > 0 else f"moved up by {-delta}"
         explanation = f"Graduation {verb} term(s) ({before['graduation_term']} → {after['graduation_term']}) because {cause}."

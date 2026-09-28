@@ -253,3 +253,11 @@ def test_prerequisite_outside_catalog_is_logged_not_crashed():
     with pytest.raises(ValueError, match="CSE 2020"):  # API turns this into 422, not a 500
         make_plan(STUDENTS["alex"], cat=cat)
     assert sum("MATH 9999" in d and "CSE 2020" in d for d in cat.discrepancies) == 1
+
+
+@pytest.mark.req("FR-09", "FR-12")
+def test_pass_explanation_does_not_claim_moves():
+    alex = STUDENTS["alex"]
+    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Pass", course_id="CSE 2010", term_label="Fall 2026"))
+    assert r["delta_terms"] == 0
+    assert r["explanation"] == "Graduation unchanged (Spring 2030): CSE 2010 passed in Fall 2026; later terms re-checked, no course moved."
