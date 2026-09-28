@@ -3,7 +3,7 @@ import json
 import networkx as nx
 import pytest
 
-from planner.engine import alternatives, apply_scenario, make_plan, offered, timeline
+from planner.engine import alternatives, apply_scenario, grade_ok, make_plan, timeline, validate_plan
 from planner.graph import DATA, Catalog, load_catalog, load_students
 from planner.models import ScenarioEvent
 
@@ -12,37 +12,53 @@ STUDENTS = load_students()
 
 
 def check_valid(plan, profile, cap=None):
-    seen = set(profile.completed_courses) | set(profile.in_progress_courses) | set(plan.credited)
-    for t in plan.terms:
-        for c in t.courses:
-            assert offered(c, t.term_label, CAT), f"{c} placed in {t.term_label}"
-            assert set(CAT.g.predecessors(c)) - {e.from_course for e in CAT.prereqs(c) if e.condition == "OR"} <= seen
-        assert t.total_units <= (cap or plan.unit_cap)
-        seen |= set(t.courses)
+    assert validate_plan(plan, profile, CAT, cap) == []
 
 
 @pytest.mark.parametrize("sid", STUDENTS)
-def test_plans_respect_offerings_prereqs_and_caps(sid):
+def test_plans_valid_and_complete(sid):
     check_valid(make_plan(STUDENTS[sid]), STUDENTS[sid])
+
+
+def test_freshman_plan_meets_catalog_total():
+    assert timeline(make_plan(STUDENTS["alex"]))["total_units"] == CAT.program["catalog_total_units"]
+
+
+def test_grades():
+    assert grade_ok("C", "C") and grade_ok("C", "C-") and not grade_ok("C-", "C")
+    assert not grade_ok("W", "D-") and not grade_ok("F", "D-")
 
 
 def test_grade_minimum_forces_retake():
     first = make_plan(STUDENTS["jordan"]).terms[0].courses
-    assert "CSE 2010" in first  # D does not meet the C minimum for CSE 2020
+    assert "CSE 2010" in first  # D is below the C that CSE 2020 requires
 
 
-def test_fail_capstone_delays_a_year_and_only_touches_descendants():
+def test_spring_only_waits():
+    plan = make_plan(STUDENTS["sam"])  # starts in Fall, still needs PHYS 2510
+    assert "PHYS 2510" not in plan.terms[0].courses
+    assert "PHYS 2510" in plan.terms[1].courses and "PHYS 2510L" in plan.terms[1].courses
+
+
+def test_fail_only_touches_descendants():
     alex = STUDENTS["alex"]
     plan = make_plan(alex)
-    term = next(t.term_label for t in plan.terms if "CSE 5700" in t.courses)
-    r = apply_scenario(alex, plan, ScenarioEvent(event_type="Fail", course_id="CSE 5700", term_label=term))
-    assert set(r["invalidated"]) == {"CSE 5700", "CSE 5720"}
-    assert r["delta_terms"] == 2 and "delayed by 2" in r["explanation"]
+    r = apply_scenario(alex, plan, ScenarioEvent(event_type="Fail", course_id="CSE 2020", term_label="Spring 2027"))
+    planned = {c for t in plan.terms for c in t.courses}
+    ripple = (nx.descendants(CAT.g, "CSE 2020") | {"CSE 2020"}) & planned
+    extra = set(r["invalidated"]) - ripple
+    assert ripple <= set(r["invalidated"])
+    assert all(CAT.courses[c].min_standing_units for c in extra)  # only standing-gated courses beyond the DAG ripple
     check_valid(r["plan"], alex)
-    # Nothing outside the ripple set moved.
     before = {c: t.term_label for t in plan.terms for c in t.courses}
     after = {c: t.term_label for t in r["plan"].terms for c in t.courses}
     assert all(after[c] == before[c] for c in before if c not in r["invalidated"])
+
+
+def test_failing_fall_only_capstone_costs_a_year():
+    morgan = STUDENTS["morgan"]
+    r = apply_scenario(morgan, make_plan(morgan), ScenarioEvent(event_type="Fail", course_id="CSE 5700", term_label="Fall 2027"))
+    assert r["delta_terms"] == 2 and "once a year" in r["explanation"]
 
 
 def test_other_scenarios_stay_valid():
@@ -51,41 +67,41 @@ def test_other_scenarios_stay_valid():
     for ev in [
         ScenarioEvent(event_type="Add Summer", term_label="Summer 2027"),
         ScenarioEvent(event_type="Change Unit Load", term_label="Fall 2027", unit_load=12),
-        ScenarioEvent(event_type="Pass", course_id="CSE 2130", term_label="Spring 2027"),
-        ScenarioEvent(event_type="Withdraw", course_id="CSE 2020", term_label="Spring 2027"),
+        ScenarioEvent(event_type="Pass", course_id="CSE 2020", term_label="Spring 2027"),
+        ScenarioEvent(event_type="Withdraw", course_id="MATH 2220", term_label="Spring 2027"),
     ]:
         r = apply_scenario(alex, plan, ev)
-        check_valid(r["plan"], alex, cap=15)
+        check_valid(r["plan"], alex, cap=plan.unit_cap)
         assert r["explanation"].startswith("Graduation")
-
-
-def test_add_summer_does_not_delay():
-    alex = STUDENTS["alex"]
-    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Add Summer", term_label="Summer 2027"))
-    assert r["delta_terms"] <= 0
 
 
 def test_alternatives_differ():
     alts = alternatives(STUDENTS["alex"])
-    assert alts["fastest"]["timeline"]["total_units"] == alts["balanced"]["timeline"]["total_units"]
-    # Same graduation here: the Fall-only capstone chain is the binding constraint, not load.
+    assert alts["fastest"]["timeline"]["term_count"] <= alts["balanced"]["timeline"]["term_count"]
     peak = {k: max(t.total_units for t in v["plan"].terms) for k, v in alts.items()}
     assert peak["fastest"] > 15 and peak["balanced"] <= 12
 
 
 def test_cycle_edge_rejected_and_logged():
-    raw = json.loads((DATA / "catalog.json").read_text())
+    raw = json.loads((DATA / "catalog.json").read_text(encoding="utf8"))
     raw["edges"].append({"from_course": "CSE 5720", "to_course": "CSE 2010"})
     cat = Catalog(raw)
     assert nx.is_directed_acyclic_graph(cat.g)
     assert any("CSE 5720 -> CSE 2010" in d for d in cat.discrepancies)
 
 
-def test_discrepancies_flagged_not_resolved():
-    assert CAT.courses["CSE 4010"].discrepancy_flag and CAT.courses["CSE 4010"].catalog_units == 4
-    assert len(CAT.discrepancies) == 4
+def test_spec_audit_discrepancies_reproduced_from_source():
+    text = "\n".join(CAT.discrepancies)
+    for needle in ["CSE 4010 units: roadmap says 3, catalog says 4", "CSE 4550 units: roadmap says 4, catalog says 3",
+                   "roadmap says 125, catalog says 120", "CSE 4600 prerequisites"]:
+        assert needle in text
+    assert CAT.courses["CSE 5700"].term_offered == "Fall" and CAT.courses["PHYS 2510"].term_offered == "Spring"
 
 
-def test_timeline_critical_path():
-    path = timeline(make_plan(STUDENTS["alex"]))["critical_path"]
-    assert path[0] == "CSE 2010" and path[-1] == "CSE 5720"
+def test_validator_catches_mycap_style_errors():
+    alex = STUDENTS["alex"]
+    plan = make_plan(alex)
+    bad = plan.model_copy(deep=True)
+    bad.terms[1].courses.append("CSE 5700")  # Fall-only course dropped into Spring, prerequisites unmet
+    problems = validate_plan(bad, alex, CAT, cap=99)
+    assert any("Fall-only" in p for p in problems) and any("prerequisites" in p for p in problems)

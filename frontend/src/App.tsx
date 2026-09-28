@@ -172,7 +172,7 @@ export default function App() {
               <div key={c} className={`course ${invalid.has(c) ? 'invalid' : ''}`} title={courses[c]?.title}>
                 <span>{c}</span>
                 <span className="muted">
-                  {courses[c]?.term_offered !== 'Both' && `${courses[c]?.term_offered} only · `}{courses[c]?.catalog_units}u
+                  {['Fall', 'Spring'].includes(courses[c]?.term_offered) && `${courses[c]?.term_offered} only · `}{courses[c]?.catalog_units}u
                   {courses[c]?.discrepancy_flag && <span className="flag" title={`Roadmap says ${courses[c].roadmap_units}u`}> ⚑</span>}
                 </span>
               </div>

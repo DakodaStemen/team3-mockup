@@ -58,3 +58,13 @@ def test_calibration_math():
     y = (rng.uniform(size=60) < raw - 0.3).astype(int)
     r = evaluate(raw, y)
     assert r["brier_calibrated"] < r["brier_raw"] and len(r["table"]["x"]) == 21
+
+
+def test_labeled_queries_match_current_plan():
+    """data/queries.json is labeled against Alex's plan; if the engine changes the plan, relabel."""
+    import json
+    from pathlib import Path
+    from planner.guardrail import validate
+    items = json.loads((Path(__file__).parent.parent / "data" / "queries.json").read_text(encoding="utf8"))
+    bad = [i["query"] for i in items if i["expected"] and validate(ScenarioEvent(**i["expected"]), PLAN)]
+    assert bad == []

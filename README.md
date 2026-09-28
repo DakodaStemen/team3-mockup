@@ -10,7 +10,9 @@ CSE 6550 Project 3 pre-team prototype. Spec: [`docs/spec.docx`](docs/spec.docx).
 # backend (Python 3.12+, uv)
 cd backend
 uv sync
-uv run pytest                                # engine + guardrail tests
+uv run pytest                                # engine, guardrail, and parser tests
+uv run python scripts/ingest.py              # rebuild planner/catalog.json from cached sources (--refresh to re-download)
+uv run python scripts/results.py             # write results/ (pathway quality, scenario sweep, bottlenecks)
 uv run uvicorn planner.api:app --port 8000
 
 # frontend
@@ -24,6 +26,31 @@ uv run python scripts/calibrate.py           # fits confidence calibration -> ba
 ```
 
 Without Ollama running, NL queries are **escalated** to human review. The engine is never called with a guess.
+
+## Data
+
+These come from public CSUSB pages. No login is involved, `robots.txt` is checked, requests are 2s apart, and raw copies are kept in `backend/data/raw/`:
+
+| Source | Used for |
+|---|---|
+| catalog.csusb.edu `coursesaz/{cse,math,phys}` | units, titles, prerequisite text (the catalog is authoritative) |
+| catalog.csusb.edu BS Computer Science page | degree requirements: required courses, choose-1 AI group, 12 elective units, 120 total |
+| csusb.edu freshman + transfer roadmap PDFs | term offerings and the recommended sequence (used as the expected pathways) |
+
+`scripts/ingest.py` parses all of this into `backend/planner/catalog.json`: 63 courses, 69 prerequisite edges with AND/OR groups, grade minimums, corequisites and standing, plus requirement groups and the roadmaps. Every catalog-vs-roadmap disagreement it finds is logged. From the source alone it reproduces the spec's audit (CSE 4010 and CSE 4550 units, 125 vs 120 total units, CSE 4600 prerequisites) and finds 7 more.
+
+Datasets for tests and results:
+- `planner/students.json`: 6 synthetic profiles (freshman, transfer, retake, missed Spring-only course, part-time, senior).
+- `data/queries.json`: 45 labeled natural-language queries (scenario, ambiguous, off-topic, one prompt injection) for `calibrate.py`.
+- `data/labeled_records.json`: 80 good and deliberately broken catalog records, labeled with the defect, for a future intake guardrail.
+
+## Results
+
+`backend/results/summary.md` holds the latest run. What it measures:
+- **Pathway quality** against the official roadmaps: precision and recall per term, and how many terms each course lands from where the roadmap puts it.
+- **Roadmap audit**: the official roadmaps checked against catalog rules.
+- **Scenario sweep**: 282 what-if runs.
+- **Bottleneck analysis**: the priority score vs betweenness centrality vs the delay actually measured when a course is failed.
 
 ## The 8 required capabilities
 
@@ -46,14 +73,16 @@ Without Ollama running, NL queries are **escalated** to human review. The engine
 
 ```
 backend/planner/  models.py  graph.py  engine.py  guardrail.py  api.py  catalog.json  students.json
-backend/tests/    test_engine.py  test_guardrail.py
-backend/scripts/  calibrate.py
+backend/tests/    test_engine.py  test_guardrail.py  test_ingest.py
+backend/scripts/  ingest.py  results.py  calibrate.py
+backend/data/     raw/  queries.json  labeled_records.json
+backend/results/  summary.md  *.json  scenario_runs.csv
 frontend/src/     App.tsx  index.css
 ```
 
 ## Known limits / deferred
 
-- `catalog.json` is a **hand-seeded, partly illustrative** subset modeled on public CSUSB pages. Verify it against catalog.csusb.edu; the scraper is deferred.
-- In this seed data, CSE 5700 and CSE 5720 are both Fall-only. That chain decides graduation, so "fastest" and "balanced" end in the same term and differ only in load.
-- Deferred until needed: SQLite persistence, MLflow, P@K metrics, transcript PDF parsing, intake-record guardrail (`MalformedRecordCheck`).
+- Only the BS CS program is ingested. Courses that aren't on a roadmap have `Unknown` term offering: the planner allows them and warns.
+- Upper-division GE is assumed to need 60 units. Prerequisites outside the program (CSE 1250, MATH 1401/1403) are treated as placement.
+- Deferred until needed: SQLite persistence, MLflow (results are plain CSV/JSON for now), transcript PDF parsing, and the intake-record guardrail (`MalformedRecordCheck`; its labeled data is ready).
 - Guardrail thresholds of 0.90 / 0.60 are placeholders until `calibrate.py` runs on real model output.

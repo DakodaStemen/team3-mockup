@@ -1,0 +1,492 @@
+[
+ {
+  "course": "CSE 2020",
+  "priority": 22,
+  "out_degree": 20,
+  "depth": 2,
+  "descendants": 26,
+  "betweenness": 0.0148,
+  "mean_delay_when_failed": 0.5,
+  "fail_runs": 2
+ },
+ {
+  "course": "MATH 2210",
+  "priority": 11,
+  "out_degree": 7,
+  "depth": 4,
+  "descendants": 18,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 2,
+  "fail_runs": 1
+ },
+ {
+  "course": "CSE 2010",
+  "priority": 8,
+  "out_degree": 5,
+  "depth": 3,
+  "descendants": 37,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 0.5,
+  "fail_runs": 2
+ },
+ {
+  "course": "MATH 2220",
+  "priority": 8,
+  "out_degree": 5,
+  "depth": 3,
+  "descendants": 12,
+  "betweenness": 0.0002,
+  "mean_delay_when_failed": 2,
+  "fail_runs": 1
+ },
+ {
+  "course": "CSE 2130",
+  "priority": 6,
+  "out_degree": 4,
+  "depth": 2,
+  "descendants": 8,
+  "betweenness": 0.0012,
+  "mean_delay_when_failed": 1.667,
+  "fail_runs": 3
+ },
+ {
+  "course": "MATH 2310",
+  "priority": 6,
+  "out_degree": 4,
+  "depth": 2,
+  "descendants": 7,
+  "betweenness": 0.0041,
+  "mean_delay_when_failed": 1.667,
+  "fail_runs": 3
+ },
+ {
+  "course": "CSE 3100",
+  "priority": 5,
+  "out_degree": 3,
+  "depth": 2,
+  "descendants": 6,
+  "betweenness": 0.0028,
+  "mean_delay_when_failed": 1.25,
+  "fail_runs": 4
+ },
+ {
+  "course": "MATH 2372",
+  "priority": 5,
+  "out_degree": 2,
+  "depth": 3,
+  "descendants": 34,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 1,
+  "fail_runs": 1
+ },
+ {
+  "course": "PHYS 2500",
+  "priority": 5,
+  "out_degree": 3,
+  "depth": 2,
+  "descendants": 3,
+  "betweenness": 0.0002,
+  "mean_delay_when_failed": 1,
+  "fail_runs": 3
+ },
+ {
+  "course": "CSE 4010",
+  "priority": 4,
+  "out_degree": 3,
+  "depth": 1,
+  "descendants": 3,
+  "betweenness": 0.0035,
+  "mean_delay_when_failed": 1.25,
+  "fail_runs": 4
+ },
+ {
+  "course": "CSE 4310",
+  "priority": 3,
+  "out_degree": 1,
+  "depth": 1,
+  "descendants": 1,
+  "betweenness": 0.0018,
+  "mean_delay_when_failed": 0.75,
+  "fail_runs": 4
+ },
+ {
+  "course": "CSE 5720",
+  "priority": 3,
+  "out_degree": 1,
+  "depth": 1,
+  "descendants": 1,
+  "betweenness": 0.0009,
+  "mean_delay_when_failed": 1.333,
+  "fail_runs": 6
+ },
+ {
+  "course": "MATH 2265",
+  "priority": 3,
+  "out_degree": 2,
+  "depth": 1,
+  "descendants": 2,
+  "betweenness": 0.0006,
+  "mean_delay_when_failed": 0.667,
+  "fail_runs": 3
+ },
+ {
+  "course": "PHYS 2510",
+  "priority": 3,
+  "out_degree": 1,
+  "depth": 1,
+  "descendants": 1,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 0.75,
+  "fail_runs": 4
+ },
+ {
+  "course": "CSE 4200",
+  "priority": 2,
+  "out_degree": 1,
+  "depth": 1,
+  "descendants": 1,
+  "betweenness": 0.0018,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 4600",
+  "priority": 2,
+  "out_degree": 1,
+  "depth": 1,
+  "descendants": 1,
+  "betweenness": 0.0012,
+  "mean_delay_when_failed": 0.5,
+  "fail_runs": 4
+ },
+ {
+  "course": "CSE 5000",
+  "priority": 2,
+  "out_degree": 1,
+  "depth": 1,
+  "descendants": 1,
+  "betweenness": 0.0009,
+  "mean_delay_when_failed": 0.4,
+  "fail_runs": 5
+ },
+ {
+  "course": "CSE 5350",
+  "priority": 2,
+  "out_degree": 1,
+  "depth": 1,
+  "descendants": 1,
+  "betweenness": 0.0018,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "PHYS 2500L",
+  "priority": 2,
+  "out_degree": 1,
+  "depth": 1,
+  "descendants": 1,
+  "betweenness": 0.0001,
+  "mean_delay_when_failed": 0,
+  "fail_runs": 3
+ },
+ {
+  "course": "CSE 4100",
+  "priority": 1,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 0.6,
+  "fail_runs": 5
+ },
+ {
+  "course": "CSE 4880",
+  "priority": 1,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 1.667,
+  "fail_runs": 6
+ },
+ {
+  "course": "CSE 5250",
+  "priority": 1,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 1,
+  "fail_runs": 5
+ },
+ {
+  "course": "CSE 5700",
+  "priority": 1,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 1.333,
+  "fail_runs": 6
+ },
+ {
+  "course": "PHYS 2510L",
+  "priority": 1,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 0.25,
+  "fail_runs": 4
+ },
+ {
+  "course": "CSE 4050",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 0.4,
+  "fail_runs": 5
+ },
+ {
+  "course": "CSE 4160",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 4400",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 0.4,
+  "fail_runs": 5
+ },
+ {
+  "course": "CSE 4410",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 4500",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 4550",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 0.5,
+  "fail_runs": 4
+ },
+ {
+  "course": "CSE 4560",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 4610",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 5010",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 5100",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 5120",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 0.4,
+  "fail_runs": 5
+ },
+ {
+  "course": "CSE 5140",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 5150",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 5160",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 5200",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 5210",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 5360",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 0.4,
+  "fail_runs": 5
+ },
+ {
+  "course": "CSE 5410",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 5420",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 5430",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 5460",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 0,
+  "fail_runs": 1
+ },
+ {
+  "course": "CSE 5500",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": 0.4,
+  "fail_runs": 5
+ },
+ {
+  "course": "CSE 5510",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 5800",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ },
+ {
+  "course": "CSE 5940",
+  "priority": 0,
+  "out_degree": 0,
+  "depth": 0,
+  "descendants": 0,
+  "betweenness": 0.0,
+  "mean_delay_when_failed": null,
+  "fail_runs": 0
+ }
+]

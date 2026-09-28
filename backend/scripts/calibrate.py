@@ -8,60 +8,29 @@ Writes backend/calibration.json, which guardrail.calibrate() picks up automatica
 """
 import json
 import sys
+from pathlib import Path
 
 import numpy as np
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import brier_score_loss
 
-sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from planner.engine import make_plan  # noqa: E402
 from planner.graph import load_students  # noqa: E402
-from planner.guardrail import CALIBRATION, llm_classify  # noqa: E402
+from planner.guardrail import CALIBRATION, OLLAMA_MODEL, llm_classify  # noqa: E402
 
-F, S = "Fail", "Pass"
-LABELED = [  # (query, expected (event_type, course_id, term_label, unit_load) or None if not a scenario)
-    ("What if I fail CSE 2020 in spring 2027?", (F, "CSE 2020", "Spring 2027", None)),
-    ("I think I'm going to fail CS II this spring", (F, "CSE 2020", "Spring 2027", None)),
-    ("what happens if I flunk discrete structures", (F, "CSE 2130", "Spring 2027", None)),
-    ("If I don't pass CSE 3100 in Fall 2027 how bad is it?", (F, "CSE 3100", "Fall 2027", None)),
-    ("fail capstone 1", (F, "CSE 5700", "Fall 2029", None)),
-    ("What if I fail Capstone Project I in Fall 2029", (F, "CSE 5700", "Fall 2029", None)),
-    ("suppose I fail calculus 1 my first semester", (F, "MATH 2110", "Fall 2026", None)),
-    ("I might fail physics 2 in spring 2028", (F, "PHYS 2510", "Spring 2028", None)),
-    ("what if CSE 4550 doesn't go well in fall 2028 and I fail", (F, "CSE 4550", "Fall 2028", None)),
-    ("fail operating systems fall 2027", (F, "CSE 4600", "Fall 2027", None)),
-    ("What if I withdraw from CSE 2020 in Spring 2027?", ("Withdraw", "CSE 2020", "Spring 2027", None)),
-    ("I want to drop computer organization in fall 2027", ("Withdraw", "CSE 3300", "Fall 2027", None)),
-    ("withdraw from theory of computation spring 2028", ("Withdraw", "CSE 4200", "Spring 2028", None)),
-    ("W in databases fall 2028?", ("Withdraw", "CSE 4700", "Fall 2028", None)),
-    ("What if I test out of CSE 2130 in spring 2027", (S, "CSE 2130", "Spring 2027", None)),
-    ("I got credit by exam for calc 2 in spring 2027", (S, "MATH 2120", "Spring 2027", None)),
-    ("pretend I already passed linear algebra fall 2027", (S, "MATH 2250", "Fall 2027", None)),
-    ("What if I take summer classes in 2027?", ("Add Summer", None, "Summer 2027", None)),
-    ("add a summer 2028 term", ("Add Summer", None, "Summer 2028", None)),
-    ("can I speed things up with summer school next year (2027)", ("Add Summer", None, "Summer 2027", None)),
-    ("what if I only take 12 units starting fall 2027", ("Change Unit Load", None, "Fall 2027", 12)),
-    ("I need to work part time, 9 units from spring 2028", ("Change Unit Load", None, "Spring 2028", 9)),
-    ("bump me to 18 units per term from fall 2027", ("Change Unit Load", None, "Fall 2027", 18)),
-    ("go full time 15 units starting spring 2027", ("Change Unit Load", None, "Spring 2027", 15)),
-    ("What's the best pizza near campus?", None),
-    ("who teaches CSE 2020?", None),
-    ("is CSE 5160 a hard class?", None),
-    ("when does registration open", None),
-    ("can you write my essay", None),
-    ("what is my GPA", None),
-]
+QUERIES = Path(__file__).parent.parent / "data" / "queries.json"  # labeled against Alex's plan
 
 
-def correct(out, expected) -> bool:
+def correct(out, expected: dict | None) -> bool:
     if expected is None:
         return out.intent == "unsupported"
     e = out.event
     if out.intent != "scenario" or e is None:
         return False
-    return (e.event_type, e.course_id, e.term_label, e.unit_load) == expected or (
-        expected[0] != "Change Unit Load" and (e.event_type, e.course_id, e.term_label) == expected[:3])
+    keys = ["event_type", "course_id", "term_label"] + (["unit_load"] if expected["event_type"] == "Change Unit Load" else [])
+    return all(getattr(e, k) == expected[k] for k in keys)
 
 
 def ece(prob: np.ndarray, y: np.ndarray, bins: int = 10) -> float:
@@ -84,7 +53,9 @@ def evaluate(raw: np.ndarray, y: np.ndarray) -> dict:
 if __name__ == "__main__":
     plan = make_plan(load_students()["alex"])
     raw, y = [], []
-    for q, expected in LABELED:
+    labeled = json.loads(QUERIES.read_text(encoding="utf8"))
+    for item in labeled:
+        q, expected = item["query"], item["expected"]
         try:
             out = llm_classify(q, plan)
         except Exception as e:
@@ -96,4 +67,11 @@ if __name__ == "__main__":
     print(f"accuracy {np.mean(y):.2f} | Brier raw {r['brier_raw']:.3f} -> {r['brier_calibrated']:.3f}"
           f" | ECE raw {r['ece_raw']:.3f} -> {r['ece_calibrated']:.3f} (recalibrate if > 0.02)")
     CALIBRATION.write_text(json.dumps(r["table"]))
+    out_dir = Path(__file__).parent.parent / "results"
+    out_dir.mkdir(exist_ok=True)
+    (out_dir / "calibration.json").write_text(json.dumps({
+        "model": OLLAMA_MODEL, "n": len(y), "accuracy": float(np.mean(y)),
+        **{k: v for k, v in r.items() if k != "table"},
+        "runs": [{"query": i["query"], "raw_confidence": c, "correct": bool(k)} for i, c, k in zip(labeled, raw, y)],
+    }, indent=1))
     print(f"wrote {CALIBRATION}")

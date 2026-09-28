@@ -1,20 +1,24 @@
 """Pydantic models shared by the engine, API, and guardrail layer (spec: Data models)."""
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 TermOffered = Literal["Fall", "Spring", "Both", "Unknown"]
 EventType = Literal["Pass", "Fail", "Withdraw", "Add Summer", "Change Unit Load"]
 
 
 class Course(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     id: str
     title: str = ""
     catalog_units: int
     roadmap_units: int | None = None
     discrepancy_flag: bool = False
-    term_offered: TermOffered = "Both"
+    term_offered: TermOffered = "Unknown"
     requirement_groups: list[str] = []
+    min_standing_units: int = 0  # e.g. 90 for "Senior standing"
+    placeholder: bool = False  # GE / free-elective slot rather than a specific course
+    prereq_text: str = ""
 
     @model_validator(mode="after")
     def _flag(self):
@@ -24,10 +28,13 @@ class Course(BaseModel):
 
 
 class PrerequisiteEdge(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     from_course: str
     to_course: str
-    condition: Literal["AND", "OR"] = "AND"  # all AND edges required; at least one OR edge required
-    grade_minimum: str = "D"
+    condition: Literal["AND", "OR"] = "AND"  # OR = one of several alternatives in the same group
+    group: int = 0  # groups are ANDed; edges within a group are ORed
+    grade_minimum: str = "D-"
+    concurrent_ok: bool = False  # corequisite / "pre- or co-requisite": same term is fine
 
 
 class StudentProfile(BaseModel):
@@ -35,9 +42,12 @@ class StudentProfile(BaseModel):
     name: str
     completed_courses: dict[str, str] = {}  # course_id -> letter grade
     in_progress_courses: list[str] = []
-    remaining_requirement_groups: list[str] = []
+    remaining_requirement_groups: list[str] | None = None  # None = every program group
+    choices: dict[str, list[str]] = {}  # requirement group -> chosen courses (else engine picks)
+    transfer_units: int = 0  # units counted toward standing but not tied to catalog courses
     unit_load_preference: int = 15
     start_term: str = "Fall 2026"
+    notes: str = ""
 
 
 class TermPlan(BaseModel):

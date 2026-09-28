@@ -4,13 +4,15 @@ import networkx as nx
 from .graph import Catalog, load_catalog
 from .models import Plan, ScenarioEvent, StudentProfile, TermPlan
 
-GRADES = "FDCBA"
+GRADE_POINTS = {"A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0, "B-": 2.7, "C+": 2.3, "C": 2.0, "C-": 1.7,
+                "D+": 1.3, "D": 1.0, "D-": 0.7, "F": 0.0}
 SUMMER_CAP = 8
 SEASON_ORDER = {"Spring": 0, "Summer": 1, "Fall": 2}
 
 
 def grade_ok(grade: str, minimum: str) -> bool:
-    return GRADES.index(grade[0].upper()) >= GRADES.index(minimum[0].upper())
+    """False for non-grades like W or NC."""
+    return GRADE_POINTS.get(grade.upper(), -1) >= GRADE_POINTS[minimum.upper()]
 
 
 def term_key(label: str) -> tuple[int, int]:
@@ -28,25 +30,31 @@ def next_label(label: str, summers: list[str]) -> str:
     return f"Fall {y}"
 
 
-def baseline(profile: StudentProfile, cat: Catalog, credited: list[str] = ()) -> tuple[dict[str, str], set[str]]:
-    """Return (satisfied course -> grade, courses still to schedule)."""
-    required = {c.id for c in cat.courses.values() if set(c.requirement_groups) & set(profile.remaining_requirement_groups)}
-    sat = {}
+def baseline(profile: StudentProfile, cat: Catalog, credited: list[str] = ()) -> tuple[dict[str, str], set[str], int]:
+    """Return (satisfied course -> grade, courses still to schedule, units counted toward standing)."""
+    sat = {c: "A" for c in cat.entry_assumed}  # entry-level placement assumptions
+    earned = profile.transfer_units
     for cid, grade in profile.completed_courses.items():
         mins = [d["edge"].grade_minimum for _, _, d in cat.g.out_edges(cid, data=True)]
-        # A grade below what a downstream course requires means a retake (e.g. D in CSE 2010).
-        if grade_ok(grade, "D") and all(grade_ok(grade, m) for m in mins):
+        # A grade below what a downstream course requires means a retake (e.g. D in CSE 2010 for CSE 2020).
+        if grade_ok(grade, "D-") and all(grade_ok(grade, m) for m in mins):
             sat[cid] = grade
-    sat |= {c: "A" for c in profile.in_progress_courses}  # assume in-progress courses pass
-    sat |= {c: "A" for c in credited}
-    return sat, required - set(sat)
+            earned += cat.units(cid)
+    for c in [*profile.in_progress_courses, *credited]:  # in-progress courses are assumed to pass
+        sat[c] = "A"
+        earned += cat.units(c)
+    done = set(sat) - cat.entry_assumed
+    return sat, cat.required(profile, done) - done, earned
 
 
-def prereqs_met(cid: str, sat: dict[str, str], cat: Catalog) -> bool:
-    edges = cat.prereqs(cid)
-    ok = lambda e: e.from_course in sat and grade_ok(sat[e.from_course], e.grade_minimum)
-    ors = [e for e in edges if e.condition == "OR"]
-    return all(ok(e) for e in edges if e.condition == "AND") and (not ors or any(map(ok, ors)))
+def prereqs_met(cid: str, sat: dict[str, str], current: set[str], cat: Catalog) -> bool:
+    """Every prerequisite group needs one satisfied alternative; corequisites may be in the current term."""
+    groups: dict[int, bool] = {}
+    for e in cat.prereqs(cid):
+        ok = (e.from_course in sat and grade_ok(sat[e.from_course], e.grade_minimum)) or (
+            e.concurrent_ok and e.from_course in current)
+        groups[e.group] = groups.get(e.group, False) or ok
+    return all(groups.values())
 
 
 def offered(cid: str, label: str, cat: Catalog) -> bool:
@@ -57,13 +65,14 @@ def offered(cid: str, label: str, cat: Catalog) -> bool:
 
 
 def place(terms: list[TermPlan], todo: set[str], start: int, cap: int, summers: list[str],
-          sat: dict[str, str], first_label: str, cat: Catalog) -> list[TermPlan]:
+          sat: dict[str, str], first_label: str, cat: Catalog, earned: int = 0) -> list[TermPlan]:
     """Constrained greedy topological sort: fill terms[start:] (and new terms) with todo."""
     terms = [t.model_copy(deep=True) for t in terms]
     todo = set(todo)
     sat = dict(sat)
     for t in terms[:start]:
         sat |= {c: "A" for c in t.courses}  # planned courses assumed to meet grade minimums
+        earned += sum(map(cat.units, t.courses))
     i = start
     while todo:
         if i - start > 30:
@@ -72,36 +81,79 @@ def place(terms: list[TermPlan], todo: set[str], start: int, cap: int, summers: 
             label = next_label(terms[-1].term_label, summers) if terms else first_label
             terms.append(TermPlan(term_label=label))
         t = terms[i]
-        t.warnings = []
+        warnings = {}
         term_cap = SUMMER_CAP if t.term_label.startswith("Summer") else cap
-        used = sum(cat.courses[c].catalog_units for c in t.courses)
-        ready = sorted((c for c in todo if prereqs_met(c, sat, cat)), key=lambda c: (-cat.priority[c], c))
-        for c in ready:
-            units = cat.courses[c].catalog_units
-            if not offered(c, t.term_label, cat):
-                t.warnings.append(f"{c} is {cat.courses[c].term_offered}-only; waiting for next offering.")
-            elif used + units <= term_cap:
-                t.courses.append(c)
-                used += units
-                todo.discard(c)
+        used = sum(map(cat.units, t.courses))
+        added = True
+        while added:  # repeat so a corequisite placed this term can unlock its partner
+            added = False
+            ready = sorted((c for c in todo if earned >= cat.courses[c].min_standing_units
+                            and prereqs_met(c, sat, set(t.courses), cat)), key=lambda c: (-cat.priority[c], c))
+            for c in ready:
+                units = cat.units(c)
+                if not offered(c, t.term_label, cat):
+                    warnings[f"{c} is {cat.courses[c].term_offered}-only; waiting for next offering."] = 1
+                elif c in todo and used + units <= term_cap:
+                    t.courses.append(c)
+                    used += units
+                    todo.discard(c)
+                    added = True
+                    # Pull corequisite partners (e.g. a lab) into the same term before lower-priority courses.
+                    for d in sorted(cat.g.successors(c)):
+                        if (d in todo and cat.g.edges[c, d]["edge"].concurrent_ok and offered(d, t.term_label, cat)
+                                and earned >= cat.courses[d].min_standing_units
+                                and prereqs_met(d, sat, set(t.courses), cat) and used + cat.units(d) <= term_cap):
+                            t.courses.append(d)
+                            used += cat.units(d)
+                            todo.discard(d)
         for c in t.courses:
             if cat.courses[c].term_offered == "Unknown":
-                t.warnings.append(f"{c} term offering unknown; confirm with department.")
+                warnings[f"{c} term offering unknown; confirm with department."] = 1
+        t.warnings = list(warnings)
         sat |= {c: "A" for c in t.courses}
+        earned += used
         i += 1
     while terms and not terms[-1].courses:
         terms.pop()
     for t in terms:
-        t.total_units = sum(cat.courses[c].catalog_units for c in t.courses)
+        t.total_units = sum(map(cat.units, t.courses))
     return terms
 
 
 def make_plan(profile: StudentProfile, unit_cap: int | None = None, cat: Catalog | None = None) -> Plan:
     cat = cat or load_catalog()
     cap = unit_cap or profile.unit_load_preference
-    sat, todo = baseline(profile, cat)
+    sat, todo, earned = baseline(profile, cat)
     return Plan(student_id=profile.id, unit_cap=cap,
-                terms=place([], todo, 0, cap, [], sat, profile.start_term, cat))
+                terms=place([], todo, 0, cap, [], sat, profile.start_term, cat, earned))
+
+
+def validate_plan(plan: Plan, profile: StudentProfile, cat: Catalog | None = None,
+                  cap: int | None = None, complete: bool = True) -> list[str]:
+    """Check any plan (engine-made, hand-edited, or an official roadmap) against catalog rules."""
+    cat = cat or load_catalog()
+    sat, todo, earned = baseline(profile, cat, plan.credited)
+    seen, problems = set(sat), []
+    for t in plan.terms:
+        here = set(t.courses)
+        for c in t.courses:
+            if c not in cat.courses:
+                problems.append(f"{t.term_label}: {c} is not in the catalog")
+                continue
+            if not offered(c, t.term_label, cat):
+                problems.append(f"{t.term_label}: {c} is {cat.courses[c].term_offered}-only")
+            if earned < cat.courses[c].min_standing_units:
+                problems.append(f"{t.term_label}: {c} needs {cat.courses[c].min_standing_units} units, has {earned}")
+            if not prereqs_met(c, {s: "A" for s in seen} | sat, here, cat):
+                problems.append(f"{t.term_label}: {c} prerequisites not met")
+        units = max(t.total_units, sum(map(cat.units, t.courses)))  # stated total covers unnamed slots
+        if units > (cap or plan.unit_cap):
+            problems.append(f"{t.term_label}: {units} units exceeds cap {cap or plan.unit_cap}")
+        seen |= here
+        earned += units
+    if complete and (missing := todo - seen):
+        problems.append(f"never scheduled: {', '.join(sorted(missing))}")
+    return problems
 
 
 def timeline(plan: Plan, cat: Catalog | None = None) -> dict:
@@ -174,8 +226,18 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
         invalid = {c for t in terms[start:] for c in t.courses}
         del terms[start:]
 
-    sat, _ = baseline(profile, cat, new.credited)
-    new.terms = place(terms, invalid, start, new.unit_cap, new.summers, sat, profile.start_term, cat)
+    sat, _, earned = baseline(profile, cat, new.credited)
+    # Losing units can also break class-standing gates (e.g. senior standing) on kept later courses.
+    run = earned
+    for i, t in enumerate(terms):
+        if i >= start:
+            lost = {c for c in t.courses if run < cat.courses[c].min_standing_units}
+            lost |= {d for c in lost for d in nx.descendants(cat.g, c)} & {c for u in terms[i:] for c in u.courses}
+            invalid |= lost
+            for u in terms[i:]:
+                u.courses = [c for c in u.courses if c not in lost]
+        run += sum(map(cat.units, t.courses))
+    new.terms = place(terms, invalid, start, new.unit_cap, new.summers, sat, profile.start_term, cat, earned)
     before, after = timeline(plan, cat), timeline(new, cat)
     delta = _ordinal(after["graduation_term"]) - _ordinal(before["graduation_term"]) if new.terms and plan.terms else 0
 

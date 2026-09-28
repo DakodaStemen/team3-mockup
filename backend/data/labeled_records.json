@@ -1,0 +1,882 @@
+[
+ {
+  "record": {
+   "id": "MATH 1401",
+   "title": "Accelerated Preparation for Calculus",
+   "catalog_units": 4,
+   "term_offered": "Unknown",
+   "prereq_text": ""
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "MATH 1401",
+   "title": "Accelerated Preparation for Calculus",
+   "catalog_units": 4,
+   "term_offered": "Unknown",
+   "prereq_text": "MATH 1401 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 5210",
+   "title": "Digital System Design",
+   "catalog_units": 4,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 4010"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE52?",
+   "title": "Digital System Design",
+   "catalog_units": 4,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 4010"
+  },
+  "malformed": true,
+  "defect": "bad_id"
+ },
+ {
+  "record": {
+   "id": "CSE 5100",
+   "title": "Advanced Computer Architecture",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 4010"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5100",
+   "title": "Advanced Computer Architecture",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 5100 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 5510",
+   "title": "Advanced Bioinformatics II: Numerical Modeling",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 5350"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5510",
+   "title": "Advanced Bioinformatics II: Numerical Modeling",
+   "catalog_units": 3,
+   "term_offered": "fall-ish",
+   "prereq_text": "CSE 5350"
+  },
+  "malformed": true,
+  "defect": "term"
+ },
+ {
+  "record": {
+   "id": "CSE 5150",
+   "title": "Automated Reasoning",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 4310"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5150",
+   "title": "Automated Reasoning",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 7907"
+  },
+  "malformed": true,
+  "defect": "unknown_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 4560",
+   "title": "Embedded Systems",
+   "catalog_units": 4,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 3100 and CSE 2130"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 4560",
+   "title": "Embedded Systems",
+   "catalog_units": 4,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 4560 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "PHYS 2500",
+   "title": "General Physics I",
+   "catalog_units": 4,
+   "term_offered": "Both",
+   "prereq_text": "MATH 2210"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "PHYS 2500",
+   "title": "General Physics I",
+   "catalog_units": 4,
+   "term_offered": "Both",
+   "prereq_text": "PHYS 2500 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 4400",
+   "title": "Game Design",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 4400",
+   "title": "Game Design",
+   "catalog_units": 12,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": true,
+  "defect": "units"
+ },
+ {
+  "record": {
+   "id": "CSE 5250",
+   "title": "Parallel Algorithms and Programming",
+   "catalog_units": 3,
+   "term_offered": "Spring",
+   "prereq_text": "CSE 4010"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5250",
+   "title": "Parallel Algorithms and Programming",
+   "catalog_units": 3,
+   "term_offered": "Spring",
+   "prereq_text": "CSE 5250 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 5160",
+   "title": "Machine Learning",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2020 and MATH 2265"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5160",
+   "title": "Machine Learning",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 5160 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 2010",
+   "title": "Computer Science I",
+   "catalog_units": 4,
+   "term_offered": "Both",
+   "prereq_text": "CSE 1250 or Instructor consent"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 2010",
+   "title": "",
+   "catalog_units": 4,
+   "term_offered": "Both",
+   "prereq_text": "CSE 1250 or Instructor consent"
+  },
+  "malformed": true,
+  "defect": "empty_title"
+ },
+ {
+  "record": {
+   "id": "CSE 3100",
+   "title": "Digital Logic",
+   "catalog_units": 4,
+   "term_offered": "Both",
+   "prereq_text": "CSE 2010 and MATH 2372"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 3100",
+   "title": "Digital Logic",
+   "catalog_units": 0,
+   "term_offered": "Both",
+   "prereq_text": "CSE 2010 and MATH 2372"
+  },
+  "malformed": true,
+  "defect": "units"
+ },
+ {
+  "record": {
+   "id": "CSE 5360",
+   "title": "Data Visualization",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2010 or instructor consent"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5360",
+   "title": "Data Visualization",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 5360 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 5720",
+   "title": "Database Systems",
+   "catalog_units": 3,
+   "term_offered": "Fall",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5720",
+   "title": "Database Systems",
+   "catalog_units": 3,
+   "term_offered": "Fall",
+   "prereq_text": "CSE 5720 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 4050",
+   "title": "Web Application Development",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 4050",
+   "title": "Web Application Development",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 7600"
+  },
+  "malformed": true,
+  "defect": "unknown_prereq"
+ },
+ {
+  "record": {
+   "id": "PHYS 2510L",
+   "title": "General Physics II Lab",
+   "catalog_units": 1,
+   "term_offered": "Spring",
+   "prereq_text": "MATH 2220 , PHYS 2500 , PHYS 2500L"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "PHYS 2510L",
+   "title": "General Physics II Lab",
+   "catalog_units": 1,
+   "term_offered": "fall-ish",
+   "prereq_text": "MATH 2220 , PHYS 2500 , PHYS 2500L"
+  },
+  "malformed": true,
+  "defect": "term"
+ },
+ {
+  "record": {
+   "id": "MATH 2372",
+   "title": "Discrete Mathematics",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "prereq_text": "Completion of the Quantitative Reasoning General Education requirement"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "MATH 2372",
+   "title": "Discrete Mathematics",
+   "catalog_units": 3,
+   "term_offered": "Winter",
+   "prereq_text": "Completion of the Quantitative Reasoning General Education requirement"
+  },
+  "malformed": true,
+  "defect": "term"
+ },
+ {
+  "record": {
+   "id": "CSE 5350",
+   "title": "Numerical Computation",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2020 and MATH 2310"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5350",
+   "title": "Numerical Computation",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 5350 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 4410",
+   "title": "Game Programming",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 4410",
+   "title": "Game Programming",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 4410 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 5010",
+   "title": "Introduction to Theory of Computation",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 5000 or consent of instructor"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5010",
+   "title": "Introduction to Theory of Computation",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 5010 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 4600",
+   "title": "Operating Systems",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "prereq_text": "CSE 2020 and CSE 2130"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 4600",
+   "title": "Operating Systems",
+   "catalog_units": -3,
+   "term_offered": "Both",
+   "prereq_text": "CSE 2020 and CSE 2130"
+  },
+  "malformed": true,
+  "defect": "units"
+ },
+ {
+  "record": {
+   "id": "CSE 5430",
+   "title": "Deep Learning",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5430",
+   "title": "Deep Learning",
+   "catalog_units": 3,
+   "term_offered": "fall-ish",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": true,
+  "defect": "term"
+ },
+ {
+  "record": {
+   "id": "MATH 2210",
+   "title": "Calculus I",
+   "catalog_units": 4,
+   "term_offered": "Both",
+   "prereq_text": "MATH 1401 or MATH 1403 or satisfactory score on department placement exam"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "MATH 2210",
+   "title": "Calculus I",
+   "catalog_units": 0,
+   "term_offered": "Both",
+   "prereq_text": "MATH 1401 or MATH 1403 or satisfactory score on department placement exam"
+  },
+  "malformed": true,
+  "defect": "units"
+ },
+ {
+  "record": {
+   "id": "PHYS 2500L",
+   "title": "General Physics I Lab",
+   "catalog_units": 1,
+   "term_offered": "Both",
+   "prereq_text": "MATH 2210"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "PHYS 2500L",
+   "title": "General Physics I Lab",
+   "catalog_units": 12,
+   "term_offered": "Both",
+   "prereq_text": "MATH 2210"
+  },
+  "malformed": true,
+  "defect": "units"
+ },
+ {
+  "record": {
+   "id": "CSE 5120",
+   "title": "Introduction to Artificial Intelligence",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE51?",
+   "title": "Introduction to Artificial Intelligence",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": true,
+  "defect": "bad_id"
+ },
+ {
+  "record": {
+   "id": "CSE 5420",
+   "title": "Reinforcement Learning",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2020 and MATH 2265"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5420",
+   "title": "Reinforcement Learning",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 5420 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 1250",
+   "title": "Programming Basics",
+   "catalog_units": 4,
+   "term_offered": "Unknown",
+   "prereq_text": ""
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE12?",
+   "title": "Programming Basics",
+   "catalog_units": 4,
+   "term_offered": "Unknown",
+   "prereq_text": ""
+  },
+  "malformed": true,
+  "defect": "bad_id"
+ },
+ {
+  "record": {
+   "id": "MATH 2220",
+   "title": "Calculus II",
+   "catalog_units": 4,
+   "term_offered": "Both",
+   "prereq_text": "MATH 2210 or MATH 2120Q2S with a grade of C- (1.7) or better"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "MATH 2220",
+   "title": "Calculus II",
+   "catalog_units": 4,
+   "term_offered": "Winter",
+   "prereq_text": "MATH 2210 or MATH 2120Q2S with a grade of C- (1.7) or better"
+  },
+  "malformed": true,
+  "defect": "term"
+ },
+ {
+  "record": {
+   "id": "CSE 4160",
+   "title": "Generative AI and Applications",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2010 and MATH 2210"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 4160",
+   "title": "Generative AI and Applications",
+   "catalog_units": -3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2010 and MATH 2210"
+  },
+  "malformed": true,
+  "defect": "units"
+ },
+ {
+  "record": {
+   "id": "CSE 5000",
+   "title": "Introduction to Formal Languages and Automata Theory",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5000",
+   "title": "Introduction to Formal Languages and Automata Theory",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "prereq_text": "CSE 7981"
+  },
+  "malformed": true,
+  "defect": "unknown_prereq"
+ },
+ {
+  "record": {
+   "id": "MATH 1403",
+   "title": "Preparation for Calculus B",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "MATH 1402"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "MATH 1403",
+   "title": "",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "MATH 1402"
+  },
+  "malformed": true,
+  "defect": "empty_title"
+ },
+ {
+  "record": {
+   "id": "CSE 4100",
+   "title": "Computer Networking and Security",
+   "catalog_units": 3,
+   "term_offered": "Spring",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 4100",
+   "title": "Computer Networking and Security",
+   "catalog_units": -3,
+   "term_offered": "Spring",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": true,
+  "defect": "units"
+ },
+ {
+  "record": {
+   "id": "CSE 5800",
+   "title": "Advanced Database Systems",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 5720"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5800",
+   "title": "Advanced Database Systems",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 7265"
+  },
+  "malformed": true,
+  "defect": "unknown_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 5940",
+   "title": "Topics in Computer Science and Engineering",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2020 or consent of instructor"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5940",
+   "title": "Topics in Computer Science and Engineering",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 7376"
+  },
+  "malformed": true,
+  "defect": "unknown_prereq"
+ },
+ {
+  "record": {
+   "id": "PHYS 2510",
+   "title": "General Physics II",
+   "catalog_units": 4,
+   "term_offered": "Spring",
+   "prereq_text": "MATH 2220 , PHYS 2500"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "PHYS 2510",
+   "title": "",
+   "catalog_units": 4,
+   "term_offered": "Spring",
+   "prereq_text": "MATH 2220 , PHYS 2500"
+  },
+  "malformed": true,
+  "defect": "empty_title"
+ },
+ {
+  "record": {
+   "id": "CSE 4550",
+   "title": "Software Engineering",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 4550",
+   "title": "Software Engineering",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "prereq_text": "CSE 4550 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 2020",
+   "title": "Computer Science II",
+   "catalog_units": 4,
+   "term_offered": "Both",
+   "prereq_text": "CSE 2010 with a grade of C or better and MATH 2372"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 2020",
+   "title": "Computer Science II",
+   "catalog_units": 4,
+   "term_offered": "Both",
+   "prereq_text": "CSE 2020 with a grade of C or better"
+  },
+  "malformed": true,
+  "defect": "self_prereq"
+ },
+ {
+  "record": {
+   "id": "CSE 4310",
+   "title": "Algorithm Analysis",
+   "catalog_units": 3,
+   "term_offered": "Spring",
+   "prereq_text": "CSE 2020 and MATH 2310"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE43?",
+   "title": "Algorithm Analysis",
+   "catalog_units": 3,
+   "term_offered": "Spring",
+   "prereq_text": "CSE 2020 and MATH 2310"
+  },
+  "malformed": true,
+  "defect": "bad_id"
+ },
+ {
+  "record": {
+   "id": "CSE 5460",
+   "title": "Natural Language Processing",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 2020"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "CSE 5460",
+   "title": "Natural Language Processing",
+   "catalog_units": 3,
+   "term_offered": "Unknown",
+   "prereq_text": "CSE 8543"
+  },
+  "malformed": true,
+  "defect": "unknown_prereq"
+ },
+ {
+  "record": {
+   "id": "MATH 2310",
+   "title": "Applied Linear Algebra",
+   "catalog_units": 4,
+   "term_offered": "Both",
+   "prereq_text": "MATH 2210 with a grade of C- or better; and MATH 2220 as a pre- or co-requisite"
+  },
+  "malformed": false,
+  "defect": null
+ },
+ {
+  "record": {
+   "id": "MATH 2310",
+   "title": "Applied Linear Algebra",
+   "catalog_units": 4,
+   "term_offered": "fall-ish",
+   "prereq_text": "MATH 2210 with a grade of C- or better; and MATH 2220 as a pre- or co-requisite"
+  },
+  "malformed": true,
+  "defect": "term"
+ }
+]

@@ -1,0 +1,233 @@
+[
+ {
+  "student": "alex",
+  "roadmap": "freshman",
+  "unit_cap": 15,
+  "terms_plan": 8,
+  "terms_roadmap": 8,
+  "precision_at_term": [
+   0.6,
+   0.5,
+   0.4,
+   0.6,
+   0.2,
+   0.4,
+   0.2,
+   0.4
+  ],
+  "recall_at_term": [
+   0.75,
+   0.5,
+   0.333,
+   0.5,
+   0.2,
+   0.4,
+   0.2,
+   0.4
+  ],
+  "cumulative_recall_at_term": [
+   0.75,
+   0.75,
+   0.714,
+   0.75,
+   0.72,
+   0.8,
+   0.886,
+   0.975
+  ],
+  "mean_precision_at_term": 0.412,
+  "mean_recall_at_term": 0.41,
+  "exact_term_match": 0.524,
+  "mean_abs_displacement_terms": 0.905,
+  "mean_displacement_terms": -0.905,
+  "courses_compared": 21,
+  "validator_problems": []
+ },
+ {
+  "student": "alex",
+  "roadmap": "freshman",
+  "unit_cap": 16,
+  "terms_plan": 8,
+  "terms_roadmap": 8,
+  "precision_at_term": [
+   0.6,
+   0.5,
+   0.4,
+   0.6,
+   0.2,
+   0.4,
+   0.2,
+   0.4
+  ],
+  "recall_at_term": [
+   0.75,
+   0.5,
+   0.333,
+   0.5,
+   0.2,
+   0.4,
+   0.2,
+   0.4
+  ],
+  "cumulative_recall_at_term": [
+   0.75,
+   0.75,
+   0.714,
+   0.75,
+   0.72,
+   0.8,
+   0.886,
+   0.975
+  ],
+  "mean_precision_at_term": 0.412,
+  "mean_recall_at_term": 0.41,
+  "exact_term_match": 0.524,
+  "mean_abs_displacement_terms": 0.905,
+  "mean_displacement_terms": -0.905,
+  "courses_compared": 21,
+  "validator_problems": []
+ },
+ {
+  "student": "alex",
+  "roadmap": "freshman",
+  "unit_cap": 18,
+  "terms_plan": 8,
+  "terms_roadmap": 8,
+  "precision_at_term": [
+   0.667,
+   0.4,
+   0.2,
+   0.5,
+   0.167,
+   0.167,
+   0.75,
+   1.0
+  ],
+  "recall_at_term": [
+   1.0,
+   0.5,
+   0.167,
+   0.5,
+   0.2,
+   0.2,
+   0.6,
+   0.2
+  ],
+  "cumulative_recall_at_term": [
+   1.0,
+   0.875,
+   0.786,
+   0.8,
+   0.8,
+   0.967,
+   0.971,
+   0.975
+  ],
+  "mean_precision_at_term": 0.481,
+  "mean_recall_at_term": 0.421,
+  "exact_term_match": 0.476,
+  "mean_abs_displacement_terms": 1,
+  "mean_displacement_terms": -1,
+  "courses_compared": 21,
+  "validator_problems": []
+ },
+ {
+  "student": "taylor",
+  "roadmap": "transfer",
+  "unit_cap": 15,
+  "terms_plan": 5,
+  "terms_roadmap": 4,
+  "precision_at_term": [
+   0.5,
+   0.75,
+   0.6,
+   0.6,
+   0.0
+  ],
+  "recall_at_term": [
+   0.4,
+   0.6,
+   0.6,
+   0.6,
+   0.0
+  ],
+  "cumulative_recall_at_term": [
+   0.4,
+   0.7,
+   0.8,
+   0.9,
+   0.95
+  ],
+  "mean_precision_at_term": 0.49,
+  "mean_recall_at_term": 0.44,
+  "exact_term_match": 0.727,
+  "mean_abs_displacement_terms": 0.455,
+  "mean_displacement_terms": -0.091,
+  "courses_compared": 11,
+  "validator_problems": []
+ },
+ {
+  "student": "taylor",
+  "roadmap": "transfer",
+  "unit_cap": 17,
+  "terms_plan": 4,
+  "terms_roadmap": 4,
+  "precision_at_term": [
+   0.4,
+   0.6,
+   0.6,
+   0.5
+  ],
+  "recall_at_term": [
+   0.4,
+   0.6,
+   0.6,
+   0.4
+  ],
+  "cumulative_recall_at_term": [
+   0.4,
+   0.7,
+   0.867,
+   0.95
+  ],
+  "mean_precision_at_term": 0.525,
+  "mean_recall_at_term": 0.5,
+  "exact_term_match": 0.636,
+  "mean_abs_displacement_terms": 0.636,
+  "mean_displacement_terms": -0.273,
+  "courses_compared": 11,
+  "validator_problems": []
+ },
+ {
+  "student": "taylor",
+  "roadmap": "transfer",
+  "unit_cap": 18,
+  "terms_plan": 4,
+  "terms_roadmap": 4,
+  "precision_at_term": [
+   0.4,
+   0.6,
+   0.5,
+   0.667
+  ],
+  "recall_at_term": [
+   0.4,
+   0.6,
+   0.6,
+   0.4
+  ],
+  "cumulative_recall_at_term": [
+   0.4,
+   0.7,
+   0.933,
+   0.95
+  ],
+  "mean_precision_at_term": 0.542,
+  "mean_recall_at_term": 0.5,
+  "exact_term_match": 0.636,
+  "mean_abs_displacement_terms": 0.636,
+  "mean_displacement_terms": -0.273,
+  "courses_compared": 11,
+  "validator_problems": []
+ }
+]
