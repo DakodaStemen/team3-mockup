@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { GraphCanvas, lightTheme, darkTheme } from 'reagraph'
 
 type Course = { id: string; title: string; catalog_units: number; roadmap_units: number | null; discrepancy_flag: boolean; term_offered: string; placeholder: boolean }
@@ -20,16 +20,38 @@ const COURSE_EVENTS = ['Fail', 'Withdraw', 'Pass']
 const EVENTS = [...COURSE_EVENTS, 'Add Summer', 'Change Unit Load']
 const CAPS = Array.from({ length: 19 }, (_, i) => i + 3)  // 3..21, the engine's allowed range
 
+const UNREACHABLE = "Can't reach the planner API. Is the backend running on port 8000?"
+
 async function api<T>(path: string, body?: unknown): Promise<T> {
-  const r = await fetch(`/api${path}`, body === undefined ? undefined : {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
-  })
-  if (!r.ok) {
-    const detail = (await r.json().catch(() => ({}))).detail
-    throw new Error(typeof detail === 'string' ? detail : detail ? JSON.stringify(detail) : r.statusText)
+  let r: Response
+  try {
+    r = await fetch(`/api${path}`, body === undefined ? undefined : {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+    })
+  } catch {
+    throw new Error(UNREACHABLE)
   }
-  return r.json()
+  const data = await r.json().catch(() => undefined)
+  if (!r.ok) {
+    // FastAPI sends a string for our 400/422s and a list of {loc, msg} for request validation errors.
+    const detail = data?.detail
+    if (typeof detail === 'string') throw new Error(detail)
+    if (Array.isArray(detail) && detail.length) {
+      const [d] = detail, where = (d.loc ?? []).filter((l: unknown) => l !== 'body').slice(-2).join('.')
+      throw new Error(`${where ? `${where}: ` : ''}${d.msg}${detail.length > 1 ? ` (+${detail.length - 1} more)` : ''}`)
+    }
+    if (r.status === 413) throw new Error('That request is too large for the planner API.')
+    throw new Error(r.status >= 500 ? UNREACHABLE : `${r.status} ${r.statusText}`)
+  }
+  if (data === undefined) throw new Error(UNREACHABLE)  // e.g. the dev server's HTML fallback
+  return data as T
 }
+
+const errorText = (e: unknown) => e instanceof Error ? e.message : String(e)
+
+// Follow the OS theme live, not just at first render.
+const DARK = matchMedia('(prefers-color-scheme: dark)')
+const useDark = () => useSyncExternalStore(cb => { DARK.addEventListener('change', cb); return () => DARK.removeEventListener('change', cb) }, () => DARK.matches)
 
 const describe = (e: Event) => e.event_type === 'Add Summer' ? `Add ${e.term_label}`
   : e.event_type === 'Change Unit Load' ? `${e.unit_load}-unit cap from ${e.term_label}`
@@ -51,7 +73,11 @@ export default function App() {
   const [error, setError] = useState('')
   const [ev, setEv] = useState<Event>({ event_type: 'Fail', course_id: '', term_label: '', unit_load: 12 })
   const [query, setQuery] = useState('What if I fail CSE 2020 in Spring 2027?')
-  const [busy, setBusy] = useState(false)
+  const [actionBusy, setActionBusy] = useState(false)
+  const [loadedKey, setLoadedKey] = useState('')  // which student+cap the shown plan belongs to
+  const planKey = `${sid}:${baseCap ?? ''}`
+  const busy = actionBusy || loadedKey !== planKey || !catalog
+  const generation = useRef(0)  // bumped whenever the saved plan is replaced; late answers for an older plan are dropped
   const scenarioRef = useRef<HTMLDivElement>(null)
 
   const courses = useMemo(() => Object.fromEntries((catalog?.courses ?? []).map(c => [c.id, c])), [catalog])
@@ -60,23 +86,40 @@ export default function App() {
   const invalid = new Set(preview?.invalidated ?? [])
   const movedFrom = Object.fromEntries((preview?.moved ?? []).map(m => [m.course, m.from]))
   const inPlan = new Set(shown?.terms.flatMap(t => t.courses) ?? [])
-  const dark = matchMedia('(prefers-color-scheme: dark)').matches
+  const dark = useDark()
 
   const refreshAudit = () => api<Audit[]>('/audit?limit=15').then(setAudit)
-  const run = async (fn: () => Promise<void>) => {
-    setError(''); setBusy(true)
-    try { await fn() } catch (e) { setError(String((e as Error).message)) } finally { setBusy(false) }
+  const refreshHealth = () => api<Health>('/health').then(setHealth, () => setHealth(undefined))
+  // Runs a user action against the current saved plan; `apply` is skipped if the plan was replaced meanwhile.
+  const run = async <T,>(fn: () => Promise<T>, apply: (r: T) => void) => {
+    const gen = generation.current
+    setError(''); setActionBusy(true)
+    try {
+      const r = await fn()
+      if (gen === generation.current) apply(r)
+    } catch (e) {
+      if (gen === generation.current) setError(errorText(e))
+    } finally { setActionBusy(false) }
   }
 
-  useEffect(() => { run(async () => {
-    setCatalog(await api('/catalog')); setStudents(await api('/students')); setHealth(await api('/health')); await refreshAudit()
-  }) }, [])
-  useEffect(() => { run(async () => {
-    const r = await api<{ plan: Plan; timeline: Timeline; alternatives: typeof alts }>('/plan', { student_id: sid, unit_cap: baseCap ?? null })
-    setPlan(r.plan); setTimeline(r.timeline); setAlts(r.alternatives); setHistory([]); setPreview(undefined); setGuard(undefined)
-    const t = r.plan.terms[0]
-    setEv(e => ({ ...e, term_label: t.term_label, course_id: t.courses[0] }))
-  }) }, [sid, baseCap])
+  useEffect(() => {
+    Promise.all([api<Catalog>('/catalog'), api<Student[]>('/students')])
+      .then(([c, s]) => { setCatalog(c); setStudents(s) }, e => setError(errorText(e)))
+    refreshHealth()
+    refreshAudit().catch(() => {})  // the audit trail is optional context
+  }, [])
+  useEffect(() => {
+    let live = true  // a slower response for a previous student/cap must not overwrite this one
+    const key = `${sid}:${baseCap ?? ''}`
+    api<{ plan: Plan; timeline: Timeline; alternatives: typeof alts }>('/plan', { student_id: sid, unit_cap: baseCap ?? null })
+      .then(r => {
+        if (!live) return
+        generation.current++
+        setPlan(r.plan); setTimeline(r.timeline); setAlts(r.alternatives); setHistory([]); setPreview(undefined); setGuard(undefined)
+        setLoadedKey(key)
+      }, e => { if (live) { setError(errorText(e)); setLoadedKey(key) } })
+    return () => { live = false }
+  }, [sid, baseCap])
 
   // Planned courses ranked by the engine's priority score, with how many later planned courses each one gates.
   const bottlenecks = useMemo(() => {
@@ -101,45 +144,55 @@ export default function App() {
   const summerOptions = (plan?.terms ?? []).filter(t => t.term_label.startsWith('Spring'))
     .map(t => `Summer ${t.term_label.split(' ')[1]}`).filter(s => !plan?.summers.includes(s))
 
-  const setType = (event_type: string) => setEv(e => {
-    if (event_type === 'Add Summer') return { ...e, event_type, term_label: summerOptions[0] ?? '' }
-    const t = plan?.terms.find(t => t.term_label === e.term_label) ?? plan?.terms[0]
-    return { ...e, event_type, term_label: t?.term_label ?? '', course_id: t?.courses.includes(e.course_id) ? e.course_id : t?.courses[0] ?? '' }
-  })
+  // The saved plan changes under the form (keep, undo, new student), so snap the selection to what the plan has now.
+  const form: Event = (() => {
+    if (ev.event_type === 'Add Summer')
+      return { ...ev, term_label: summerOptions.includes(ev.term_label) ? ev.term_label : summerOptions[0] ?? '' }
+    const t = plan?.terms.find(t => t.term_label === ev.term_label) ?? plan?.terms[0]
+    return { ...ev, term_label: t?.term_label ?? '', course_id: t?.courses.includes(ev.course_id) ? ev.course_id : t?.courses[0] ?? '' }
+  })()
   const pick = (id: string) => {
     const t = plan?.terms.find(t => t.courses.includes(id))
     if (!t) return
     setEv(e => ({ ...e, event_type: COURSE_EVENTS.includes(e.event_type) ? e.event_type : 'Fail', term_label: t.term_label, course_id: id }))
     scenarioRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
+  const replacePlan = (p: Plan, t: Timeline) => {
+    generation.current++
+    setPlan(p); setTimeline(t); setPreview(undefined); setGuard(undefined)
+  }
 
   const adopt = (p: Plan, t: Timeline, label: string) => {
     if (plan && timeline) setHistory(h => [...h, { plan, timeline, label }])
-    setPlan(p); setTimeline(t); setPreview(undefined); setGuard(undefined)
+    replacePlan(p, t)
   }
   const undo = () => {
     const last = history.at(-1)
     if (!last) return
-    setPlan(last.plan); setTimeline(last.timeline); setHistory(h => h.slice(0, -1)); setPreview(undefined)
+    replacePlan(last.plan, last.timeline); setHistory(h => h.slice(0, -1))
   }
   const reset = () => {
     const first = history[0]
     if (!first) return
-    setPlan(first.plan); setTimeline(first.timeline); setHistory([]); setPreview(undefined)
+    replacePlan(first.plan, first.timeline); setHistory([])
   }
-  const whatIf = () => run(async () => {
-    const event = { ...ev, course_id: COURSE_EVENTS.includes(ev.event_type) ? ev.course_id : null,
-                    unit_load: ev.event_type === 'Change Unit Load' ? ev.unit_load : null }
+  const changeStudent = (id: string) => { setError(''); setBaseCap(undefined); setSid(id) }
+  const changeCap = (cap: number) => { setError(''); setBaseCap(cap) }
+  const whatIf = () => {
+    const event = { ...form, course_id: COURSE_EVENTS.includes(form.event_type) ? form.course_id : null,
+                    unit_load: form.event_type === 'Change Unit Load' ? form.unit_load : null }
+    const label = describe(form)
     setGuard(undefined)
-    setPreview({ ...await api<Result>('/scenario', { plan, event }), label: describe(ev) })
-  })
-  const ask = () => run(async () => {
-    const r = await api<{ guardrail: Guardrail; result: Result | null }>('/query', { text: query, plan })
-    setGuard(r.guardrail); setPreview(r.result ? { ...r.result, label: `“${query}”` } : undefined)
-    await refreshAudit(); setHealth(await api('/health'))
-  })
+    run(() => api<Result>('/scenario', { plan, event }), r => setPreview({ ...r, label }))
+  }
+  const ask = () => {
+    const text = query
+    run(() => api<{ guardrail: Guardrail; result: Result | null }>('/query', { text, plan }), r => {
+      setGuard(r.guardrail); setPreview(r.result ? { ...r.result, label: `“${text}”` } : undefined)
+    }).then(() => { refreshAudit().catch(() => {}); refreshHealth() })
+  }
 
-  const termCourses = plan?.terms.find(t => t.term_label === ev.term_label)?.courses ?? []
+  const termCourses = plan?.terms.find(t => t.term_label === form.term_label)?.courses ?? []
   const status = (id: string) =>
     invalid.has(id) ? 'invalid' : student?.completed_courses[id] || student?.in_progress_courses.includes(id) ? 'done'
       : inPlan.has(id) ? 'planned' : 'unplanned'
@@ -153,16 +206,16 @@ export default function App() {
         </div>
         <div className="controls">
           {busy && <span className="pill">working…</span>}
-          {health && <span className={`pill ${health.ollama ? 'on' : 'off'}`} title={health.ollama ? `Using ${health.model}` : 'Start Ollama to enable plain-language parsing'}>
+          {health && <span role="status" className={`pill ${health.ollama ? 'on' : 'off'}`} title={health.ollama ? `Using ${health.model}` : 'Start Ollama to enable plain-language parsing'}>
             AI parser {health.ollama ? 'online' : 'offline'}
           </span>}
           <label>Student
-            <select value={sid} onChange={e => { setBaseCap(undefined); setSid(e.target.value) }}>
+            <select value={sid} onChange={e => changeStudent(e.target.value)}>
               {students.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </label>
           <label>Unit cap
-            <select value={plan?.unit_cap ?? ''} onChange={e => setBaseCap(+e.target.value)}>
+            <select value={plan?.unit_cap ?? ''} onChange={e => changeCap(+e.target.value)}>
               {CAPS.map(c => <option key={c} value={c}>{c}{c === student?.unit_load_preference ? ' (preferred)' : ''}</option>)}
             </select>
           </label>
@@ -187,8 +240,8 @@ export default function App() {
         <h2>Starting point</h2>
         {student.notes && <p className="muted note">{student.notes}</p>}
         <p className="chips">
-          {Object.entries(student.completed_courses).map(([c, g]) => <span key={c} className="chip done">{c} · {g}</span>)}
-          {student.in_progress_courses.map(c => <span key={c} className="chip">{c} · in progress</span>)}
+          {Object.entries(student.completed_courses).map(([c, g]) => <span key={`done-${c}`} className="chip done">{c} · {g}</span>)}
+          {student.in_progress_courses.map(c => <span key={`now-${c}`} className="chip">{c} · in progress</span>)}
           {!Object.keys(student.completed_courses).length && !student.in_progress_courses.length && <span className="muted">No completed courses.</span>}
         </p>
       </section>}
@@ -220,26 +273,27 @@ export default function App() {
           <h2>What-if scenario</h2>
           <p className="muted hint">Tip: click any course in the plan or the graph to load it here.</p>
           <div className="form">
-            <select aria-label="Event" value={ev.event_type} onChange={e => setType(e.target.value)}>
+            <select aria-label="Event" value={form.event_type} onChange={e => setEv({ ...form, event_type: e.target.value })}>
               {EVENTS.map(x => <option key={x}>{x}</option>)}
             </select>
-            {ev.event_type === 'Add Summer'
-              ? <select aria-label="Summer term" value={ev.term_label} onChange={e => setEv({ ...ev, term_label: e.target.value })}>
-                  {summerOptions.map(s => <option key={s}>{s}</option>)}
-                </select>
-              : <select aria-label="Term" value={ev.term_label} onChange={e => {
-                  const t = plan?.terms.find(t => t.term_label === e.target.value)
-                  setEv({ ...ev, term_label: e.target.value, course_id: t?.courses[0] ?? '' })
-                }}>{plan?.terms.map(t => <option key={t.term_label}>{t.term_label}</option>)}</select>}
-            {COURSE_EVENTS.includes(ev.event_type) &&
-              <select aria-label="Course" value={ev.course_id} onChange={e => setEv({ ...ev, course_id: e.target.value })}>
+            {form.event_type === 'Add Summer'
+              ? summerOptions.length
+                ? <select aria-label="Summer term" value={form.term_label} onChange={e => setEv({ ...form, term_label: e.target.value })}>
+                    {summerOptions.map(s => <option key={s}>{s}</option>)}
+                  </select>
+                : <span className="muted">Every summer in this plan is already on.</span>
+              : <select aria-label="Term" value={form.term_label} onChange={e => setEv({ ...form, term_label: e.target.value, course_id: '' })}>
+                  {plan?.terms.map(t => <option key={t.term_label}>{t.term_label}</option>)}
+                </select>}
+            {COURSE_EVENTS.includes(form.event_type) &&
+              <select aria-label="Course" value={form.course_id} onChange={e => setEv({ ...form, course_id: e.target.value })}>
                 {termCourses.map(c => <option key={c}>{c}</option>)}
               </select>}
-            {ev.event_type === 'Change Unit Load' &&
-              <select aria-label="New unit load" value={ev.unit_load} onChange={e => setEv({ ...ev, unit_load: +e.target.value })}>
+            {form.event_type === 'Change Unit Load' &&
+              <select aria-label="New unit load" value={form.unit_load} onChange={e => setEv({ ...form, unit_load: +e.target.value })}>
                 {CAPS.map(c => <option key={c} value={c}>{c} units</option>)}
               </select>}
-            <button disabled={busy || !plan || (ev.event_type === 'Add Summer' && !ev.term_label)} onClick={whatIf}>Run what-if</button>
+            <button disabled={busy || !plan || !form.term_label || (COURSE_EVENTS.includes(form.event_type) && !form.course_id)} onClick={whatIf}>Run what-if</button>
           </div>
         </div>
         <div className="card">
@@ -250,7 +304,7 @@ export default function App() {
             <button disabled={busy || !plan} onClick={ask}>Ask</button>
           </div>
           {guard && <p className={`guard ${guard.outcome}`} data-testid="guard">
-            <strong>{guard.outcome.replace(/_/g, ' ')}</strong> · confidence {guard.confidence.toFixed(2)}
+            <strong>{guard.outcome.replace(/_/g, ' ')}</strong> · confidence {guard.confidence?.toFixed(2) ?? "n/a"}
             {guard.reason && <> · {guard.reason}</>}
           </p>}
         </div>
@@ -289,12 +343,12 @@ export default function App() {
             {t.courses.map(c => (
               <button key={c} type="button" className={`course ${invalid.has(c) ? 'invalid' : ''} ${shown.credited[c] ? 'passed' : ''}`}
                       title={`${courses[c]?.title ?? c}. Click to load into the what-if form.`} onClick={() => pick(c)}>
-                <span>{c}{shown.credited[c] && ' ✓'}{invalid.has(c) && ' (affected)'}
+                <span>{c}{shown.credited[c] && <span aria-label="passed"> ✓</span>}{invalid.has(c) && ' (affected)'}
                   {movedFrom[c] && <span className="was"> was {movedFrom[c]}</span>}
                 </span>
                 <span className="muted">
                   {['Fall', 'Spring'].includes(courses[c]?.term_offered) && `${courses[c]?.term_offered} only · `}{courses[c]?.catalog_units}u
-                  {courses[c]?.discrepancy_flag && <span className="flag" title={`Roadmap says ${courses[c].roadmap_units}u`}> ⚑</span>}
+                  {courses[c]?.discrepancy_flag && <span className="flag" title={`Roadmap says ${courses[c].roadmap_units}u`} aria-label={`roadmap says ${courses[c].roadmap_units} units`}> ⚑</span>}
                 </span>
               </button>
             ))}
