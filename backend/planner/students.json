@@ -1,0 +1,58 @@
+[
+ {
+  "id": "alex",
+  "name": "Alex (incoming freshman)",
+  "remaining_requirement_groups": [
+   "GE",
+   "Math/Science",
+   "Core CS"
+  ],
+  "unit_load_preference": 15,
+  "start_term": "Fall 2026"
+ },
+ {
+  "id": "jordan",
+  "name": "Jordan (sophomore, D in CSE 2010)",
+  "completed_courses": {
+   "GE A1": "A",
+   "GE A2": "B",
+   "MATH 2110": "B",
+   "CSE 2010": "D",
+   "PHYS 2500": "B"
+  },
+  "remaining_requirement_groups": [
+   "GE",
+   "Math/Science",
+   "Core CS"
+  ],
+  "unit_load_preference": 15,
+  "start_term": "Spring 2027"
+ },
+ {
+  "id": "sam",
+  "name": "Sam (junior)",
+  "completed_courses": {
+   "GE A1": "A",
+   "GE A2": "A",
+   "GE C": "B",
+   "GE D": "B",
+   "MATH 2110": "B",
+   "MATH 2120": "C",
+   "PHYS 2500": "B",
+   "CSE 2010": "A",
+   "CSE 2020": "B",
+   "CSE 2130": "B",
+   "CSE 3300": "B"
+  },
+  "in_progress_courses": [
+   "CSE 3100"
+  ],
+  "remaining_requirement_groups": [
+   "GE",
+   "Math/Science",
+   "Core CS"
+  ],
+  "unit_load_preference": 12,
+  "start_term": "Spring 2027"
+ }
+]

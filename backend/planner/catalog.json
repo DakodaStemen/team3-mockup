@@ -1,0 +1,431 @@
+{
+ "_note": "Hand-seeded subset modeled on public CSUSB catalog/roadmap pages. Titles, some numbers and edges are illustrative; verify against catalog.csusb.edu before relying on them.",
+ "courses": [
+  {
+   "id": "GE A1",
+   "title": "Oral Communication",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "GE"
+   ]
+  },
+  {
+   "id": "GE A2",
+   "title": "Written Communication",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "GE"
+   ]
+  },
+  {
+   "id": "GE C",
+   "title": "Arts & Humanities",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "GE"
+   ]
+  },
+  {
+   "id": "GE D",
+   "title": "Social Sciences",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "GE"
+   ]
+  },
+  {
+   "id": "GE US",
+   "title": "US History & Government",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "GE"
+   ]
+  },
+  {
+   "id": "MATH 2110",
+   "title": "Calculus I",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Math/Science"
+   ]
+  },
+  {
+   "id": "MATH 2120",
+   "title": "Calculus II",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Math/Science"
+   ]
+  },
+  {
+   "id": "MATH 2250",
+   "title": "Linear Algebra",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Math/Science"
+   ]
+  },
+  {
+   "id": "PHYS 2500",
+   "title": "General Physics I",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Math/Science"
+   ]
+  },
+  {
+   "id": "PHYS 2510",
+   "title": "General Physics II",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Spring",
+   "requirement_groups": [
+    "Math/Science"
+   ]
+  },
+  {
+   "id": "PHYS 2510L",
+   "title": "General Physics II Lab",
+   "catalog_units": 1,
+   "roadmap_units": null,
+   "term_offered": "Spring",
+   "requirement_groups": [
+    "Math/Science"
+   ]
+  },
+  {
+   "id": "CSE 2010",
+   "title": "Computer Science I",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 2020",
+   "title": "Computer Science II",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 2130",
+   "title": "Discrete Structures",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 3100",
+   "title": "Data Structures & Algorithms",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 3300",
+   "title": "Computer Organization",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 3400",
+   "title": "Systems Programming",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 4010",
+   "title": "Algorithm Analysis",
+   "catalog_units": 4,
+   "roadmap_units": 3,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 4200",
+   "title": "Theory of Computation",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 4300",
+   "title": "Computer Networks",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 4550",
+   "title": "Software Engineering",
+   "catalog_units": 3,
+   "roadmap_units": 4,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 4600",
+   "title": "Operating Systems",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 4700",
+   "title": "Database Systems",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 5160",
+   "title": "Machine Learning",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 5700",
+   "title": "Capstone Project I",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Fall",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 5720",
+   "title": "Capstone Project II",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Fall",
+   "requirement_groups": [
+    "Core CS"
+   ]
+  },
+  {
+   "id": "CSE 6310",
+   "title": "Advanced Software Architecture",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "requirement_groups": [
+    "Graduate Elective"
+   ]
+  }
+ ],
+ "edges": [
+  {
+   "from_course": "MATH 2110",
+   "to_course": "MATH 2120",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "MATH 2110",
+   "to_course": "MATH 2250",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "MATH 2110",
+   "to_course": "PHYS 2500",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "PHYS 2500",
+   "to_course": "PHYS 2510",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "MATH 2120",
+   "to_course": "PHYS 2510",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "PHYS 2500",
+   "to_course": "PHYS 2510L",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 2010",
+   "to_course": "CSE 2020",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 2010",
+   "to_course": "CSE 2130",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 3100",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 2130",
+   "to_course": "CSE 3100",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 3300",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 3300",
+   "to_course": "CSE 3400",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 3100",
+   "to_course": "CSE 4010",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 3100",
+   "to_course": "CSE 4200",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 3400",
+   "to_course": "CSE 4300",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 4200",
+   "to_course": "CSE 4550",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 4600",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 2130",
+   "to_course": "CSE 4600",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 3100",
+   "to_course": "CSE 4700",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 3100",
+   "to_course": "CSE 5160",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "MATH 2120",
+   "to_course": "CSE 5160",
+   "condition": "OR",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "MATH 2250",
+   "to_course": "CSE 5160",
+   "condition": "OR",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 4550",
+   "to_course": "CSE 5700",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 5700",
+   "to_course": "CSE 5720",
+   "condition": "AND",
+   "grade_minimum": "C"
+  },
+  {
+   "from_course": "CSE 5720",
+   "to_course": "CSE 6310",
+   "condition": "AND",
+   "grade_minimum": "C"
+  }
+ ],
+ "discrepancies": [
+  "Program total units: roadmap says 125, catalog says 120 (catalog wins).",
+  "CSE 4600 prerequisites: roadmap lists CSE 2130 only, catalog requires CSE 2020 AND CSE 2130 (catalog wins)."
+ ]
+}
