@@ -74,5 +74,5 @@ class Plan(BaseModel):
     student_id: str
     unit_cap: int
     summers: list[str] = []  # summer term labels the student opted into
-    credited: list[str] = []  # courses marked passed by a Pass scenario event
+    credited: dict[str, str] = {}  # course -> term it was marked passed in by a Pass scenario event
     terms: list[TermPlan] = []

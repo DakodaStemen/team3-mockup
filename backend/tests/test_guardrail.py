@@ -174,3 +174,19 @@ def test_scenario_api_rejects_out_of_range_unit_load(units):
     r = c.post("/scenario", json={"plan": plan, "event": ev})
     assert r.status_code == 400 and "between 3 and 21" in r.json()["detail"]
     assert c.post("/scenario", json={"plan": plan, "event": {**ev, "unit_load": 21}}).status_code == 200
+
+
+@pytest.mark.req("NFR-03", "FR-06")
+def test_plan_api_rejects_bad_unit_caps():
+    c = TestClient(app)
+    assert c.post("/plan", json={"student_id": "alex", "unit_cap": 40}).status_code == 422
+    r = c.post("/plan", json={"student_id": "alex", "unit_cap": 3})
+    assert r.status_code == 422 and "cap of at least 4" in r.json()["detail"]
+    assert c.post("/plan", json={"student_id": "alex", "unit_cap": 12}).status_code == 200
+
+
+@pytest.mark.req("NFR-12")
+def test_health_reports_llm_availability(monkeypatch):
+    monkeypatch.setattr(guardrail, "OLLAMA_URL", "http://127.0.0.1:9")  # nothing listens on the discard port
+    r = TestClient(app).get("/health").json()
+    assert r["engine"] is True and r["ollama"] is False and r["unit_load_range"] == [3, 21]

@@ -34,7 +34,7 @@ def correct(out, expected: dict | None) -> bool:
     return all(getattr(e, k) == expected[k] for k in keys)
 
 
-def ece(prob: np.ndarray, y: np.ndarray, bins: int = 10) -> float:
+def ece(prob: np.ndarray, y: np.ndarray, bins: int = 5) -> float:  # ~9 queries per bin at n=45; 10 bins is noise
     idx = np.minimum((prob * bins).astype(int), bins - 1)
     return float(sum(abs(prob[idx == b].mean() - y[idx == b].mean()) * (idx == b).mean()
                      for b in range(bins) if (idx == b).any()))

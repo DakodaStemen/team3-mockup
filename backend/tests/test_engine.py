@@ -250,7 +250,7 @@ def test_prerequisite_outside_catalog_is_logged_not_crashed():
     raw = json.loads((DATA / "catalog.json").read_text(encoding="utf8"))
     raw["edges"].append({"from_course": "MATH 9999", "to_course": "CSE 2020", "group": 9})
     cat = Catalog(raw)
-    with pytest.raises(ValueError, match="CSE 2020"):  # API turns this into 422, not a 500
+    with pytest.raises(ValueError, match="CSE 2020 needs MATH 9999"):  # API turns this into 422, not a 500
         make_plan(STUDENTS["alex"], cat=cat)
     assert sum("MATH 9999" in d and "CSE 2020" in d for d in cat.discrepancies) == 1
 
@@ -261,3 +261,39 @@ def test_pass_explanation_does_not_claim_moves():
     r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Pass", course_id="CSE 2010", term_label="Fall 2026"))
     assert r["delta_terms"] == 0
     assert r["explanation"] == "Graduation unchanged (Spring 2030): CSE 2010 passed in Fall 2026; later terms re-checked, no course moved."
+
+
+@pytest.mark.req("FR-01", "FR-02", "DR-04")
+def test_credit_grades_count_as_c():
+    assert grade_ok("CR", "C") and grade_ok("P", "D-") and grade_ok("TR", "C-")
+    assert not grade_ok("CR", "C+") and not grade_ok("NC", "D-")
+    profile = STUDENTS["jordan"].model_copy(update={"completed_courses": {**STUDENTS["jordan"].completed_courses, "CSE 2010": "CR"}})
+    plan = make_plan(profile)
+    assert "CSE 2010" not in {c for t in plan.terms for c in t.courses}  # CR meets CSE 2020's C minimum; no retake
+    check_valid(plan, profile)
+
+
+@pytest.mark.req("FR-06", "FR-13")
+def test_cap_below_a_course_is_one_clear_message():
+    with pytest.raises(ValueError, match=r"^A 3-unit cap can't fit .* use a cap of at least 4\.$"):
+        make_plan(STUDENTS["alex"], unit_cap=3)
+
+
+@pytest.mark.req("FR-12")
+def test_moved_lists_every_course_whose_term_changed():
+    alex = STUDENTS["alex"]
+    plan = make_plan(alex)
+    r = apply_scenario(alex, plan, ScenarioEvent(event_type="Fail", course_id="CSE 2020", term_label="Spring 2027"))
+    before = {c: t.term_label for t in plan.terms for c in t.courses}
+    after = {c: t.term_label for t in r["plan"].terms for c in t.courses}
+    assert {m["course"]: (m["from"], m["to"]) for m in r["moved"]} == {
+        c: (before[c], after[c]) for c in before if c in after and before[c] != after[c]}
+    assert {"course": "CSE 2020", "from": "Spring 2027", "to": "Fall 2027"} in r["moved"]
+
+
+@pytest.mark.req("FR-09")
+def test_pass_records_term_and_marks_nothing_affected():
+    alex = STUDENTS["alex"]
+    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Pass", course_id="CSE 2010", term_label="Fall 2026"))
+    assert r["plan"].credited == {"CSE 2010": "Fall 2026"}
+    assert r["invalidated"] == [] and r["moved"] == []

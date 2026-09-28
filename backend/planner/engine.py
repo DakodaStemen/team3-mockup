@@ -7,12 +7,18 @@ from .models import UNIT_LOAD_RANGE, Plan, ScenarioEvent, StudentProfile, TermPl
 GRADE_POINTS = {"A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0, "B-": 2.7, "C+": 2.3, "C": 2.0, "C-": 1.7,
                 "D+": 1.3, "D": 1.0, "D-": 0.7, "F": 0.0}
 SUMMER_CAP = 8
+# Credit/pass grades carry no letter. Assumption to confirm with an advisor (CH-02 C-8): CSU credit means
+# C or better, so CR/P/TR meet any minimum up to C. NC, W, and I never pass.
+NO_LETTER_PASS = {"CR", "P", "TR", "CRT"}
+NO_LETTER_EQUIV = "C"
 SEASON_ORDER = {"Spring": 0, "Summer": 1, "Fall": 2}
 
 
 def grade_ok(grade: str, minimum: str) -> bool:
-    """False for non-grades like W or NC."""
-    return GRADE_POINTS.get(grade.upper(), -1) >= GRADE_POINTS[minimum.upper()]
+    """False for non-grades like W or NC; CR/P/TR count as NO_LETTER_EQUIV."""
+    g = grade.upper()
+    points = GRADE_POINTS[NO_LETTER_EQUIV] if g in NO_LETTER_PASS else GRADE_POINTS.get(g, -1)
+    return points >= GRADE_POINTS[minimum.upper()]
 
 
 def term_key(label: str) -> tuple[int, int]:
@@ -72,6 +78,26 @@ def offered(cid: str, label: str, cat: Catalog) -> bool:
     return off in ("Both", "Unknown", season)
 
 
+def unplaceable(todo: set[str], sat: dict[str, str], earned: int, cat: Catalog) -> str:
+    """FR-13: name the courses that block the rest, and the constraint that blocks each one."""
+    roots, waiting = [], 0
+    for c in sorted(todo):
+        groups: dict[int, list[str]] = {}
+        for e in cat.prereqs(c):
+            groups.setdefault(e.group, []).append(e.from_course)
+        missing = [alts for alts in groups.values() if not any(a in sat for a in alts)]
+        if any(a in todo for alts in missing for a in alts):
+            waiting += 1  # blocked by another unplaced course, reported through that one
+        elif missing:
+            roots.append(f"{c} needs {' or '.join(missing[0])}, which is neither completed nor plannable")
+        elif earned < cat.courses[c].min_standing_units:
+            roots.append(f"{c} needs {cat.courses[c].min_standing_units} units of standing")
+        else:
+            roots.append(f"{c} is never offered in an allowed term ({cat.courses[c].term_offered})")
+    more = f"; {waiting} more course(s) wait on these" if waiting else ""
+    return f"Cannot schedule {len(todo)} course(s): {'; '.join(roots) or 'prerequisite cycle'}{more}."
+
+
 def place(terms: list[TermPlan], todo: set[str], start: int, cap: int, summers: list[str],
           sat: dict[str, str], first_label: str, cat: Catalog, earned: int = 0) -> list[TermPlan]:
     """Constrained greedy topological sort: fill terms[start:] (and new terms) with todo."""
@@ -81,10 +107,13 @@ def place(terms: list[TermPlan], todo: set[str], start: int, cap: int, summers: 
     for t in terms[:start]:
         sat |= {c: "A" for c in t.courses}  # planned courses assumed to meet grade minimums
         earned += sum(map(cat.units, t.courses))
+    if too_big := [c for c in todo if cat.units(c) > cap]:
+        c = max(too_big, key=cat.units)
+        raise ValueError(f"A {cap}-unit cap can't fit {c} ({cat.units(c)} units); use a cap of at least {cat.units(c)}.")
     i = start
     while todo:
         if i - start > 30:
-            raise ValueError(f"Cannot schedule {sorted(todo)}: prerequisites or offerings never satisfied.")
+            raise ValueError(unplaceable(todo, sat, earned, cat))
         if i == len(terms):
             label = next_label(terms[-1].term_label, summers) if terms else first_label
             terms.append(TermPlan(term_label=label))
@@ -217,7 +246,7 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
         invalid = (nx.descendants(cat.g, cid) | {cid}) & planned_after
         if event.event_type == "Pass":
             # The course stays in the term it was passed in; only later terms can use it.
-            new.credited.append(cid)
+            new.credited[cid] = event.term_label
             invalid = {c for c in invalid if c != cid and c not in terms[idx].courses}
         start = idx + 1
         for t in terms[idx:]:
@@ -258,12 +287,15 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
 
     k = len(invalid - {cid})
     was = {c: t.term_label for t in plan.terms for c in t.courses}
-    moved = sum(1 for t in new.terms for c in t.courses if c in was and was[c] != t.term_label)
+    moved = [{"course": c, "from": was[c], "to": t.term_label}
+             for t in new.terms for c in t.courses if c in was and was[c] != t.term_label]
+    if event.event_type == "Pass":
+        invalid = {m["course"] for m in moved}  # re-checked courses that stayed put were never invalid
     cause = {
         "Fail": f"{cid} must be retaken and gates {k} planned course(s)",
         "Withdraw": f"{cid} must be retaken and gates {k} planned course(s)",
         "Pass": f"{cid} passed in {event.term_label}; later terms re-checked, "
-                + (f"{moved} course(s) moved" if moved else "no course moved"),
+                + (f"{len(moved)} course(s) moved" if moved else "no course moved"),
         "Add Summer": f"{event.term_label} adds up to {SUMMER_CAP} units of capacity",
         "Change Unit Load": f"the unit cap changed from {old_cap} to {new.unit_cap}",
     }[event.event_type]
@@ -281,5 +313,6 @@ def apply_scenario(profile: StudentProfile, plan: Plan, event: ScenarioEvent, ca
         "timeline": after,
         "invalidated": sorted(invalid),
         "delta_terms": delta,
+        "moved": moved,
         "explanation": explanation,
     }

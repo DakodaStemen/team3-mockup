@@ -21,8 +21,8 @@ Change a requirement's *text* in the SRS first, then update its summary here.
 | FR-09 | Recalculate when a planned course is recorded Passed | EV-01 | Test | SRS v0.1 | Implemented |
 | FR-10 | Reschedule a Not passed or Withdrawn course and its downstream courses | EV-01 | Test | SRS v0.1 | Implemented: also re-places courses whose class standing no longer holds |
 | FR-11 | Recalculate when summer is turned on or a term's unit load changes | EV-01 | Test | SRS v0.1 | Implemented |
-| FR-12 | Show previous and new graduation terms and each course whose term changed | EV-01 | Test; Demonstration | SRS v0.1 | Partial: shows graduation before/after and the affected set; no exact moved-course diff yet |
-| FR-13 | Report an unplaceable course and its blocking constraint instead of a pathway | EV-01 | Test | SRS v0.1 | Partial: `POST /plan` returns 422 naming the unplaceable courses; the per-course constraint is not yet identified |
+| FR-12 | Show previous and new graduation terms and each course whose term changed | EV-01 | Test; Demonstration | SRS v0.1 | Implemented: before/after graduation plus a `moved` list (course, from, to); the UI shows "was <term>" |
+| FR-13 | Report an unplaceable course and its blocking constraint instead of a pathway | EV-01 | Test | SRS v0.1 | Implemented: 422 names each root blocking course and its constraint (missing prerequisite, standing, or offering), or a cap below a course's units |
 | FR-14 | Flag a saved-pathway course planned in a term it is not offered | EV-01 | Test | SRS v0.1 | Implemented: `validate_plan()` and `POST /validate` |
 | FR-15 | Scenario mode changes a copy; the saved pathway is unchanged until saved | EV-01 | Test | SRS v0.1 | Implemented |
 | FR-16 | Answer whether graduation by a selected term is possible, with the earliest feasible term | EV-01 | Test | SRS v0.1 | Not implemented |
@@ -34,7 +34,7 @@ Change a requirement's *text* in the SRS first, then update its summary here.
 | DR-01 | Program, course, prerequisite, student, and plan data with stable IDs and referential integrity | EV-01 | Test; Inspection | SRS v0.1 | Partial: every prerequisite endpoint resolves to a catalog course; no separate Offering or CourseAttempt entities |
 | DR-02 | Prerequisites as Boolean AND/OR expressions | EV-02; OQ-02 | Test | SRS v0.1 | Implemented: groups ANDed, alternatives ORed, with grade minimum and corequisite flag |
 | DR-03 | Reject a load containing a cycle, undefined course, or missing field, reporting each record | EV-01 | Test | SRS v0.1 | Partial: cycle edges are rejected and logged but the load continues (tech-spec ADR; CH-02 §C-1); missing fields fail validation |
-| DR-04 | Record each attempt with course, term, and outcome | EV-01 | Test | SRS v0.1 | Partial: letter grades per course; W/NC/F are not passes; no term per attempt |
+| DR-04 | Record each attempt with course, term, and outcome | EV-01 | Test | SRS v0.1 | Partial: letter grades per course; W/NC/F are not passes; CR/P/TR count as C pending advisor confirmation (CH-02 C-8); no term per attempt |
 | DR-05 | Load only datasets labeled synthetic | EV-01; EV-06 | Test; Inspection | SRS v0.1 | Not implemented: public catalog data is real, not synthetic (CH-02 §C-2) |
 | DR-06 | Store program-data version and generation date with each saved pathway | EV-01 | Inspection | SRS v0.1 | Not implemented: no persistence yet |
 | DR-07 | Rebuild program data reproducibly from cached public sources | EV-02 | Test | CH-02 (proposed) | Implemented |

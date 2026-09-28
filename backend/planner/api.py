@@ -1,17 +1,19 @@
+import urllib.request
+
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from . import guardrail
 from .engine import alternatives, apply_scenario, make_plan, timeline, validate_plan
 from .graph import load_catalog, load_students
-from .models import Plan, ScenarioEvent
+from .models import UNIT_LOAD_RANGE, Plan, ScenarioEvent
 
 app = FastAPI(title="Adaptive Degree Pathway Planner (mock)")
 
 
 class PlanRequest(BaseModel):
     student_id: str
-    unit_cap: int | None = None
+    unit_cap: int | None = Field(None, ge=UNIT_LOAD_RANGE[0], le=UNIT_LOAD_RANGE[1])
 
 
 class ScenarioRequest(BaseModel):
@@ -33,6 +35,17 @@ def student(sid: str):
     if not s:
         raise HTTPException(404, f"unknown student {sid}")
     return s
+
+
+@app.get("/health")
+def health():
+    """Whether the optional LLM parser is reachable; without it plain-language questions are escalated."""
+    try:
+        with urllib.request.urlopen(f"{guardrail.OLLAMA_URL}/models", timeout=1) as r:
+            ollama = r.status == 200
+    except OSError:
+        ollama = False
+    return {"engine": True, "ollama": ollama, "model": guardrail.OLLAMA_MODEL, "unit_load_range": UNIT_LOAD_RANGE}
 
 
 @app.get("/catalog")
