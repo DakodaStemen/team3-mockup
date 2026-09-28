@@ -173,6 +173,9 @@ def main():
     rho_p = spearman([r["priority"] for r in measured], [r["mean_delay_when_failed"] for r in measured])
     rho_b = spearman([r["betweenness"] for r in measured], [r["mean_delay_when_failed"] for r in measured])
     rho_d = spearman([r["descendants"] for r in measured], [r["mean_delay_when_failed"] for r in measured])
+    sub = CAT.g.subgraph(CAT.universe())
+    entry = [r["course"] for r in bn if sub.in_degree(r["course"]) == 0]  # only ever start a path
+    assert all(r["betweenness"] == 0 for r in bn if r["course"] in entry)
     speed = [r["full_plan_ms"] / r["recalc_ms"] for r in runs if r["recalc_ms"]]
     L = ["# Results", "", f"Data: {CAT.program['name']} ({CAT.program['code']}), CSUSB 2026-27 catalog + roadmaps. "
          f"{len(CAT.courses)} courses, {CAT.g.number_of_edges()} prerequisite edges, {len(CAT.discrepancies)} discrepancies.", "",
@@ -194,7 +197,10 @@ def main():
           f"median ratio {statistics.median(speed):.1f}x)", "",
           "## Bottlenecks", "",
           f"Spearman correlation with measured delay-when-failed ({len(measured)} courses): priority score {rho_p:.2f}, "
-          f"descendant count {rho_d:.2f}, betweenness centrality {rho_b:.2f}.", "",
+          f"descendant count {rho_d:.2f}, betweenness centrality {rho_b:.2f}. "
+          "Delay is measured by the same greedy engine that schedules by priority, so this correlation is a consistency "
+          f"check, not validation. Betweenness is 0 by construction for all {len(entry)} courses with no prerequisites to "
+          f"plan, including gatekeepers like {' and '.join(c for c in ('MATH 2210', 'CSE 2010') if c in entry)}.", "",
           "| course | priority | descendants | betweenness | mean delay when failed |", "|---|---|---|---|---|"]
     L += [f"| {r['course']} | {r['priority']} | {r['descendants']} | {r['betweenness']} | {r['mean_delay_when_failed']} |" for r in bn[:12]]
     L += ["", "## Discrepancies (catalog vs roadmap)", ""] + [f"- {d}" for d in CAT.discrepancies]

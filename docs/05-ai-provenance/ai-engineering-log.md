@@ -69,7 +69,7 @@ This is the AI Assistance and Provenance record required by course policy (SRS C
 
 - **What was wrong:** AIL-03's results used a hand-written Spearman correlation that did not average tied ranks. Many courses have betweenness 0, so the reported values (priority 0.54, betweenness 0.04) were wrong.
 - **Fix:** replaced with `statistics.correlation(..., method="ranked")`, found by the over-engineering audit.
-- **Corrected values:** priority 0.62, descendant count 0.49, betweenness 0.31. The priority score still predicts measured delay best, but the gap is smaller than first reported.
+- **Corrected values:** see the Bottlenecks section of `backend/results/summary.md`, which `scripts/results.py` regenerates; numbers are not restated here so they cannot drift. The priority score still ranks highest, but the gap is smaller than first reported, and the summary explains why that comparison is a consistency check rather than validation (delay is measured by the same engine; betweenness is 0 for courses with no prerequisites).
 - **Lesson:** hand-rolled statistics need a check against a reference implementation.
 
 ### AIL-06: Data gap fixes (2026-09-28)
