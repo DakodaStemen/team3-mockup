@@ -7,7 +7,10 @@ Output is a classification with a calibrated confidence, threshold-gated:
 """
 import json
 import os
+import re
+import threading
 import time
+from collections import deque
 from pathlib import Path
 from typing import Literal
 
@@ -26,10 +29,16 @@ ROOT = Path(__file__).parent.parent
 AUDIT = Path(os.getenv("AUDIT_LOG", ROOT / "audit.jsonl"))
 CALIBRATION = ROOT / "calibration.json"
 
-audit = structlog.wrap_logger(
-    structlog.WriteLogger(AUDIT.open("a", encoding="utf8")),
-    processors=[structlog.processors.TimeStamper(fmt="iso"), structlog.processors.JSONRenderer()],
-)
+
+def _make_audit_logger(path: Path):
+    # JSONRenderer escapes newlines and control characters, so one decision is always one line.
+    return structlog.wrap_logger(
+        structlog.WriteLogger(path.open("a", encoding="utf8")),
+        processors=[structlog.processors.TimeStamper(fmt="iso"), structlog.processors.JSONRenderer()],
+    )
+
+
+audit = _make_audit_logger(AUDIT)
 
 
 class ScenarioQueryClassification(BaseModel):
@@ -40,14 +49,33 @@ class ScenarioQueryClassification(BaseModel):
 
 # ponytail: in-process breaker state; move to shared store if the API runs multi-worker.
 _breaker = {"fails": 0, "opened_at": 0.0}
+_breaker_lock = threading.Lock()  # sync endpoints run in a threadpool
+_table_cache: dict = {}
+
+
+def _load_table(path: Path) -> tuple[list[float], list[float]] | None:
+    """The calibration table, re-read only when the file changes; None if absent or malformed."""
+    try:
+        mtime = path.stat().st_mtime
+    except OSError:
+        return None
+    if _table_cache.get("key") != (path, mtime):
+        try:
+            t = json.loads(path.read_text(encoding="utf8"))
+            x, y = [float(v) for v in t["x"]], [float(v) for v in t["y"]]
+            ok = len(x) == len(y) >= 2 and x == sorted(x) and all(0 <= v <= 1 for v in x + y)
+        except (ValueError, KeyError, TypeError):
+            ok = False
+        if not ok:
+            structlog.get_logger().warning("calibration table malformed; using raw confidence", path=str(path))
+        _table_cache.update(key=(path, mtime), table=(x, y) if ok else None)
+    return _table_cache["table"]
 
 
 def calibrate(raw: float) -> float:
-    """Map raw LLM confidence through the isotonic/Platt table from scripts/calibrate.py, if present."""
-    if not CALIBRATION.exists():
-        return raw
-    table = json.loads(CALIBRATION.read_text())
-    return float(np.interp(raw, table["x"], table["y"]))
+    """Map raw LLM confidence through the Platt table from scripts/calibrate.py; raw if none or malformed."""
+    table = _load_table(CALIBRATION)
+    return raw if table is None else float(np.interp(raw, *table))
 
 
 def llm_classify(text: str, plan: Plan) -> ScenarioQueryClassification:
@@ -76,7 +104,7 @@ def validate(event: ScenarioEvent | None, plan: Plan) -> str | None:
         return "no event produced"
     labels = {t.term_label for t in plan.terms}
     if event.event_type == "Add Summer":
-        return None if event.term_label.startswith("Summer") else "summer term label invalid"
+        return None if re.fullmatch(r"Summer (19|20|21)\d{2}", event.term_label) else "summer term label invalid"
     if event.term_label not in labels:
         return f"term {event.term_label} not in plan"
     if event.event_type == "Change Unit Load":
@@ -89,20 +117,27 @@ def validate(event: ScenarioEvent | None, plan: Plan) -> str | None:
     return None
 
 
-def classify(text: str, plan: Plan, llm=llm_classify) -> dict:
+def classify(text: str, plan: Plan, llm=None) -> dict:
+    llm = llm or llm_classify  # looked up at call time so it can be swapped in tests
     result = {"input": text, "parsed_event": None, "raw_confidence": None, "confidence": 0.0, "reason": None}
-    if _breaker["fails"] >= BREAKER_FAILS and time.time() - _breaker["opened_at"] < BREAKER_COOLDOWN:
+    with _breaker_lock:
+        is_open = _breaker["fails"] >= BREAKER_FAILS and time.time() - _breaker["opened_at"] < BREAKER_COOLDOWN
+    if is_open:
         result.update(outcome="escalated", reason="circuit breaker open: LLM unavailable")
     else:
         try:
             out = llm(text, plan)
-            _breaker["fails"] = 0
+            with _breaker_lock:
+                _breaker["fails"] = 0
         except Exception as e:  # timeout, rate limit, retries exhausted, Ollama down
-            _breaker["fails"] += 1
-            if _breaker["fails"] >= BREAKER_FAILS:
-                _breaker["opened_at"] = time.time()
+            with _breaker_lock:
+                _breaker["fails"] += 1
+                if _breaker["fails"] >= BREAKER_FAILS:
+                    _breaker["opened_at"] = time.time()
             out = None
-            result["reason"] = f"LLM error: {type(e).__name__}: {e}"[:300]
+            # The exception text can hold internal URLs or keys, and /audit is readable by clients.
+            result["reason"] = f"LLM unavailable ({type(e).__name__})"
+            structlog.get_logger().warning("llm_error", error=f"{type(e).__name__}: {e}"[:300])
         if out is None:
             result["outcome"] = "escalated"
         else:
@@ -120,7 +155,14 @@ def classify(text: str, plan: Plan, llm=llm_classify) -> dict:
 
 
 def read_audit(limit: int = 50) -> list[dict]:
+    """Newest first. Streams the file (bounded memory) and skips a line cut short by a crash."""
     if not AUDIT.exists():
         return []
-    lines = AUDIT.read_text(encoding="utf8").splitlines()[-limit:]
-    return [json.loads(line) for line in reversed(lines)]
+    rows: deque[dict] = deque(maxlen=max(limit, 0))
+    with AUDIT.open(encoding="utf8", errors="replace") as f:
+        for line in f:
+            try:
+                rows.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    return list(reversed(rows))
