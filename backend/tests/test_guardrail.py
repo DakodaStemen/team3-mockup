@@ -139,3 +139,26 @@ def test_unschedulable_plan_reports_courses_instead_of_pathway(monkeypatch):
     monkeypatch.setattr(api, "make_plan", impossible)
     r = TestClient(app).post("/plan", json={"student_id": "alex"})
     assert r.status_code == 422 and "CSE 5720" in r.json()["detail"]
+
+
+@pytest.mark.req("NFR-13")
+def test_calibration_metrics_are_out_of_fold():
+    """Reported Brier must come from held-out predictions, so on noise labels it cannot beat an in-sample fit."""
+    import sys
+    from pathlib import Path
+
+    import numpy as np
+    from sklearn.calibration import CalibratedClassifierCV
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import brier_score_loss
+
+    sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+    from calibrate import evaluate
+
+    for seed in range(5):
+        rng = np.random.default_rng(seed)
+        raw, y = rng.random(45), (rng.random(45) < 0.5).astype(int)  # labels unrelated to confidence
+        X = raw.reshape(-1, 1)
+        fit = CalibratedClassifierCV(LogisticRegression(), method="sigmoid", cv=3).fit(X, y)
+        in_sample = brier_score_loss(y, fit.predict_proba(X)[:, 1])
+        assert evaluate(raw, y)["brier_calibrated"] > in_sample

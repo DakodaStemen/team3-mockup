@@ -1,7 +1,7 @@
 """Calibrate the guardrail's LLM confidence against hand-labeled queries.
 
 Runs each labeled query through the real Instructor+Ollama call, records raw confidence and whether the
-parsed event was correct, then fits CalibratedClassifierCV (isotonic) and reports Brier score + ECE.
+parsed event was correct, then fits CalibratedClassifierCV (sigmoid by default) and reports out-of-fold Brier score + ECE.
 Writes backend/calibration.json, which guardrail.calibrate() picks up automatically.
 
     uv run python scripts/calibrate.py
@@ -14,6 +14,7 @@ import numpy as np
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import brier_score_loss
+from sklearn.model_selection import StratifiedKFold, cross_val_predict
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from planner.engine import make_plan  # noqa: E402
@@ -39,13 +40,21 @@ def ece(prob: np.ndarray, y: np.ndarray, bins: int = 10) -> float:
                      for b in range(bins) if (idx == b).any()))
 
 
-def evaluate(raw: np.ndarray, y: np.ndarray) -> dict:
-    model = CalibratedClassifierCV(LogisticRegression(), method="isotonic", cv=3).fit(raw.reshape(-1, 1), y)
-    cal = model.predict_proba(raw.reshape(-1, 1))[:, 1]
+def evaluate(raw: np.ndarray, y: np.ndarray, method: str = "sigmoid", folds: int = 5) -> dict:
+    """Metrics come from out-of-fold predictions; the saved table comes from a fit on all rows."""
+    X = raw.reshape(-1, 1)
+    base = CalibratedClassifierCV(LogisticRegression(), method=method, cv=3)
+    k = min(folds, int(np.bincount(y, minlength=2).min()))  # each fold needs both classes
+    if k < 2:
+        raise ValueError("Need at least 2 correct and 2 incorrect labeled queries to calibrate.")
+    cal = cross_val_predict(base, X, y, cv=StratifiedKFold(k, shuffle=True, random_state=0),
+                            method="predict_proba")[:, 1]
+    model = base.fit(X, y)
     xs = np.linspace(0, 1, 21)
     return {
         "brier_raw": brier_score_loss(y, raw), "brier_calibrated": brier_score_loss(y, cal),
         "ece_raw": ece(raw, y), "ece_calibrated": ece(cal, y),
+        "method": method, "folds": k,
         "table": {"x": xs.tolist(), "y": model.predict_proba(xs.reshape(-1, 1))[:, 1].tolist()},
     }
 
