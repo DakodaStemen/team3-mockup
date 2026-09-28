@@ -41,9 +41,11 @@ details.banner { display: block; }
 .course { display: flex; justify-content: space-between; gap: 6px; padding: 4px 0; border-top: 1px solid var(--border); font-size: .9rem; }
 .course.invalid { color: var(--bad); font-weight: 600; }
 .flag { color: var(--warn); }
+.was { color: var(--muted); font-weight: 400; font-size: .8rem; }
 .warning { font-size: .8rem; color: var(--warn); margin-top: 6px; }
 .guard { margin-top: 8px; }
 .guard.auto_accepted { color: var(--ok); } .guard.accepted_low_confidence { color: var(--warn); } .guard.escalated { color: var(--bad); }
 .graph { position: relative; height: 480px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
 table { width: 100%; border-collapse: collapse; font-size: .85rem; display: block; overflow-x: auto; }
+th { padding: 4px 8px; text-align: left; color: var(--muted); font-weight: 500; }
 td { padding: 4px 8px; border-top: 1px solid var(--border); vertical-align: top; }

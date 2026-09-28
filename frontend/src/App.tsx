@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { GraphCanvas, lightTheme, darkTheme } from 'reagraph'
 
-type Course = { id: string; title: string; catalog_units: number; roadmap_units: number | null; discrepancy_flag: boolean; term_offered: string }
+type Course = { id: string; title: string; catalog_units: number; roadmap_units: number | null; discrepancy_flag: boolean; term_offered: string; placeholder: boolean }
 type Edge = { from_course: string; to_course: string; condition: string; grade_minimum: string }
 type Term = { term_label: string; courses: string[]; total_units: number; warnings: string[] }
 type Plan = { student_id: string; unit_cap: number; summers: string[]; credited: string[]; terms: Term[] }
@@ -10,7 +10,7 @@ type Student = { id: string; name: string; completed_courses: Record<string, str
 type Result = { plan: Plan; timeline: Timeline; invalidated: string[]; delta_terms: number; explanation: string }
 type Guardrail = { input: string; outcome: string; confidence: number; reason: string | null; parsed_event: unknown }
 type Audit = Guardrail & { timestamp: string }
-type Catalog = { courses: Course[]; edges: Edge[]; discrepancies: string[] }
+type Catalog = { courses: Course[]; edges: Edge[]; priority: Record<string, number>; discrepancies: string[] }
 
 const EVENTS = ['Fail', 'Withdraw', 'Pass', 'Add Summer', 'Change Unit Load']
 
@@ -41,6 +41,24 @@ export default function App() {
   const student = students.find(s => s.id === sid)
   const shown = preview?.plan ?? plan
   const invalid = new Set(preview?.invalidated ?? [])
+  const inPlan = new Set(shown?.terms.flatMap(t => t.courses) ?? [])
+  const wasTerm = Object.fromEntries(plan?.terms.flatMap(t => t.courses.map(c => [c, t.term_label])) ?? [])
+
+  // Planned courses ranked by the engine's priority score, with how many later planned courses each one gates.
+  const bottlenecks = useMemo(() => {
+    if (!catalog || !plan) return []
+    const planned = new Set(plan.terms.flatMap(t => t.courses))
+    const next: Record<string, string[]> = {}
+    for (const e of catalog.edges) (next[e.from_course] ??= []).push(e.to_course)
+    const gates = (id: string) => {
+      const seen = new Set<string>(), stack = [id]
+      while (stack.length) for (const d of next[stack.pop()!] ?? []) if (!seen.has(d)) { seen.add(d); stack.push(d) }
+      return [...seen].filter(d => planned.has(d)).length
+    }
+    return catalog.courses.filter(c => planned.has(c.id) && !c.placeholder && catalog.priority[c.id] !== undefined)
+      .sort((a, b) => catalog.priority[b.id] - catalog.priority[a.id] || a.id.localeCompare(b.id)).slice(0, 10)
+      .map(c => ({ id: c.id, title: c.title, priority: catalog.priority[c.id], gates: gates(c.id) }))
+  }, [catalog, plan])
 
   const refreshAudit = () => api<Audit[]>('/audit?limit=15').then(setAudit)
   const run = async (fn: () => Promise<void>) => {
@@ -68,9 +86,11 @@ export default function App() {
     setGuard(r.guardrail); setPreview(r.result ?? undefined); await refreshAudit()
   })
 
+  const dark = matchMedia('(prefers-color-scheme: dark)').matches
   const termCourses = plan?.terms.find(t => t.term_label === ev.term_label)?.courses ?? []
   const status = (id: string) =>
-    invalid.has(id) ? 'invalid' : student?.completed_courses[id] || student?.in_progress_courses.includes(id) ? 'done' : 'planned'
+    invalid.has(id) ? 'invalid' : student?.completed_courses[id] || student?.in_progress_courses.includes(id) ? 'done'
+      : inPlan.has(id) ? 'planned' : 'unplanned'
 
   return (
     <main>
@@ -174,7 +194,9 @@ export default function App() {
             <h3>{t.term_label} <span className="muted">{t.total_units}u</span></h3>
             {t.courses.map(c => (
               <div key={c} className={`course ${invalid.has(c) ? 'invalid' : ''}`} title={courses[c]?.title}>
-                <span>{c}{invalid.has(c) && ' (affected)'}</span>
+                <span>{c}{invalid.has(c) && ' (affected)'}
+                  {preview && wasTerm[c] && wasTerm[c] !== t.term_label && <span className="was"> was {wasTerm[c]}</span>}
+                </span>
                 <span className="muted">
                   {['Fall', 'Spring'].includes(courses[c]?.term_offered) && `${courses[c]?.term_offered} only · `}{courses[c]?.catalog_units}u
                   {courses[c]?.discrepancy_flag && <span className="flag" title={`Roadmap says ${courses[c].roadmap_units}u`}> ⚑</span>}
@@ -186,14 +208,30 @@ export default function App() {
         ))}
       </section>
 
+      {bottlenecks.length > 0 && <section className="card">
+        <h2>Bottleneck courses in this plan</h2>
+        <p className="muted">Top 10 planned courses by priority score (direct dependents + longest downstream chain + 1 if offered once a year). "Gates" counts the later courses in this plan that depend on it.</p>
+        <table>
+          <thead><tr><th>Course</th><th>Priority</th><th>Gates</th><th>Title</th></tr></thead>
+          <tbody>
+            {bottlenecks.map(b => (
+              <tr key={b.id}>
+                <td>{b.id}</td><td>{b.priority}</td><td>{b.gates} course{b.gates === 1 ? '' : 's'}</td>
+                <td className="muted">{b.title}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>}
+
       {catalog && <section className="card">
         <h2>Prerequisite DAG</h2>
-        <p className="muted">Grey = completed · blue = planned · red = invalidated by the current what-if</p>
+        <p className="muted">Grey = completed · blue = planned · red = invalidated by the current what-if · faded = not in this plan</p>
         <div className="graph">
           <GraphCanvas
-            theme={matchMedia('(prefers-color-scheme: dark)').matches ? darkTheme : lightTheme}
+            theme={dark ? darkTheme : lightTheme}
             layoutType="treeTd2d"
-            nodes={catalog.courses.map(c => ({ id: c.id, label: c.id, fill: { invalid: '#d64545', done: '#9aa3ad', planned: '#3a7bd5' }[status(c.id)] }))}
+            nodes={catalog.courses.map(c => ({ id: c.id, label: c.id, fill: { invalid: '#d64545', done: '#9aa3ad', planned: '#3a7bd5', unplanned: dark ? '#3a3f47' : '#dde1e6' }[status(c.id)] }))}
             edges={catalog.edges.map(e => ({ id: `${e.from_course}>${e.to_course}`, source: e.from_course, target: e.to_course, dashed: e.condition === 'OR' }))}
           />
         </div>
