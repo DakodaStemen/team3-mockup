@@ -314,9 +314,9 @@ def _order_ok(plan):
 ])
 def test_passed_course_stays_put_when_its_term_is_rebuilt(second):
     alex = STUDENTS["alex"]
-    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Pass", course_id="CSE 2130", term_label="Fall 2027"))
+    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Pass", course_id="CSE 3100", term_label="Fall 2027"))
     r = apply_scenario(alex, r["plan"], second)
-    assert "CSE 2130" in next(t for t in r["plan"].terms if t.term_label == "Fall 2027").courses
+    assert "CSE 3100" in next(t for t in r["plan"].terms if t.term_label == "Fall 2027").courses
     _order_ok(r["plan"])
     check_valid(r["plan"], alex, cap=21)
 
@@ -378,7 +378,7 @@ def test_validator_flags_duplicates_bad_labels_and_order():
 @pytest.mark.req("FR-04", "FR-10")
 def test_retaking_a_prerequisite_revokes_credit_downstream():
     alex = STUDENTS["alex"]
-    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Pass", course_id="CSE 5000", term_label="Fall 2027"))
+    r = apply_scenario(alex, make_plan(alex), ScenarioEvent(event_type="Pass", course_id="CSE 5000", term_label="Spring 2028"))
     r = apply_scenario(alex, r["plan"], ScenarioEvent(event_type="Withdraw", course_id="CSE 2020", term_label="Spring 2027"))
     assert "CSE 5000" not in r["plan"].credited  # its pass depended on the course being retaken
     _order_ok(r["plan"])
@@ -433,7 +433,7 @@ def test_each_term_keeps_the_cap_it_was_planned_under():
         r = apply_scenario(sam, plan, ev)
         for t in r["plan"].terms:
             limit = 15 if term_key(t.term_label) < term_key(raised) else 18
-            assert t.unit_cap == (min(8, limit) if t.term_label.startswith("Summer") else limit), t.term_label
+            assert t.unit_cap == (min(14, limit) if t.term_label.startswith("Summer") else limit), t.term_label
             assert t.total_units <= t.unit_cap, f"{ev.course_id}: {t.term_label} {t.total_units} > {t.unit_cap}"
         check_valid(r["plan"], sam)  # no cap override: each term is checked against its own cap
 

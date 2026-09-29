@@ -198,6 +198,11 @@ def parse_courses(path: Path) -> list[dict]:
                 coreq_text = re.split(r"\.?\s*Quarter", m.group(1))[0]
         groups, standing, notes = parse_requisites(prereq_text)
         cgroups, _, cnotes = parse_requisites(coreq_text, concurrent_all=True)
+        if any(a["course"] == cid for g in groups + cgroups for a in g):
+            # "X, which may be taken concurrently with <this course>": a remark about this course, not a prerequisite on itself.
+            groups = [g for g in ([a for a in g if a["course"] != cid] for g in groups) if g]
+            cgroups = [g for g in ([a for a in g if a["course"] != cid] for g in cgroups) if g]
+            notes.append(prereq_text.strip()[:200])
         ge = re.search(r"Satisfies GE ([^.,;]+)", desc.get_text(" ") if desc else "")
         out.append({
             "id": cid, "title": name, "catalog_units": units[0] if units else 0,

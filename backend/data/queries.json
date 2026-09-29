@@ -81,11 +81,11 @@
   }
  },
  {
-  "query": "fail operating systems spring 2028",
+  "query": "fail operating systems fall 2027",
   "expected": {
    "event_type": "Fail",
    "course_id": "CSE 4600",
-   "term_label": "Spring 2028",
+   "term_label": "Fall 2027",
    "unit_load": null
   }
  },
@@ -99,11 +99,11 @@
   }
  },
  {
-  "query": "failing machine organization CSE 2130 in fall 2027, what now",
+  "query": "failing machine organization CSE 2130 in spring 2027, what now",
   "expected": {
    "event_type": "Fail",
    "course_id": "CSE 2130",
-   "term_label": "Fall 2027",
+   "term_label": "Spring 2027",
    "unit_load": null
   }
  },
@@ -162,11 +162,11 @@
   }
  },
  {
-  "query": "drop PHYS 2500 in Spring 2027",
+  "query": "drop PHYS 2500 in Fall 2027",
   "expected": {
    "event_type": "Withdraw",
    "course_id": "PHYS 2500",
-   "term_label": "Spring 2027",
+   "term_label": "Fall 2027",
    "unit_load": null
   }
  },

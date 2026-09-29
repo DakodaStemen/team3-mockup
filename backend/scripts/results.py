@@ -20,7 +20,7 @@ from pathlib import Path
 import networkx as nx
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from planner.engine import apply_scenario, make_plan, timeline, validate_plan  # noqa: E402
+from planner.engine import apply_scenario, make_plan, recover, terms_later, timeline, validate_plan  # noqa: E402
 from planner.graph import load_catalog, load_students  # noqa: E402
 from planner.models import Plan, ScenarioEvent, StudentProfile, TermPlan  # noqa: E402
 from scripts.ingest import GE_SLOTS  # noqa: E402
@@ -125,6 +125,9 @@ def scenario_sweep() -> list[dict]:
         spring = next((t.term_label for t in plan.terms if t.term_label.startswith("Spring")), None)
         if spring:
             events.append(ScenarioEvent(event_type="Add Summer", term_label=f"Summer {spring.split()[1]}"))
+        fall = next((t.term_label for t in plan.terms[:-1] if t.term_label.startswith("Fall")), None)
+        if fall:
+            events.append(ScenarioEvent(event_type="Add Winter", term_label=f"Winter {int(fall.split()[1]) + 1}"))
         events += [ScenarioEvent(event_type="Change Unit Load", term_label=first, unit_load=u) for u in (9, 12, 18)]
         events += [ScenarioEvent(event_type="Pass", course_id=c, term_label=t.term_label)
                    for t in plan.terms[1:3] for c in t.courses if not CAT.courses[c].placeholder]
@@ -133,6 +136,9 @@ def scenario_sweep() -> list[dict]:
             t0 = time.perf_counter()
             r = apply_scenario(s, plan, ev)
             ms = (time.perf_counter() - t0) * 1000
+            rec = None  # FR-24: can opt-in Summer/Winter terms win back a delay?
+            if r["delta_terms"] > 0 and ev.event_type in ("Fail", "Withdraw", "Change Unit Load"):
+                rec = recover(s, r["plan"], before["graduation_term"], ev.term_label, CAT)
             rows.append({
                 "student": sid, "event_type": ev.event_type, "course_id": ev.course_id or "", "term": ev.term_label,
                 "unit_load": ev.unit_load or "", "invalidated": len(r["invalidated"]), "delta_terms": r["delta_terms"],
@@ -140,6 +146,9 @@ def scenario_sweep() -> list[dict]:
                 "recalc_ms": round(ms, 3), "full_plan_ms": round(full_ms, 3),
                 "valid": not validate_plan(r["plan"], s, CAT, cap=max(plan.unit_cap, ev.unit_load or 0)),
                 "explanation": r["explanation"],
+                "recovery_adds": " + ".join(rec["adds"]) if rec else "",
+                "recovered_grad": rec["timeline"]["graduation_term"] if rec else "",
+                "recovery_valid": (not validate_plan(rec["plan"], s, CAT, cap=max(plan.unit_cap, ev.unit_load or 0))) if rec else "",
             })
     return rows
 
@@ -184,6 +193,7 @@ def main():
         w.writerows(runs)
 
     fails = [r for r in runs if r["event_type"] == "Fail"]
+    late = [r for r in runs if r["event_type"] in ("Fail", "Withdraw") and r["delta_terms"] > 0]
     measured = [r for r in bn if r["mean_delay_when_failed"] is not None]
     rho_p = spearman([r["priority"] for r in measured], [r["mean_delay_when_failed"] for r in measured])
     rho_b = spearman([r["betweenness"] for r in measured], [r["mean_delay_when_failed"] for r in measured])
@@ -209,6 +219,12 @@ def main():
           f"- {len(runs)} what-if runs across {len(STUDENTS)} students; **{sum(r['valid'] for r in runs)}/{len(runs)} produced valid plans**.",
           f"- Fail/withdraw delay distribution (terms): {dict(sorted(Counter(r['delta_terms'] for r in fails).items()))}",
           f"- Mean ripple size on Fail: {mean((r['invalidated'] for r in fails), 1)} courses",
+          f"- Delayed Fail/Withdraw runs where opt-in Summer/Winter terms win back the full delay (FR-24): "
+          f"{sum(1 for r in late if r['recovered_grad'] and terms_later(r['grad_before'], r['recovered_grad']) <= 0)}/{len(late)}; "
+          f"at least one term: {sum(1 for r in late if r['recovery_adds'])}/{len(late)}. "
+          f"Recovered plans valid: {sum(r['recovery_valid'] is True for r in late)}/{sum(1 for r in late if r['recovery_adds'])}. "
+          "Planned loads are lighter than the Registrar's maximums (summer 7 of 14, winter 4 of 4); "
+          "which courses run in each intersession is unconfirmed (CH-03).",
           f"- Recalc time: median {median(r['recalc_ms'] for r in runs):.2f} ms "
           f"(full plan from scratch: median {median(r['full_plan_ms'] for r in runs):.2f} ms, "
           f"median ratio {median(speed):.1f}x)", "",

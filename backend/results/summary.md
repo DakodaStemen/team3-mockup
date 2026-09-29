@@ -20,14 +20,15 @@ Data: BS Computer Science (CSCI), CSUSB 2026-27 catalog + roadmaps. 67 courses, 
 
 ## Scenario sweep
 
-- 280 what-if runs across 6 students; **280/280 produced valid plans**.
-- Fail/withdraw delay distribution (terms): {0: 33, 1: 46, 2: 27, 3: 3}
-- Mean ripple size on Fail: 2.7 courses
-- Recalc time: median 0.42 ms (full plan from scratch: median 0.41 ms, median ratio 0.9x)
+- 285 what-if runs across 6 students; **285/285 produced valid plans**.
+- Fail/withdraw delay distribution (terms): {0: 29, 1: 49, 2: 28, 3: 3}
+- Mean ripple size on Fail: 2.8 courses
+- Delayed Fail/Withdraw runs where opt-in Summer/Winter terms win back the full delay (FR-24): 128/160; at least one term: 128/160. Recovered plans valid: 128/128. Planned loads are lighter than the Registrar's maximums (summer 7 of 14, winter 4 of 4); which courses run in each intersession is unconfirmed (CH-03).
+- Recalc time: median 1.15 ms (full plan from scratch: median 1.28 ms, median ratio 1.1x)
 
 ## Bottlenecks
 
-Spearman correlation with measured delay-when-failed (29 courses): priority score 0.65, descendant count 0.51, betweenness centrality 0.32. Delay is measured by the same greedy engine that schedules by priority, so this correlation is a consistency check, not validation. Betweenness is 0 by construction for all 6 courses with no prerequisites to plan, including gatekeepers like CSE 2010 and MATH 2372.
+Spearman correlation with measured delay-when-failed (29 courses): priority score 0.62, descendant count 0.48, betweenness centrality 0.31. Delay is measured by the same greedy engine that schedules by priority, so this correlation is a consistency check, not validation. Betweenness is 0 by construction for all 6 courses with no prerequisites to plan, including gatekeepers like CSE 2010 and MATH 2372.
 
 | course | priority | descendants | betweenness | mean delay when failed |
 |---|---|---|---|---|
@@ -36,7 +37,7 @@ Spearman correlation with measured delay-when-failed (29 courses): priority scor
 | MATH 2220 | 9 | 12 | 0.0002 | 2 |
 | CSE 2010 | 8 | 39 | 0.0 | 1 |
 | MATH 2310 | 7 | 7 | 0.0037 | 2 |
-| CSE 2130 | 6 | 8 | 0.0011 | 1.667 |
+| CSE 2130 | 6 | 8 | 0.0011 | 1.333 |
 | CSE 3100 | 6 | 7 | 0.003 | 2 |
 | MATH 2372 | 5 | 36 | 0.0 | 1 |
 | PHYS 2500 | 5 | 3 | 0.0002 | 1.333 |

@@ -56,7 +56,7 @@
   "depth": 2,
   "descendants": 8,
   "betweenness": 0.0011,
-  "mean_delay_when_failed": 1.667,
+  "mean_delay_when_failed": 1.333,
   "fail_runs": 3
  },
  {
@@ -196,7 +196,7 @@
   "depth": 1,
   "descendants": 1,
   "betweenness": 0.0001,
-  "mean_delay_when_failed": 0,
+  "mean_delay_when_failed": 1.333,
   "fail_runs": 3
  },
  {
@@ -336,7 +336,7 @@
   "depth": 0,
   "descendants": 0,
   "betweenness": 0.0,
-  "mean_delay_when_failed": 0.5,
+  "mean_delay_when_failed": 1,
   "fail_runs": 4
  },
  {

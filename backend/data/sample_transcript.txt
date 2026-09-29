@@ -1,0 +1,29 @@
+SYNTHETIC SAMPLE - NOT A REAL STUDENT RECORD
+California State University, San Bernardino
+Unofficial Transcript
+
+Transfer Credit
+  ENG 1070A   Stretch Composition          3.00  3.00  TR
+  COMM 1006   Oral Communication           3.00  3.00  CR
+
+Fall 2025
+  Course      Description                  Attempted Earned Grade Points
+  MATH 2210   Calculus I                   4.00  4.00  B     12.000
+  CSE 2010    Computer Science I           4.00  4.00  D      4.000
+  MATH 2372   Discrete Mathematics         3.00  3.00  A-    11.100
+  BIOL 1000   Topics in Biology            3.00  3.00  B      9.000
+
+Winter Intersession 2026
+  MATH 2265   Statistics with Applications 3.00  3.00  B+     9.900
+
+Spring 2026
+  CSE 2010    Computer Science I           4.00  4.00  B     12.000
+  MATH 2220   Calculus II                  4.00  0.00  W      0.000
+
+Summer 2026
+  MATH 2220   Calculus II                  4.00  4.00  C+     9.200
+
+Fall 2026
+  CSE 2020    Computer Science II          4.00
+  CSE 2130    Machine Organization         3.00
+  MATH 2310   Applied Linear Algebra       4.00
