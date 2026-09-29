@@ -43,7 +43,7 @@ This follows Sommerville Ch 13 (risk-driven security requirements, secure design
 
 ## 3. Reporting a vulnerability
 
-The repo is private. Report a suspected issue to the team through a private message to the ScrumMaster, not a public issue. Include the steps and the affected commit.
+The repo is public. Report a suspected issue to the team through a private message to the ScrumMaster, not a public issue. Include the steps and the affected commit.
 
 ## 4. Professional ethics (ACM/IEEE Code, Sommerville §1.2)
 

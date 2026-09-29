@@ -14,6 +14,7 @@
     "test:e2e:static": "playwright test -c playwright.static.config.ts"
   },
   "dependencies": {
+    "pdfjs-dist": "^6.3.289",
     "pyodide": "^314.0.7",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"

@@ -1,11 +1,12 @@
 import { expect, test, type Page } from '@playwright/test'
+import { openDashboard } from './helpers'
 
 // Edge cases found in the frontend sweep: stale form state, request races, error rendering, console noise.
 const stat = (page: Page, label: string) => page.locator('.stat', { hasText: label }).locator('span').last()
 const alert = (page: Page) => page.getByRole('alert')
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/')
+  await openDashboard(page)
   await expect(stat(page, 'Graduation')).toHaveText('Spring 2030')
 })
 
@@ -100,7 +101,7 @@ for (const scheme of ['light', 'dark'] as const) {
     page.on('pageerror', e => errors.push(String(e)))
     await page.emulateMedia({ colorScheme: scheme })
     if (scheme === 'dark') await page.addInitScript(() => localStorage.setItem('adpp-theme', 'dark'))  // the app is light unless toggled
-    await page.goto('/')
+    await openDashboard(page)
     await expect(stat(page, 'Graduation')).toHaveText('Spring 2030')
     for (const ev of ['Fail', 'Pass', 'Add Summer', 'Change Unit Load']) {
       await page.getByRole('radio', { name: ev, exact: true }).click()

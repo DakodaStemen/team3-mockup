@@ -21,10 +21,10 @@ CSE 6550 Software Engineering · Fall 2026 · CSUSB · Project 3. This README is
 
 | Team member | Current responsibilities | GitHub |
 |---|---|---|
-| Dakoda Stemen | Team lead; requirements owner; prototype | `DakodaStemen` |
-| Yao Guo | *TBD at team meeting* | |
+| Dakoda Stemen | Team lead; requirements owner; prototype | [`DakodaStemen`](https://github.com/DakodaStemen) |
+| Yao Guo | *TBD at team meeting* | [`yaoyaodebbie97`](https://github.com/yaoyaodebbie97) |
 | Lusine Hayrapetyan | *TBD* | |
-| Fabian Torres | *TBD* | |
+| Fabian Torres | *TBD* | [`fabstorres`](https://github.com/fabstorres) |
 
 Lanes and backups: [agile engineering plan §2](docs/03-planning-risk/agile-engineering-plan.md#2-team-organization).
 
@@ -32,7 +32,7 @@ Lanes and backups: [agile engineering plan §2](docs/03-planning-risk/agile-engi
 
 | Milestone | Status | Responsible | Due | Blockers / decisions |
 |---|---|---|---|---|
-| **SRS v0.1: Requirements Baseline** (graded, Week 5) | Draft, in team review | Dakoda Stemen + team | Week 5 | Team must accept or reject [CH-02](docs/01-product-requirements/srs-change-proposal-CH-02.md), [CH-03](docs/01-product-requirements/srs-change-proposal-CH-03.md), and [CH-04](docs/01-product-requirements/srs-change-proposal-CH-04.md), and decide the open conflicts in CH-02 §C and CH-04 §C-1 (real transcripts). The instructor and team members must be added to this repo. |
+| **SRS v0.1: Requirements Baseline** (graded, Week 5) | Draft, in team review | Dakoda Stemen + team | Week 5 | Team must accept or reject [CH-02](docs/01-product-requirements/srs-change-proposal-CH-02.md), [CH-03](docs/01-product-requirements/srs-change-proposal-CH-03.md), and [CH-04](docs/01-product-requirements/srs-change-proposal-CH-04.md), and decide the open conflicts in CH-02 §C and CH-04 §C-1 (real transcripts). The instructor and team members must be added as collaborators (the repo is public, so they can already read it). |
 
 ## Engineering Dossier Index
 
@@ -81,7 +81,7 @@ Requires [uv](https://docs.astral.sh/uv/), Python 3.12+, and Node.js 22.12+ (or 
 ./dev.sh    # installs deps if needed, starts API :8000 + UI :5173; Ctrl+C stops both
 ```
 
-Open http://localhost:5173. Things to try:
+Open http://localhost:5173. The landing page offers **Upload your transcript** or **Explore with sample data** (Alex and five other synthetic students); the logo returns to it. Things to try:
 
 - Click any course (term grid, bottleneck table, or graph) to load it into the what-if form, then **Run what-if**.
 - **Keep this plan** stacks changes in *Plan history*; **Undo last** / **Reset to baseline** walk them back.
@@ -121,7 +121,7 @@ npm run build:pages                          # static build: the API runs in the
 `.github/workflows/pages.yml` publishes the app as a static site on every push to `main`. There is no server: the same FastAPI app runs in a Web Worker under [Pyodide](https://pyodide.org) (`backend/planner/browser.py`, `frontend/src/backend.ts`), so plans and what-ifs come from the same tested engine.
 
 - The first visit downloads about 10 MB (the Python runtime from the jsDelivr CDN, plus a 1 MB bundle of the engine); later visits use the browser cache.
-- PDF transcripts are not supported there (pdfplumber has no Pyodide build). Text and CSV transcripts and the sample work, and are parsed in memory.
+- PDF transcripts are read in the browser with pdf.js (pdfplumber has no Pyodide build), and the text goes to the same parser as a text or CSV upload. Everything stays in memory.
 - Repository setting: Settings > Pages > Source = GitHub Actions.
 
 ## Data

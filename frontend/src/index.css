@@ -66,7 +66,7 @@ button:disabled { opacity: .45; cursor: default; }
 
 /* Top bar: white, like the site's utility strip, carrying the two-tone logo */
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px max(24px, calc((100% - 1392px) / 2)); background: var(--surface); border-bottom: 1px solid var(--line); }
-.brand { display: flex; align-items: center; gap: 16px; }
+.brand { display: flex; align-items: center; gap: 16px; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; border-radius: var(--radius); }
 .logo { height: 46px; width: auto; display: block; }
 .logo-mountain { fill: var(--logo-blue); } .logo-wordmark { fill: var(--logo-gray); }
 .brand-name { font-size: 1.05rem; font-weight: 700; color: var(--navy); padding-left: 16px; border-left: 1px solid var(--line); letter-spacing: .01em; }
@@ -356,3 +356,27 @@ tr.clickable { cursor: pointer; } tr.clickable:hover td { background: var(--blue
 .grade.low { color: var(--bad); background: var(--bad-tint); }
 .grade.ip { color: var(--blue); background: var(--blue-tint); font-weight: 600; }
 @media (max-width: 640px) { .upload { width: 100%; } .upload-btn { justify-content: center; } }
+
+/* Landing page: the banner gradient, a plain-language promise, and the two ways in */
+.landing { background: var(--banner); color: #fff; min-height: calc(100vh - 61px); display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 460px);
+  gap: 56px; align-content: center; align-items: center; padding: 56px max(24px, calc((100% - 1200px) / 2)); }
+.landing-hero { display: grid; gap: 18px; }
+.eyebrow { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgb(255 255 255 / .8); }
+.landing h1 { font-size: clamp(2rem, 4.2vw, 3.1rem); line-height: 1.12; letter-spacing: -.01em; color: #fff; }
+.lede { font-size: 1.1rem; line-height: 1.55; color: rgb(255 255 255 / .92); max-width: 34rem; }
+.landing-actions { background: var(--surface); color: var(--text); border-radius: 8px; padding: 26px; display: grid; gap: 14px; box-shadow: 0 12px 40px rgb(0 20 50 / .3); }
+.dropzone { display: grid; justify-items: center; gap: 6px; text-align: center; padding: 30px 20px; border: 2px dashed var(--line-strong); border-radius: var(--radius);
+  background: var(--surface-2); cursor: pointer; transition: border-color .15s, background-color .15s; position: relative; }
+.dropzone:hover, .dropzone.drag, .dropzone:focus-within { border-color: var(--blue); background: var(--blue-tint); }
+.dropzone.busy { cursor: progress; opacity: .75; }
+.dropzone strong { font-size: 1.1rem; color: var(--ink); }
+.dropzone span { font-size: .88rem; color: var(--muted); }
+.dropzone svg { width: 30px; height: 30px; fill: none; stroke: var(--blue); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 4px; }
+.dropzone input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.privacy { font-size: .8rem; color: var(--muted); text-align: center; margin-top: -4px; }
+.or { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: .8rem; }
+.or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.landing-actions .linkish { justify-self: center; color: var(--blue); }
+.engine-note { font-size: .8rem; text-align: center; }
+.landing-note { grid-column: 1 / -1; font-size: .8rem; color: rgb(255 255 255 / .8); }
+@media (max-width: 900px) { .landing { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 36px 16px; } }

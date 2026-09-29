@@ -14,7 +14,7 @@ This plan carries the useful parts of a traditional SPMP, per the course dossier
 |---|---|---|
 | Duration | Remaining course weeks (currently Week 5 of the course plan) | SRS LIM-01 |
 | Team | 5 people | SRS LIM-01 |
-| Budget | $0: open-source tools, GitHub private repo | Team decision |
+| Budget | $0: open-source tools, GitHub public repo | Team decision |
 | Data | Synthetic students; public CSUSB program data | COM-03; CH-02 C-2 |
 | Starting point | v0.1.0: working prototype on real program data (what-ifs, Summer/Winter catch-up, transcript upload), test suite, dossier structure | [CHANGELOG](../../CHANGELOG.md) |
 

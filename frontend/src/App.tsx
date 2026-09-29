@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { PrereqMap, type NodeState } from './PrereqMap'
 import { Logo } from './Logo'
 import { apiFetch, STATIC, whenEngineReady } from './backend'
+import { pdfToText } from './pdfText'
 
 type Course = { id: string; title: string; catalog_units: number; roadmap_units: number | null; discrepancy_flag: boolean; term_offered: string; placeholder: boolean; requirement_groups: string[] }
 type Edge = { from_course: string; to_course: string; condition: string; grade_minimum: string }
@@ -80,6 +81,8 @@ export default function App() {
   const [report, setReport] = useState<Report>()
   const [uploading, setUploading] = useState(false)
   const sampleCount = useRef(0)
+  const [started, setStarted] = useState(false)  // false: the landing page
+  const [dragging, setDragging] = useState(false)
   const [engineReady, setEngineReady] = useState(!STATIC)
   useEffect(() => whenEngineReady(() => setEngineReady(true)), [])
   const [sid, setSid] = useState('alex')
@@ -132,7 +135,7 @@ export default function App() {
 
   useEffect(() => {
     Promise.all([api<Catalog>('/catalog'), api<Student[]>('/students')])
-      .then(([c, s]) => { setCatalog(c); setStudents(s) }, e => setError(errorText(e)))
+      .then(([c, s]) => { setCatalog(c); setStudents(list => [...s, ...list.filter(x => x.id.startsWith('upload-'))]) }, e => setError(errorText(e)))
   }, [])
   useEffect(() => {
     let live = true  // a slower response for a previous student/cap must not overwrite this one
@@ -224,12 +227,19 @@ export default function App() {
   const upload = async (body: Blob, file: string) => {
     setError(''); setUploading(true)
     try {
-      const r = await apiFetch(`/api/transcript?filename=${encodeURIComponent(file)}`, { method: 'POST', body })
+      let name = file
+      if (STATIC && (body.type === 'application/pdf' || /\.pdf$/i.test(file))) {  // read the PDF here; the parser only sees text
+        try { body = new Blob([await pdfToText(body)], { type: 'text/plain' }) } catch (e) {
+          throw e instanceof Error && /pages/.test(e.message) ? e : new Error('Could not read that file as a PDF. Try a text or CSV export.')
+        }
+        name = file.replace(/\.pdf$/i, '.txt')
+      }
+      const r = await apiFetch(`/api/transcript?filename=${encodeURIComponent(name)}`, { method: 'POST', body })
       const data = await r.json().catch(() => undefined)
       if (!r.ok) throw new Error(typeof data?.detail === 'string' ? data.detail : r.status === 413 ? 'That file is over the 1 MB upload limit.' : UNREACHABLE)
       const s: Student = data.student
       s.name = `${file.replace(/\.[a-z]+$/i, '')} (uploaded)`
-      setStudents(list => [...list, s]); setReport({ ...data.report, file }); changeStudent(s.id)
+      setStudents(list => [...list, s]); setReport({ ...data.report, file }); changeStudent(s.id); setStarted(true)
     } catch (e) {
       setError(errorText(e))
     } finally { setUploading(false) }
@@ -299,10 +309,10 @@ export default function App() {
   return (
     <>
       <header className="topbar">
-        <div className="brand">
+        <button className="brand" onClick={() => setStarted(false)} title="Back to the start page">
           <Logo className="logo" />
           <span className="brand-name">Degree Pathway Planner<small>B.S. Computer Science · 2026–27 catalog</small></span>
-        </div>
+        </button>
         <div className="top-actions">
           <button className="theme-toggle" onClick={toggleTheme} aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'} title={theme === 'dark' ? 'Light theme' : 'Dark theme'}>
             {theme === 'dark'
@@ -312,6 +322,34 @@ export default function App() {
         </div>
       </header>
 
+      {!started ? <main className="landing" data-testid="landing">
+        <section className="landing-hero">
+          <p className="eyebrow">CSUSB · B.S. Computer Science · 2026–27 catalog</p>
+          <h1>See your path to graduation, and what a setback would change.</h1>
+          <p className="lede">Upload your unofficial transcript and get a term-by-term plan. Then ask what happens if you fail, withdraw from, or delay a course, and see exactly how graduation moves.</p>
+        </section>
+        <section className="landing-actions">
+          {error && <div className="alert" role="alert">
+            <span><strong>Error: </strong>{error}</span>
+            <button className="ghost small" onClick={() => setError('')}>Dismiss</button>
+          </div>}
+          <label className={`dropzone ${dragging ? 'drag' : ''} ${uploading ? 'busy' : ''}`}
+                 onDragOver={e => { e.preventDefault(); setDragging(true) }} onDragLeave={() => setDragging(false)}
+                 onDrop={e => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f && !uploading) upload(f, f.name) }}>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 13V3M6 7l4-4 4 4M4 13v3h12v-3" /></svg>
+            <strong>{uploading ? 'Reading your transcript…' : 'Upload your transcript'}</strong>
+            <span>Drop a file here, or click to choose one. PDF, text, or CSV.</span>
+            <input type="file" accept=".pdf,.txt,.csv,application/pdf,text/plain,text/csv" disabled={uploading}
+                   onChange={e => { const f = e.target.files?.[0]; if (f) upload(f, f.name); e.target.value = '' }} />
+          </label>
+          <p className="privacy">Read in your browser and kept in memory only. Nothing is uploaded or saved.</p>
+          <div className="or"><span>or</span></div>
+          <button className="primary wide" onClick={() => { if (sid.startsWith('upload-')) changeStudent('alex'); setStarted(true) }}>Explore with sample data</button>
+          <button className="linkish" onClick={uploadSample} disabled={uploading}>Try the sample transcript instead</button>
+          {!engineReady && <p className="muted engine-note">Starting the planning engine in your browser (about 10 MB the first time)…</p>}
+        </section>
+        <p className="landing-note">Planning aid only: not an official degree audit or advising decision.</p>
+      </main> : <>
       <div className="banner">
         <div className="banner-inner">
           <div className="who">
@@ -607,6 +645,7 @@ export default function App() {
           </div>
         </section>}
       </main>
+      </>}
     </>
   )
 }

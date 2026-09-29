@@ -4,7 +4,7 @@ import { defineConfig } from '@playwright/test'
 // The engine downloads Pyodide from the jsDelivr CDN, so this needs network access.
 export default defineConfig({
   testDir: 'e2e',
-  testMatch: 'demo.spec.ts',
+  testMatch: ['demo.spec.ts', 'landing.spec.ts'],
   expect: { timeout: 60_000 },  // each test starts a fresh engine: Pyodide and its packages download on a cold cache
   timeout: 120_000,
   use: { baseURL: 'http://localhost:4173' },

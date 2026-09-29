@@ -264,6 +264,7 @@ Solid and plain, like the site's buttons.
 
 ### Cards / Containers
 
+- **Landing page:** the banner gradient full-bleed, a plain-language promise on the left, and one white card on the right: a dashed drop zone for the transcript, then a full-width primary "Explore with sample data" and a text link for the sample transcript. The logo returns here.
 - **What-if panel:** white surface, hairline border, 5px radius, 20px padding. The event is a row of pill chips (one selected, filled blue); term and course sit side by side. The result card follows below with a colored left rule (red for a delay, green for none) and a filled delta pill, and scrolls into view when it appears.
 - **Result card:** tinted by outcome (Affected Red or Done Green wash with a 35% border of the same hue), 18px 20px padding, rises 4px on entry (0.22s). Head row pairs the event with a bold delta ("+1 term"); a disclosure lists moved courses.
 - **Term card:** white, 1px hairline, card lift, 12px 14px padding; heading carries the term and "used / cap" units over a 3px blue rule. Course rows are full-bleed buttons that wash Blue Wash on hover. Engine notes fold into a "N scheduling notes" disclosure.

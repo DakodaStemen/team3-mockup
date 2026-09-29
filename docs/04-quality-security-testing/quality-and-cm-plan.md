@@ -85,14 +85,14 @@ Reported at each sprint review (Sommerville §24.5: static and dynamic metrics):
 
 ### 2.1 Version management
 
-- **Tool:** Git; GitHub private repo `DakodaStemen/team3-mockup`.
+- **Tool:** Git; GitHub public repo `DakodaStemen/team3-mockup`.
 - **Codelines:** `main` is the mainline and is always releasable (CI green). Work happens on short-lived branches named `feat/<issue>-<slug>`, `fix/<issue>-<slug>`, `docs/<slug>`, or `data/<slug>`, merged by PR (squash).
 - **Rules:**
   - No direct pushes or force-pushes to `main`.
   - Commits reference their issue.
   - Generated artifacts (`catalog.json`, `traceability.md`, `results/`) are committed together with the change that produced them.
   - `backend/data/raw/*` is stored byte-exact (`.gitattributes` `-text`).
-- **Enforcement:** GitHub branch protection or rulesets on `main` (required checks + 1 review) need a paid plan for private repos. Until then these rules are a team standard, checked at review.
+- **Enforcement:** GitHub branch protection or rulesets on `main` (required checks + 1 review) are free on this public repo but not yet enabled; until then they are a team standard, checked at review.
 
 ### 2.2 System building
 

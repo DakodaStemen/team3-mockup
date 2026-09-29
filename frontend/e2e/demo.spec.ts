@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { openDashboard } from './helpers'
 
 // Mirrors the demo walkthrough: Alex's baseline, then one what-if at a time.
 const stat = (page: Page, label: string) => page.locator('.stat', { hasText: label }).locator('span').last()
@@ -12,7 +13,7 @@ async function whatIf(page: Page, event: string, term: string, course?: string) 
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/')
+  await openDashboard(page)
   await expect(stat(page, 'Graduation')).toHaveText('Spring 2030')
 })
 

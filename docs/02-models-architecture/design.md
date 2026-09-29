@@ -191,7 +191,7 @@ flowchart LR
 
 **Development view:** the repository layout is in the [README](../../README.md#repository-layout); area owners are in the [agile engineering plan §2](../03-planning-risk/agile-engineering-plan.md#2-team-organization).
 
-**Physical view:** a single developer machine. UI on `:5173`, API on `:8000`. CI runs on GitHub-hosted Linux. No production deployment is in scope (SRS §2.6). The demo is also published as a static site on GitHub Pages: there is no server, and the same FastAPI app runs in a Web Worker under Pyodide (`planner/browser.py`, `frontend/src/backend.ts`). PDF transcript upload is unavailable there because pdfplumber has no Pyodide build.
+**Physical view:** a single developer machine. UI on `:5173`, API on `:8000`. CI runs on GitHub-hosted Linux. No production deployment is in scope (SRS §2.6). The demo is also published as a static site on GitHub Pages: there is no server, and the same FastAPI app runs in a Web Worker under Pyodide (`planner/browser.py`, `frontend/src/backend.ts`). PDFs are read in the browser with pdf.js (`frontend/src/pdfText.ts`) because pdfplumber has no Pyodide build; the text goes to the same parser.
 
 **+1 Scenarios:** the use cases in §2.2, each exercised by the release-test scenarios in the [verification strategy §4](../04-quality-security-testing/verification-strategy.md#4-release-testing-83).
 
@@ -247,6 +247,6 @@ Every response carries `X-Content-Type-Options`, `X-Frame-Options`, and `Referre
 
 - **Design patterns:**
   - *Template method* for explanations (FR-12).
-- **Reuse:** NetworkX, Pydantic, FastAPI, pdfplumber, BeautifulSoup. Hand-written: the per-term greedy packing, the catch-up search, the transcript parser, and the SVG prerequisite map (it replaced Reagraph in v0.6).
+- **Reuse:** NetworkX, Pydantic, FastAPI, pdfplumber, BeautifulSoup, Pyodide and pdf.js (browser demo). Hand-written: the per-term greedy packing, the catch-up search, the transcript parser, and the SVG prerequisite map (it replaced an earlier Reagraph prototype).
 - **Host–target:** develop on Windows, CI on Linux. `pathlib` and explicit UTF-8 throughout.
-- **Licensing:** all dependencies are permissive (MIT/BSD/Apache). CSUSB content is used for coursework in a private repo, not redistributed.
+- **Licensing:** all dependencies are permissive (MIT/BSD/Apache). CSUSB content is used for coursework. The repo is public and holds cached copies of public CSUSB pages (`backend/data/raw/`), with each source cited in `catalog.json`.
