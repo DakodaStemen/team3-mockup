@@ -5,6 +5,7 @@ import { defineConfig } from '@playwright/test'
 export default defineConfig({
   testDir: 'e2e',
   testMatch: 'demo.spec.ts',
+  expect: { timeout: 60_000 },  // each test starts a fresh engine: Pyodide and its packages download on a cold cache
   timeout: 120_000,
   use: { baseURL: 'http://localhost:4173' },
   webServer: {
