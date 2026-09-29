@@ -2,7 +2,7 @@
 
 CSE 6550 Software Engineering · Fall 2026 · CSUSB · Project 3. This README is the **Engineering Dossier Index** (course: *Engineering Dossier Workspace and Repository Structure*). **Looking for a document? Start at the [documentation index](docs/README.md).**
 
-**Contents:** [Summary](#project-summary) · [Team](#team) · [Milestone](#current-milestone) · [Dossier index](#engineering-dossier-index) · [Quick start](#quick-start) · [Setup](#setup-and-run) · [Data](#data) · [Layout](#repository-layout)
+**Contents:** [Summary](#project-summary) · [Team](#team) · [Milestone](#current-milestone) · [Dossier index](#engineering-dossier-index) · [Quick start](#quick-start) · [Setup](#setup-and-run) · [Pages demo](#github-pages-demo) · [Data](#data) · [Layout](#repository-layout)
 
 ## Project summary
 
@@ -90,7 +90,7 @@ Open http://localhost:5173. Things to try:
 - Add **Summer** or **Winter** terms as what-ifs; when a setback delays graduation, the catch-up suggestion shows the fewest intersessions that win the time back.
 - The **Prerequisite map** view of the plan shows every dependency on the same timeline.
 
-Tests: `cd backend && uv run pytest -q` (199 tests: engine, fuzz and term sweeps, API, security, transcript, ingest, traceability) and `cd frontend && npm run test:e2e` (Playwright drives the real app; first run may need `npx playwright install chromium`).
+Tests: `cd backend && uv run pytest -q` (207 tests: engine, fuzz and term sweeps, API, security, transcript, ingest, in-browser bridge, traceability) and `cd frontend && npm run test:e2e` (Playwright drives the real app; first run may need `npx playwright install chromium`). `npm run test:e2e:static` runs the walkthrough against the GitHub Pages build.
 
 ## Setup and run
 
@@ -105,6 +105,7 @@ uv run python scripts/ingest.py              # rebuild planner/catalog.json from
 uv run python scripts/ingest_all.py          # read every catalog subject into data/all_courses.json
 uv run python scripts/outliers.py            # screen that dataset into results/outliers.json
 uv run python scripts/results.py             # regenerate results/
+uv run python scripts/pages_bundle.py        # zip the engine for the in-browser (GitHub Pages) build
 uv run uvicorn planner.api:app --port 8000   # OpenAPI contract at /openapi.json
 
 # frontend
@@ -112,7 +113,16 @@ cd frontend
 npm install
 npm run dev                                  # http://localhost:5173 (proxies /api -> :8000)
 npm run test:e2e                             # Playwright end-to-end tests (starts both servers; stop ./dev.sh first)
+npm run build:pages                          # static build: the API runs in the browser under Pyodide, no backend
 ```
+
+## GitHub Pages demo
+
+`.github/workflows/pages.yml` publishes the app as a static site on every push to `main`. There is no server: the same FastAPI app runs in a Web Worker under [Pyodide](https://pyodide.org) (`backend/planner/browser.py`, `frontend/src/backend.ts`), so plans and what-ifs come from the same tested engine.
+
+- The first visit downloads about 10 MB (the Python runtime from the jsDelivr CDN, plus a 1 MB bundle of the engine); later visits use the browser cache.
+- PDF transcripts are not supported there (pdfplumber has no Pyodide build). Text and CSV transcripts and the sample work, and are parsed in memory.
+- Repository setting: Settings > Pages > Source = GitHub Actions.
 
 ## Data
 
@@ -143,11 +153,11 @@ docs/02-models-architecture/      design.md: models, 4+1 views, ADRs, interface 
 docs/03-planning-risk/            agile engineering plan, risk register
 docs/04-quality-security-testing/ verification strategy, quality and CM plan, threat analysis
 docs/05-ai-provenance/            AI Engineering Log
-backend/planner/                  models, graph, engine, transcript, api, catalog.json, students.json
-backend/scripts/                  ingest, ingest_all, outliers, results, trace
+backend/planner/                  models, graph, engine, transcript, api, browser (Pyodide bridge), catalog.json, students.json
+backend/scripts/                  ingest, ingest_all, outliers, results, trace, pages_bundle
 backend/tests/                    requirement-tagged tests
 backend/data/, backend/results/   raw sources and datasets; evaluation outputs
-frontend/src/                     React client (App, SVG prerequisite map, logo)
+frontend/src/                     React client (App, SVG prerequisite map, logo, in-browser API worker)
 frontend/e2e/                     Playwright end-to-end tests
 PRODUCT.md, DESIGN.md             product context and design system
 dev.sh                            starts API and UI together

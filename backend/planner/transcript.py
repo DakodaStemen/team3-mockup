@@ -30,7 +30,10 @@ IN_PROGRESS_WORDS = re.compile(r"in progress|enrolled|current", re.I)
 def extract_text(data: bytes, filename: str = "") -> str:
     """PDF (by magic bytes or name) via pdfplumber; anything else decoded as UTF-8 text."""
     if data[:5] == b"%PDF-" or filename.lower().endswith(".pdf"):
-        import pdfplumber
+        try:
+            import pdfplumber
+        except ImportError as e:  # the in-browser demo has no PDF library
+            raise ValueError("PDF upload is not available in this build; upload a text or CSV transcript") from e
         with pdfplumber.open(io.BytesIO(data)) as pdf:
             if len(pdf.pages) > MAX_PDF_PAGES:
                 raise ValueError(f"transcript PDF has {len(pdf.pages)} pages; the limit is {MAX_PDF_PAGES}")

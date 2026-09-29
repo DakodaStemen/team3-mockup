@@ -14,9 +14,10 @@ First release: a working prototype on real CSUSB program data. The planner is fu
 - Real CSUSB 2026-27 data: catalog, BS CS requirements, General Education slots (89 major + 27 GE + 4 free = 120 units), and term offerings from all 12 CSE roadmaps with confidence levels and discrepancy logging.
 - Past terms and transcript upload (PDF, text, or CSV), parsed in memory and never stored.
 - All-subject dataset (84 subjects, 4,042 courses) with outlier screening.
+- GitHub Pages demo: the same FastAPI app runs in the browser under Pyodide (no server), built and deployed by `.github/workflows/pages.yml`. PDF transcript upload is unavailable there.
 - FastAPI service and React UI: term grid, SVG prerequisite map, plan history with undo and reset, light and dark themes.
 - Engineering Dossier per CSE 6550: requirement register, SRS change proposals CH-02 to CH-04, design and UML, verification strategy, agile plan, risk register, quality and CM plan, threat analysis, AI Engineering Log.
-- Requirement-tagged tests (199), a generated traceability matrix, Playwright end-to-end tests, and CI.
+- Requirement-tagged tests (207), a generated traceability matrix, Playwright end-to-end tests, and CI.
 
 ### Known limitations
 

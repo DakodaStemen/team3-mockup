@@ -151,3 +151,11 @@ This is the AI Assistance and Provenance record required by course policy (SRS C
 - **Validation:** 234 backend tests passed before the removal below. The diagrams have not been rendered; the Mermaid and PlantUML syntax is unchecked.
 - **LLM removal (human decision):** Dakoda asked for the demo build to run without the LLM. AI removed the guardrail module, `/query`, `/audit`, calibration, the UI's question box, AI status chip, and audit tab, the four LLM requirements, and the related docs on branch `feat/remove-llm`. After it: 199 backend tests and 21 e2e tests pass, lint and build are clean. Earlier log entries are left as written because they record what happened.
 - **Known limitations:** the AI's first UML draft was wrong in several places (event names, a `validate_plan` call that `apply_scenario` never makes, HTTP status codes); the audit corrected them. Unreleased CHANGELOG items (all-subject catalog) are described from the CHANGELOG and file contents, not from a code read.
+
+### AIL-12: Docs pass, single-commit reset, and GitHub Pages demo (2026-09-29)
+
+- **Decisions (human):** Dakoda asked for the README and every docs page to be formatted and accurate, for everything to be at 0.1 with the git history wiped, and for the demo to be hosted free on GitHub Pages. Dakoda chose Pyodide over a hosted API, and chose the force-push.
+- **Method:** AI checked every relative link and anchor with a script, recounted the catalog, tests and endpoints against the code, and fixed stale numbers. It tried the FastAPI app under Pyodide in Node first, then in a real browser through Playwright.
+- **Output:** `planner/browser.py` (ASGI bridge; runs sync endpoints inline because the browser has no threads), `scripts/pages_bundle.py`, `frontend/src/backend.ts` and `pyodide.worker.ts`, `.github/workflows/pages.yml`, a `e2e-static` CI job, the README "GitHub Pages demo" section, and one 0.1.0 CHANGELOG entry.
+- **Validation:** 207 backend tests pass. The demo walkthrough (12 tests) passes against the static build in Chromium.
+- **Known limitations:** PDF transcripts are unsupported in the browser build (pdfplumber has no Pyodide build). The Pyodide runtime loads from the jsDelivr CDN, so the demo needs network access. GitHub Pages is not enabled until the repository is public or the plan allows Pages on private repos.

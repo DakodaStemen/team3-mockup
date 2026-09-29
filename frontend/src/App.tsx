@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { PrereqMap, type NodeState } from './PrereqMap'
 import { Logo } from './Logo'
+import { apiFetch, STATIC, whenEngineReady } from './backend'
 
 type Course = { id: string; title: string; catalog_units: number; roadmap_units: number | null; discrepancy_flag: boolean; term_offered: string; placeholder: boolean; requirement_groups: string[] }
 type Edge = { from_course: string; to_course: string; condition: string; grade_minimum: string }
@@ -39,12 +40,12 @@ const EVENTS = [...COURSE_EVENTS, 'Add Summer', 'Add Winter', 'Change Unit Load'
 const CAPS = Array.from({ length: 19 }, (_, i) => i + 3)  // 3..21, the engine's allowed range
 
 const NO_MOVES: Move[] = []
-const UNREACHABLE = "Can't reach the planner API. Is the backend running on port 8000?"
+const UNREACHABLE = STATIC ? "The in-browser planner engine isn't responding. Reload the page." : "Can't reach the planner API. Is the backend running on port 8000?"
 
 async function api<T>(path: string, body?: unknown): Promise<T> {
   let r: Response
   try {
-    r = await fetch(`/api${path}`, body === undefined ? undefined : {
+    r = await apiFetch(`/api${path}`, body === undefined ? undefined : {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
     })
   } catch {
@@ -79,6 +80,8 @@ export default function App() {
   const [report, setReport] = useState<Report>()
   const [uploading, setUploading] = useState(false)
   const sampleCount = useRef(0)
+  const [engineReady, setEngineReady] = useState(!STATIC)
+  useEffect(() => whenEngineReady(() => setEngineReady(true)), [])
   const [sid, setSid] = useState('alex')
   const [baseCap, setBaseCap] = useState<number>()
   const [plan, setPlan] = useState<Plan>()
@@ -219,7 +222,7 @@ export default function App() {
   const upload = async (body: Blob, file: string) => {
     setError(''); setUploading(true)
     try {
-      const r = await fetch(`/api/transcript?filename=${encodeURIComponent(file)}`, { method: 'POST', body })
+      const r = await apiFetch(`/api/transcript?filename=${encodeURIComponent(file)}`, { method: 'POST', body })
       const data = await r.json().catch(() => undefined)
       if (!r.ok) throw new Error(typeof data?.detail === 'string' ? data.detail : r.status === 413 ? 'That file is over the 1 MB upload limit.' : UNREACHABLE)
       const s: Student = data.student
@@ -230,7 +233,7 @@ export default function App() {
     } finally { setUploading(false) }
   }
   const uploadSample = async () => {
-    const text = await fetch('/api/transcript/sample').then(r => r.text()).catch(() => '')
+    const text = await apiFetch('/api/transcript/sample').then(r => r.text()).catch(() => '')
     if (text) upload(new Blob([text], { type: 'text/plain' }), `Sample transcript ${++sampleCount.current}`)
     else setError(UNREACHABLE)
   }
@@ -311,6 +314,7 @@ export default function App() {
         <div className="banner-inner">
           <div className="who">
             <h1>{student?.name ?? 'Loading…'}</h1>
+            {!engineReady && <p className="who-note"><span>Starting the planning engine in your browser (about 10 MB the first time)…</span></p>}
             {student && <p className="who-note">
               <span className="sample">{student.id.startsWith('upload-') ? 'Uploaded transcript · not saved' : 'Sample student · synthetic data'}</span>
               {student.notes && <span>{student.notes}</span>}

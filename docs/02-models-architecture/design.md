@@ -191,7 +191,7 @@ flowchart LR
 
 **Development view:** the repository layout is in the [README](../../README.md#repository-layout); area owners are in the [agile engineering plan §2](../03-planning-risk/agile-engineering-plan.md#2-team-organization).
 
-**Physical view:** a single developer machine. UI on `:5173`, API on `:8000`. CI runs on GitHub-hosted Linux. No production deployment is in scope (SRS §2.6).
+**Physical view:** a single developer machine. UI on `:5173`, API on `:8000`. CI runs on GitHub-hosted Linux. No production deployment is in scope (SRS §2.6). The demo is also published as a static site on GitHub Pages: there is no server, and the same FastAPI app runs in a Web Worker under Pyodide (`planner/browser.py`, `frontend/src/backend.ts`). PDF transcript upload is unavailable there because pdfplumber has no Pyodide build.
 
 **+1 Scenarios:** the use cases in §2.2, each exercised by the release-test scenarios in the [verification strategy §4](../04-quality-security-testing/verification-strategy.md#4-release-testing-83).
 

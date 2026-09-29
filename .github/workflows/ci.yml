@@ -58,3 +58,19 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         if: failure()
         with: { name: playwright-report, path: "frontend/test-results/\nfrontend/playwright-report/", retention-days: 7 }
+
+  e2e-static:  # the GitHub Pages build: no backend, the API runs in the browser under Pyodide (needs the jsDelivr CDN)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e  # v6
+        with: { enable-cache: true, cache-dependency-glob: backend/uv.lock }
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: uv sync --frozen
+        working-directory: backend
+      - run: npm ci && npx playwright install --with-deps chromium && npm run pages:bundle
+        working-directory: frontend
+      - run: npm run test:e2e:static
+        working-directory: frontend

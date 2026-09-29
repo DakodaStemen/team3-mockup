@@ -8,9 +8,13 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "pages:bundle": "cd ../backend && uv run python scripts/pages_bundle.py",
+    "build:pages": "npm run pages:bundle && VITE_STATIC=1 vite build",
+    "test:e2e:static": "playwright test -c playwright.static.config.ts"
   },
   "dependencies": {
+    "pyodide": "^314.0.7",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

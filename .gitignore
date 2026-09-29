@@ -6,3 +6,4 @@ dist/
 backend/data/raw/*.part
 .ruff_cache/
 .DS_Store
+frontend/public/planner.zip

@@ -11,7 +11,7 @@ Verification and validation combines **inspection** and **testing** (Sommerville
 | Activity | Applies to | How |
 |---|---|---|
 | Inspection | Every pull request: code, docs, data changes | PR review with the checklist in [quality-and-cm-plan.md §1.4](quality-and-cm-plan.md#14-inspection-checklist) |
-| Development testing | Units, components, system | `pytest` (backend, 199 tests), `oxlint` and `tsc` (frontend), and Playwright end-to-end tests, run in CI on every push/PR |
+| Development testing | Units, components, system | `pytest` (backend, 207 tests), `oxlint` and `tsc` (frontend), and Playwright end-to-end tests, run in CI on every push/PR |
 | Release testing | A tagged release candidate | Requirements-based and scenario tests, run by a team member who did not author the features (§4) |
 | User testing | Release candidates | Alpha (team), usability sessions (NFR-05), acceptance by the instructor (§5) |
 
