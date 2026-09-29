@@ -99,6 +99,7 @@ for (const scheme of ['light', 'dark'] as const) {
     page.on('console', m => { if (m.type() === 'error') errors.push(m.text()) })
     page.on('pageerror', e => errors.push(String(e)))
     await page.emulateMedia({ colorScheme: scheme })
+    if (scheme === 'dark') await page.addInitScript(() => localStorage.setItem('adpp-theme', 'dark'))  // the app is light unless toggled
     await page.goto('/')
     await expect(stat(page, 'Graduation')).toHaveText('Spring 2030')
     for (const ev of ['Fail', 'Pass', 'Add Summer', 'Change Unit Load']) {
@@ -111,6 +112,6 @@ for (const scheme of ['light', 'dark'] as const) {
     await expect(stat(page, 'Graduation')).toHaveText('Spring 2030')
     await page.getByLabel('Student').selectOption('sam')
     await expect(page.getByTestId('terms')).toBeVisible()
-    expect(errors.filter(e => !e.includes('THREE.'))).toEqual([])
+    expect(errors).toEqual([])
   })
 }
