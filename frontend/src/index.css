@@ -199,7 +199,7 @@ button:disabled { opacity: .45; cursor: default; }
 .map-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; margin-bottom: 4px; }
 .map-bar .legend { margin: 0; }
 .term { min-width: 0; grid-template-columns: minmax(0, 1fr); background: var(--surface); border-radius: var(--radius); padding: 12px 14px 14px; box-shadow: var(--shadow); border: 1px solid var(--line); display: grid; align-content: start; gap: 2px; }
-.term h3 { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 8px; margin-bottom: 4px; border-bottom: 3px solid var(--blue); }
+.term h3 { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 8px; margin-bottom: 4px; border-bottom: 1px solid var(--line-strong); }
 .units { font-variant-numeric: tabular-nums; font-weight: 600; }
 .units .muted { font-weight: 400; font-size: .8rem; }
 .course { height: auto; display: grid; gap: 1px; padding: 6px 8px; margin: 0 -8px; width: calc(100% + 16px); text-align: left; background: none; border: 0; border-radius: 4px; font-weight: 400; }
