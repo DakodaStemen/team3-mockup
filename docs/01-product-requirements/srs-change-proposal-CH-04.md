@@ -1,5 +1,7 @@
 # SRS change proposal CH-04 (for SRS v0.2)
 
+> [Docs index](../README.md) · [Register](requirements-register.md) · [Traceability](traceability.md) · [Change proposals](srs-change-proposal-CH-02.md) · [References](references.md)
+
 | Field | Entry |
 |---|---|
 | Change ID | CH-04 (after [CH-03](srs-change-proposal-CH-03.md)) |
@@ -27,7 +29,7 @@ The UI also shows past terms in the plan (marked "Completed", with grades and re
 
 ## C. Conflicts and decisions
 
-1. **Real student records.** SRS v0.1 lists "real student records" as a non-goal and DR-05 says to load only synthetic data. FR-26 lets a real record in. Mitigations in the prototype: the file never touches disk, the profile lives in process memory (newest 200) and is gone on restart, nothing from it enters the guardrail audit log unless the student asks a plain-language question, and the UI says "not saved". Decision needed: accept FR-26 and amend DR-05, or keep upload to synthetic demo transcripts only.
+1. **Real student records.** SRS v0.1 lists "real student records" as a non-goal and DR-05 says to load only synthetic data. FR-26 lets a real record in. Mitigations in the prototype: the file never touches disk, the profile lives in process memory (newest 200) and is gone on restart, nothing from it is logged, and the UI says "not saved". Decision needed: accept FR-26 and amend DR-05, or keep upload to synthetic demo transcripts only.
 2. **FERPA.** A deployed version handling real transcripts would fall under FERPA and campus data policy. Out of scope for the prototype; record it as a constraint for any deployment (risk register).
 3. **Parser accuracy.** Unrecognized courses (not in the B.S. CS catalog, or quarter-era numbers) are listed and not counted. A course the parser misreads could still mislead; the report asks the student to check every term.
 

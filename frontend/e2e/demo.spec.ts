@@ -80,11 +80,6 @@ test('base unit cap and student switch replan', async ({ page }) => {
   await expect(stat(page, 'Graduation')).toHaveText('Fall 2027')
 })
 
-test('plain-language question gets a guardrail decision', async ({ page }) => {
-  await page.getByRole('button', { name: 'Ask' }).click()
-  await expect(page.getByTestId('guard')).toBeVisible({ timeout: 20_000 })  // escalated without Ollama
-})
-
 test('a student with history sees completed terms, grades, and retakes before the plan', async ({ page }) => {
   await page.getByLabel('Student').selectOption('jordan')
   const past = page.getByTestId('terms').locator('.term.past')

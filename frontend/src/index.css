@@ -73,9 +73,6 @@ button:disabled { opacity: .45; cursor: default; }
 :root[data-theme=dark] .brand-name { color: var(--ink); }
 .brand-name small { display: block; font-size: .78rem; font-weight: 500; color: var(--muted); letter-spacing: 0; }
 .top-actions { display: flex; align-items: center; gap: 16px; }
-.status { display: inline-flex; align-items: center; gap: 6px; font-size: .82rem; color: var(--muted); }
-.status i { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); }
-.status.on i { background: var(--ok); }
 .theme-toggle { width: 40px; padding: 0; display: grid; place-items: center; background: var(--surface); border-color: var(--line-strong); }
 .theme-toggle:hover { border-color: var(--blue); }
 .theme-toggle svg { width: 18px; height: 18px; fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
@@ -147,10 +144,6 @@ button:disabled { opacity: .45; cursor: default; }
 .field { display: grid; gap: 4px; font-size: .8rem; font-weight: 700; color: var(--ink); }
 .field select { width: 100%; font-weight: 400; }
 .field-note { font-weight: 400; font-size: .78rem; }
-.ask { display: flex; gap: 8px; }
-.ask input { flex: 1; }
-.guard { font-size: .85rem; }
-.guard.auto_accepted { color: var(--ok); } .guard.accepted_low_confidence { color: var(--warn); } .guard.escalated { color: var(--bad); }
 .result { border-radius: var(--radius); padding: 18px 20px; display: grid; gap: 10px; border: 1px solid; animation: rise .22s cubic-bezier(.2, .7, .3, 1); }
 .result.bad { background: var(--bad-tint); border-color: color-mix(in srgb, var(--bad) 35%, transparent); }
 .result.ok { background: var(--ok-tint); border-color: color-mix(in srgb, var(--ok) 35%, transparent); }
@@ -284,7 +277,6 @@ tr.clickable { cursor: pointer; } tr.clickable:hover td { background: var(--blue
 }
 @media (max-width: 640px) {
   .topbar { padding: 8px 16px; } .logo { height: 38px; } .brand { gap: 12px; } .brand-name { padding-left: 12px; font-size: .95rem; }
-  .status { display: none; }
   h1 { font-size: 1.9rem; }
   .banner-inner { padding: 24px 16px; }
   .controls { width: 100%; } .controls label { flex: 1; } .controls select { width: 100%; min-width: 0; }

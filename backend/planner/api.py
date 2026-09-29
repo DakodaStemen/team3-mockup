@@ -1,13 +1,11 @@
 import secrets
-import urllib.request
 from collections import OrderedDict
 from typing import Annotated
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, PlainTextResponse
-from pydantic import BaseModel, Field, StringConstraints, ValidationError, field_validator, model_validator
+from pydantic import BaseModel, Field, StringConstraints, model_validator
 
-from . import guardrail
 from .engine import alternatives, apply_scenario, course_risk, make_plan, moves, off_term_max, recover, term_key, terms_later, timeline, validate_plan
 from .graph import DATA, load_catalog, load_students
 from .models import UNIT_LOAD_RANGE, Plan, ScenarioEvent, StudentProfile, TermPlan
@@ -18,8 +16,7 @@ app = FastAPI(title="Adaptive Degree Pathway Planner (mock)")
 MAX_BODY = 1_000_000  # bytes; a full plan is ~5 KB
 
 # Request bodies are client state, so the API checks their shape before the engine sees them (NFR-03).
-# The shared models stay permissive: scripts build roadmap plans with unit_cap=99, and the LLM's raw output
-# is checked here too rather than failing inside the parser (which would count toward the circuit breaker).
+# The shared models stay permissive: scripts build roadmap plans with unit_cap=99.
 TermLabel = Annotated[str, StringConstraints(pattern=r"^(Fall|Winter|Spring|Summer) (19|20|21)\d{2}$")]
 CourseId = Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9][A-Za-z0-9 ./-]{0,23}$")]
 Cap = Annotated[int, Field(ge=UNIT_LOAD_RANGE[0], le=UNIT_LOAD_RANGE[1])]
@@ -109,16 +106,6 @@ class ValidateRequest(BaseModel):
     plan: PlanIn
 
 
-class QueryRequest(BaseModel):
-    text: Annotated[str, StringConstraints(min_length=1, max_length=500)]
-    plan: KnownPlan
-
-    @field_validator("text")
-    @classmethod
-    def _printable(cls, v: str) -> str:
-        return "".join(ch if ch.isprintable() else " " for ch in v)  # no control characters into the prompt or log
-
-
 @app.middleware("http")
 async def limits_and_headers(request: Request, call_next):
     length = request.headers.get("content-length") or "0"
@@ -133,7 +120,7 @@ async def limits_and_headers(request: Request, call_next):
     return response
 
 
-# Uploaded transcripts live only in this process's memory, newest 200, never on disk or in the audit log (FR-26).
+# Uploaded transcripts live only in this process's memory, newest 200, never on disk (FR-26).
 UPLOADS: OrderedDict[str, StudentProfile] = OrderedDict()
 MAX_UPLOADS = 200
 
@@ -147,13 +134,7 @@ def student(sid: str):
 
 @app.get("/health")
 def health():
-    """Whether the optional LLM parser is reachable; without it plain-language questions are escalated."""
-    try:
-        with urllib.request.urlopen(f"{guardrail.OLLAMA_URL}/models", timeout=1) as r:
-            ollama = r.status == 200
-    except OSError:
-        ollama = False
-    return {"engine": True, "ollama": ollama, "model": guardrail.OLLAMA_MODEL, "unit_load_range": UNIT_LOAD_RANGE}
+    return {"engine": True, "unit_load_range": UNIT_LOAD_RANGE}
 
 
 @app.get("/catalog")
@@ -243,29 +224,3 @@ async def transcript(request: Request, filename: str = Query("", max_length=200)
 def validate(req: ValidateRequest):
     """SRS FR-14: check any pathway (engine-made, edited, or a roadmap) against catalog rules."""
     return {"problems": validate_plan(req.plan, student(req.plan.student_id))}
-
-
-@app.post("/query")
-def query(req: QueryRequest):
-    profile = student(req.plan.student_id)  # before the LLM: no model call or audit line for an unknown student
-    decision = guardrail.classify(req.text, req.plan)
-    if decision["outcome"] == "escalated":
-        return {"guardrail": decision, "result": None}
-    try:
-        # The LLM's event passes the same checks as a typed /scenario request before the engine runs it.
-        event = EventIn(**decision["parsed_event"])
-        result = with_recovery(profile, req.plan, event, apply_scenario(profile, req.plan, event))
-    except ValidationError as e:
-        decision.update(outcome="escalated", reason=f"parsed event invalid: {e.errors()[0]['msg']}"[:300])
-        guardrail.audit.info("guardrail_decision", student_id=req.plan.student_id, **decision)
-        return {"guardrail": decision, "result": None}
-    except ValueError as e:
-        decision.update(outcome="escalated", reason=f"engine rejected event: {e}"[:300])
-        guardrail.audit.info("guardrail_decision", student_id=req.plan.student_id, **decision)
-        return {"guardrail": decision, "result": None}
-    return {"guardrail": decision, "result": result}
-
-
-@app.get("/audit")
-def audit(limit: int = Query(50, ge=1, le=500)):
-    return guardrail.read_audit(limit)

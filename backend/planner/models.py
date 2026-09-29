@@ -1,4 +1,4 @@
-"""Pydantic models shared by the engine, API, and guardrail layer (spec: Data models)."""
+"""Pydantic models shared by the engine and the API (spec: Data models)."""
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -40,7 +40,7 @@ class PrerequisiteEdge(BaseModel):
     concurrent_ok: bool = False  # corequisite / "pre- or co-requisite": same term is fine
 
 
-UNIT_LOAD_RANGE = (3, 21)  # allowed unit cap for Change Unit Load, on every path (API, NL guardrail, engine)
+UNIT_LOAD_RANGE = (3, 21)  # allowed unit cap for Change Unit Load, on every path (API, engine)
 
 
 IN_PROGRESS = "IP"  # grade placeholder for a course being taken now

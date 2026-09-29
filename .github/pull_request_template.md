@@ -8,8 +8,8 @@
 - [ ] New or changed behavior has a `@pytest.mark.req(...)` test; `uv run python scripts/trace.py` re-run
 - [ ] Requirement changed? SRS updated first (CH-nn in Appendix A), then register; ADR/CHANGELOG updated if decisions or behavior changed
 - [ ] Significant AI assistance recorded in docs/05-ai-provenance/ai-engineering-log.md
-- [ ] Inputs validated at trust boundaries; LLM/network errors escalate, never guess
-- [ ] Catalog stays authoritative; AI does not schedule; discrepancies logged, not resolved
+- [ ] Inputs validated at trust boundaries; network errors are logged, never guessed
+- [ ] Catalog stays authoritative; discrepancies logged, not resolved
 - [ ] No PII, transcripts, secrets, or new outbound network calls
 
 ## Reviewer (non-author)

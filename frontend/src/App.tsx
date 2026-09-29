@@ -16,10 +16,7 @@ type Slot = { label: string; past?: PastTerm; term?: Term }
 type Move = { course: string; from: string; to: string }
 type Result = { plan: Plan; timeline: Timeline; invalidated: string[]; delta_terms: number; moved: Move[]; explanation: string
                 recovery?: (Result & { adds: string[] }) | null }
-type Guardrail = { input: string; outcome: string; confidence: number; reason: string | null; parsed_event: unknown }
-type Audit = Guardrail & { timestamp: string }
 type Catalog = { courses: Course[]; edges: Edge[]; priority: Record<string, number>; discrepancies: string[] }
-type Health = { engine: boolean; ollama: boolean; model: string; unit_load_range: [number, number] }
 type Event = { event_type: string; course_id: string; term_label: string; unit_load: number }
 type Saved = { plan: Plan; timeline: Timeline; label: string }
 
@@ -82,7 +79,6 @@ export default function App() {
   const [report, setReport] = useState<Report>()
   const [uploading, setUploading] = useState(false)
   const sampleCount = useRef(0)
-  const [health, setHealth] = useState<Health>()
   const [sid, setSid] = useState('alex')
   const [baseCap, setBaseCap] = useState<number>()
   const [plan, setPlan] = useState<Plan>()
@@ -90,11 +86,8 @@ export default function App() {
   const [history, setHistory] = useState<Saved[]>([])
   const [alts, setAlts] = useState<Record<string, { plan: Plan; timeline: Timeline; adds?: string[] }>>({})
   const [preview, setPreview] = useState<Result & { label: string }>()
-  const [guard, setGuard] = useState<Guardrail>()
-  const [audit, setAudit] = useState<Audit[]>([])
   const [error, setError] = useState('')
   const [ev, setEv] = useState<Event>({ event_type: 'Fail', course_id: '', term_label: '', unit_load: 12 })
-  const [query, setQuery] = useState('What if I fail CSE 2020 in Spring 2027?')
   const [actionBusy, setActionBusy] = useState(false)
   const [loadedKey, setLoadedKey] = useState('')  // which student+cap the shown plan belongs to
   const planKey = `${sid}:${baseCap ?? ''}`
@@ -111,7 +104,7 @@ export default function App() {
     try { localStorage.setItem('adpp-theme', next) } catch { /* private mode: the choice lasts this visit */ }
     setTheme(next)
   }
-  const [tab, setTab] = useState<'bottlenecks' | 'confirm' | 'discrepancies' | 'audit'>('bottlenecks')
+  const [tab, setTab] = useState<'bottlenecks' | 'confirm' | 'discrepancies'>('bottlenecks')
 
   const courses = useMemo(() => Object.fromEntries((catalog?.courses ?? []).map(c => [c.id, c])), [catalog])
   const student = students.find(s => s.id === sid)
@@ -120,8 +113,6 @@ export default function App() {
   const movedFrom = Object.fromEntries((preview?.moved ?? []).map(m => [m.course, m.from]))
   const inPlan = new Set(shown?.terms.flatMap(t => t.courses) ?? [])
 
-  const refreshAudit = () => api<Audit[]>('/audit?limit=15').then(setAudit)
-  const refreshHealth = () => api<Health>('/health').then(setHealth, () => setHealth(undefined))
   // Runs a user action against the current saved plan; `apply` is skipped if the plan was replaced meanwhile.
   const run = async <T,>(fn: () => Promise<T>, apply: (r: T) => void) => {
     const gen = generation.current
@@ -137,8 +128,6 @@ export default function App() {
   useEffect(() => {
     Promise.all([api<Catalog>('/catalog'), api<Student[]>('/students')])
       .then(([c, s]) => { setCatalog(c); setStudents(s) }, e => setError(errorText(e)))
-    refreshHealth()
-    refreshAudit().catch(() => {})  // the audit trail is optional context
   }, [])
   useEffect(() => {
     let live = true  // a slower response for a previous student/cap must not overwrite this one
@@ -147,7 +136,7 @@ export default function App() {
       .then(r => {
         if (!live) return
         generation.current++
-        setPlan(r.plan); setTimeline(r.timeline); setAlts(r.alternatives); setHistory([]); setPreview(undefined); setGuard(undefined)
+        setPlan(r.plan); setTimeline(r.timeline); setAlts(r.alternatives); setHistory([]); setPreview(undefined)
         setLoadedKey(key)
       }, e => { if (live) { setError(errorText(e)); setLoadedKey(key) } })
     return () => { live = false }
@@ -208,7 +197,7 @@ export default function App() {
   }
   const replacePlan = (p: Plan, t: Timeline) => {
     generation.current++
-    setPlan(p); setTimeline(t); setPreview(undefined); setGuard(undefined)
+    setPlan(p); setTimeline(t); setPreview(undefined)
   }
 
   const adopt = (p: Plan, t: Timeline, label: string) => {
@@ -250,15 +239,9 @@ export default function App() {
     const event = { ...form, course_id: COURSE_EVENTS.includes(form.event_type) ? form.course_id : null,
                     unit_load: form.event_type === 'Change Unit Load' ? form.unit_load : null }
     const label = describe(form)
-    setGuard(undefined)
     run(() => api<Result>('/scenario', { plan, event }), r => setPreview({ ...r, label }))
   }
-  const ask = () => {
-    const text = query
-    run(() => api<{ guardrail: Guardrail; result: Result | null }>('/query', { text, plan }), r => {
-      setGuard(r.guardrail); setPreview(r.result ? { ...r.result, label: `“${text}”` } : undefined)
-    }).then(() => { refreshAudit().catch(() => {}); refreshHealth() })
-  }
+
 
 
   const termCourses = plan?.terms.find(t => t.term_label === form.term_label)?.courses ?? []
@@ -316,9 +299,6 @@ export default function App() {
           <span className="brand-name">Degree Pathway Planner<small>B.S. Computer Science · 2026–27 catalog</small></span>
         </div>
         <div className="top-actions">
-          {health && <span role="status" className={`status ${health.ollama ? 'on' : 'off'}`} title={health.ollama ? `Using ${health.model}` : 'Start Ollama to enable plain-language parsing'}>
-            <i aria-hidden="true" /> AI parser {health.ollama ? 'online' : 'offline'}
-          </span>}
           <button className="theme-toggle" onClick={toggleTheme} aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'} title={theme === 'dark' ? 'Light theme' : 'Dark theme'}>
             {theme === 'dark'
               ? <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.5" /><path d="M10 1.5v2M10 16.5v2M1.5 10h2M16.5 10h2M4 4l1.4 1.4M14.6 14.6 16 16M4 16l1.4-1.4M14.6 5.4 16 4" /></svg>
@@ -480,7 +460,7 @@ export default function App() {
             </details>}
             <div className="row">
               <button className="primary" onClick={() => adopt(preview.plan, preview.timeline, preview.label)}>Keep this plan</button>
-              <button className="ghost" onClick={() => { setPreview(undefined); setGuard(undefined) }}>Discard</button>
+              <button className="ghost" onClick={() => { setPreview(undefined) }}>Discard</button>
             </div>
             {preview.recovery && <div className="catchup">
               <p><strong>Catch up with {preview.recovery.adds.join(' + ')}</strong></p>
@@ -491,18 +471,6 @@ export default function App() {
             </div>}
           </section>}
 
-          <section className="block">
-            <h2>Ask in plain language</h2>
-            {health && !health.ollama && <p className="muted hint">The AI parser is offline, so questions are escalated to a human. That is the guardrail working.</p>}
-            <div className="ask">
-              <input aria-label="Question" value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && !busy && ask()} />
-              <button className="primary" disabled={busy || !plan} onClick={ask}>Ask</button>
-            </div>
-            {guard && <p className={`guard ${guard.outcome}`} data-testid="guard">
-              <strong>{guard.outcome.replace(/_/g, ' ')}</strong> · confidence {guard.confidence?.toFixed(2) ?? 'n/a'}
-              {guard.reason && <> · {guard.reason}</>}
-            </p>}
-          </section>
         </aside>
 
         <section className="plancard" id="plan">
@@ -597,7 +565,7 @@ export default function App() {
         {catalog && <section className="details" id="details">
           <div className="tabs" role="tablist">
             {([['bottlenecks', 'Bottlenecks', bottlenecks.length], ['confirm', 'To confirm', toConfirm.length],
-               ['discrepancies', 'Discrepancies', catalog.discrepancies.length], ['audit', 'AI audit trail', audit.length]] as const).map(([id, name, n]) => (
+               ['discrepancies', 'Discrepancies', catalog.discrepancies.length]] as const).map(([id, name, n]) => (
               <button key={id} role="tab" aria-selected={tab === id} className="tab" onClick={() => setTab(id)}>
                 {name} <span className="count">{n}</span>
               </button>
@@ -627,20 +595,6 @@ export default function App() {
               <p className="muted hint">Catalog/roadmap discrepancies flagged for advisor review. The catalog wins; nothing is auto-resolved.</p>
               <ul className="list">{catalog.discrepancies.map(d => <li key={d}>{d}</li>)}</ul>
             </>}
-            {tab === 'audit' && (!audit.length ? <p className="muted">No AI decisions yet. Ask a question to see the guardrail decide.</p> : <div className="table-wrap"><table>
-              <thead><tr><th>Time</th><th>Outcome</th><th className="num">Confidence</th><th>Question</th><th>Reason</th></tr></thead>
-              <tbody>
-                {audit.map((a, i) => (
-                  <tr key={i}>
-                    <td className="muted nowrap">{a.timestamp.slice(0, 19).replace('T', ' ')}</td>
-                    <td className={`guard ${a.outcome}`}>{a.outcome.replace(/_/g, ' ')}</td>
-                    <td className="num">{a.confidence?.toFixed(2)}</td>
-                    <td>{a.input}</td>
-                    <td className="muted">{a.reason}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table></div>)}
           </div>
         </section>}
       </main>

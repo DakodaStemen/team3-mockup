@@ -1,6 +1,9 @@
 # Requirement attribute register
 
+> [Docs index](../README.md) · [Register](requirements-register.md) · [Traceability](traceability.md) · [Change proposals](srs-change-proposal-CH-02.md) · [References](references.md)
+
 **The authoritative requirement text is the SRS**, not this file:
+
 - **SRS v0.1** (Google Doc, team working copy): [TeamName_AdaptiveDegreePathwayPlanner_SRS_v0_1](https://docs.google.com/document/d/1h-cgCt8wF0NcHRoyRzOdYJiq81ip6GJhvYBi4g2LHtY/edit)
 - **Proposed changes:** [srs-change-proposal-CH-02.md](srs-change-proposal-CH-02.md), [srs-change-proposal-CH-03.md](srs-change-proposal-CH-03.md), [srs-change-proposal-CH-04.md](srs-change-proposal-CH-04.md)
 
@@ -28,9 +31,7 @@ Change a requirement's *text* in the SRS first, then update its summary here.
 | FR-16 | Answer whether graduation by a selected term is possible, with the earliest feasible term | EV-01 | Test | SRS v0.1 | Not implemented |
 | FR-17 | Up to three valid alternatives, each labeled by how it differs | EV-01; OQ-05 | Test; Demonstration | SRS v0.1 | Partial: two alternatives (fastest 18u, balanced 12u) labeled by graduation term and peak load |
 | FR-18 | Advisor view of a saved pathway with FR-13/FR-14 flags | EV-01; EV-04 | Demonstration | SRS v0.1 | Not implemented |
-| FR-19 | Convert a plain-language what-if into one typed scenario; apply it only if validated and confidence ≥ 0.60 | EV-08 | Test | CH-02 (proposed) | Implemented |
 | FR-20 | Record and display every catalog–roadmap disagreement; never resolve silently | EV-02; EV-09 | Test | CH-02 (proposed) | Implemented |
-| FR-21 | Log every AI decision with input, parsed event, raw and calibrated confidence, thresholds, and outcome | EV-08 | Test | CH-02 (proposed) | Implemented |
 | FR-22 | Plan a Winter intersession only when the student selects it; cap it and flag every winter placement unconfirmed | Team request 2026-09-28 | Test | CH-03 (proposed) | Implemented: `Add Winter` event, 4-unit placeholder cap, only Fall-and-Spring courses; cap and offerings await department data (CH-03 §C) |
 | FR-23 | Place a lab in the same term as its lecture; moving either moves both | EV-02 (catalog corequisite); team review | Test | CH-03 (proposed) | Implemented: `XXXX nnnnL` pairs with `XXXX nnnn`; the validator flags a split pair |
 | FR-24 | When a what-if delays graduation, propose the fewest opt-in Summer/Winter terms that recover the date, and offer an intersession alternative pathway | Team request 2026-09-28 | Test | CH-03 (proposed) | Implemented: greedy search with pair lookahead (`recover()`); returned as `recovery` on /scenario and /query, and as the "with summer & winter" alternative |
@@ -53,11 +54,9 @@ Change a requirement's *text* in the SRS first, then update its summary here.
 | NFR-06 | Keyboard operable; status never conveyed by color alone | EV-06 | Test; Inspection | SRS v0.1 | Unverified: native controls and text labels, but the DAG view uses color only |
 | NFR-07 | Every pathway in a ≥ 30-case scenario suite passes the independent validator | EV-01 | Test; Analysis | SRS v0.1 | Implemented: 280-run sweep in `results/`, plus tests |
 | NFR-08 | Identical inputs give an identical pathway | EV-01 | Test | SRS v0.1 | Implemented |
-| NFR-09 | Groups, prerequisites, offerings, and unit limits defined in data files | EV-01 | Inspection; Demonstration | SRS v0.1 | Partial: `catalog.json`; summer and winter caps and guardrail thresholds are still code constants |
+| NFR-09 | Groups, prerequisites, offerings, and unit limits defined in data files | EV-01 | Inspection; Demonstration | SRS v0.1 | Partial: `catalog.json`; summer and winter caps are still code constants |
 | NFR-10 | Every pathway screen states it is a planning aid, not an official audit or advising decision | EV-01 | Inspection | SRS v0.1 | Implemented |
 | NFR-11 | After Not passed or Withdrawn, 100% of courses outside the affected set keep their term | EV-08 | Test | CH-02 (proposed) | Implemented |
-| NFR-12 | If the LLM is unavailable, deterministic functions stay available; NL requests escalate; breaker opens after 3 failures for 60 s | EV-08 | Test | CH-02 (proposed) | Implemented |
-| NFR-13 | Thresholds count as calibrated only when ECE ≤ 0.02 on ≥ 40 labeled queries | EV-08 | Analysis | CH-02 (proposed) | Partial: method and 45-query set exist; not yet run (needs Ollama) |
 | COM-01 | Maintain the SRS per course-tailored ISO/IEC/IEEE 29148 practice | REF-02 | Inspection | SRS v0.1 | Active |
 | COM-02 | Document AI assistance, human review, validation, and responsibility | Course policy | Inspection | SRS v0.1 | Active: [AI Engineering Log](../05-ai-provenance/ai-engineering-log.md) |
 | COM-03 | No real student or restricted data in repo, drives, or AI tools | EV-06 | Inspection | SRS v0.1 | Active |

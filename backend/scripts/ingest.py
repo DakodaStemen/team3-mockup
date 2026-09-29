@@ -12,7 +12,6 @@ Catalog/roadmap disagreements are logged as discrepancies, never silently resolv
 """
 import html
 import json
-import random
 import re
 import sys
 import time
@@ -494,39 +493,9 @@ def build(refresh: bool = False) -> dict:
     }
 
 
-# ---------- labeled records for the (future) intake guardrail ----------
-
-def labeled_records(catalog: dict, n: int = 40, seed: int = 6550) -> list[dict]:
-    """Known-good course records plus deliberately corrupted copies, labeled with the defect."""
-    rng = random.Random(seed)
-    real = [c for c in catalog["courses"] if not c.get("placeholder")]
-    ids = [c["id"] for c in real]
-    out = []
-    for c in rng.sample(real, min(n, len(real))):
-        rec = {k: c[k] for k in ("id", "title", "catalog_units", "term_offered", "prereq_text")}
-        out.append({"record": rec, "malformed": False, "defect": None})
-        bad, defect = dict(rec), rng.choice(["units", "term", "self_prereq", "unknown_prereq", "empty_title", "bad_id"])
-        if defect == "units":
-            bad["catalog_units"] = rng.choice([0, 12, -3])
-        elif defect == "term":
-            bad["term_offered"] = rng.choice(["Winter", "fall-ish", ""])
-        elif defect == "self_prereq":
-            bad["prereq_text"] = f"{rec['id']} with a grade of C or better"
-        elif defect == "unknown_prereq":
-            bad["prereq_text"] = f"CSE {rng.randint(7000, 9999)}"
-        elif defect == "empty_title":
-            bad["title"] = ""
-        else:
-            bad["id"] = rec["id"].replace(" ", "")[:5] + "?"
-        assert bad["id"] in ids or defect == "bad_id"
-        out.append({"record": bad, "malformed": True, "defect": defect})
-    return out
-
-
 if __name__ == "__main__":
     data = build(refresh="--refresh" in sys.argv)
     OUT.write_text(json.dumps(data, indent=1, ensure_ascii=False), encoding="utf8")
-    (ROOT / "data" / "labeled_records.json").write_text(json.dumps(labeled_records(data), indent=1), encoding="utf8")
     print(f"{len(data['courses'])} courses, {len(data['edges'])} prerequisite edges, "
           f"{len(data['discrepancies'])} discrepancies -> {OUT.relative_to(ROOT)}")
     for d in data["discrepancies"]:

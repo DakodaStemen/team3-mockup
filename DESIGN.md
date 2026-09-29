@@ -142,6 +142,7 @@ Inside that institutional frame, one idea carries the product: the plan and its 
 Density is medium: a working tool read on laptops and projected in class, so headings are large and plain, numerals are tabular, and the what-if result is legible from across a room. Light is the default; dark is an opt-in theme through the top-bar toggle (stored as `adpp-theme`, applied as `html[data-theme=dark]`).
 
 **Key Characteristics:**
+
 - csusb.edu chrome: white top bar, blue gradient banner, blue sticky section nav, #f1f1f1 sidebar boxes.
 - Team-supplied CSUSB logo: arc and mountain in CSUSB blue, wordmark in CSUSB gray, never recolored beyond the dark-theme lift.
 - One timeline for plan and graph; terms are columns.
@@ -153,12 +154,14 @@ Density is medium: a working tool read on laptops and projected in class, so hea
 A cool institutional palette: one CSUSB blue doing nearly all the work over white and warm-neutral grays, with a status trio held for meaning.
 
 ### Primary
+
 - **CSUSB Blue** (csusb-blue): primary buttons, links, the section nav bar, planned-node strokes, critical-path fills and edges, the 3px rule under each term heading, the selected tab, the hero graduation value, focus outlines.
 - **Deep Campus Blue** (blue-deep): primary-button hover and the dark end of the banner gradient (`linear-gradient(120deg, #0065bd 0%, #0058a6 55%, #004a8a 100%)`).
 - **Coyote Navy** (navy): the product name in the top bar, the active section-nav pill, keyboard focus on map nodes.
 - **Blue Wash** (blue-tint): hover rows on course lists and tables, the selected tab's count badge.
 
 ### Secondary
+
 - **CSUSB Gray** (logo-gray): the logo wordmark only.
 - **Coyote Gold** (coyote-gold): the "Sample student · synthetic data" / "Uploaded transcript · not saved" tag (on dark text #3a2a00) and the loading bar under the section nav. Nothing else.
 - **Elective Green** (#007934 light, #5fd08f dark; wash #e3f3ea / #123524): CSUSB's green, only for major electives (course code and "Elective" tag) and its legend swatch. Required courses stay ink; the critical path's blue wins over it.
@@ -166,6 +169,7 @@ A cool institutional palette: one CSUSB blue doing nearly all the work over whit
 - **Once-a-year** badge uses Warn Amber on its wash with a calendar icon ("Fall only" / "Spring only"); on the map, an amber dot on the node's corner. Missing the term costs a year, so it is never fine print.
 
 ### Neutral
+
 - **White** (white): page, top bar, cards, inputs.
 - **Campus Gray** (ground): sidebar boxes, alternating term bands on the map, neutral count badges.
 - **Chalk** (surface-2): completed-course nodes on the map.
@@ -175,14 +179,17 @@ A cool institutional palette: one CSUSB blue doing nearly all the work over whit
 - **Hairline** (line) and **Strong Hairline** (line-strong): borders, table rules, section-head rules, default map edges, input strokes.
 
 ### Status
+
 - **Done Green** (ok / ok-tint): passed courses, improved results.
 - **Affected Red** (bad / bad-tint): affected courses, delayed results, alerts, ghost and move edges. Always with the hatch and the "(affected)" text.
-- **Waiting Amber** (warn / warn-tint): offering warnings, discrepancy flags, low-confidence guardrail results.
+- **Waiting Amber** (warn / warn-tint): offering warnings and discrepancy flags.
 
 ### Dark theme
+
 Dark is a remap of the same roles, not a new palette: page #0d1520, ground #131e2b, surface #152233, surface-2 #1a293c, ink #eef2f6, text #d3dae3, muted #9eaab8, line #26374b, line-strong #3a4e66, blue #5aa9f0 (hover #8cc4f6, tint #15314f), navy #0a2540, section nav #0b3a66, text on blue #06182b, banner `linear-gradient(120deg, #0a3563 0%, #082c52 55%, #06213e 100%)`, logo #4a9fe8 / #b3b6ba, ok #4cc47f, bad #ff7b6e, warn #e8b54a with matching deep tints.
 
 ### Named Rules
+
 **The Lines-and-State Rule.** Color appears on edges, strokes, and status, not on decorative fills. Aside from the banner, section nav, and critical-path nodes, surfaces stay white or gray.
 
 **The Never-Color-Alone Rule.** Every status color travels with a second cue: "(affected)" text plus the red hatch, a check icon for passed, a dashed outline for ghosts and unplanned courses, a text label on every legend swatch.
@@ -197,6 +204,7 @@ Dark is a remap of the same roles, not a new palette: page #0d1520, ground #131e
 **Character:** A single humanist sans in place of csusb.edu's Proxima Nova: friendly, round, institutional. Hierarchy comes from size and weight, not from a second family.
 
 ### Hierarchy
+
 - **Display** (700, 2.5rem, 1.15; 1.9rem under 640px): the student's name in the banner, white on blue. One per page.
 - **Headline** (700, 1.6rem; 1.3rem under 640px): section headings between hairline rules (Prerequisite map, Pathway), after the site's ruled "Welcome" heading.
 - **Title** (700, 1.15rem): sidebar box headings, underlined by a strong hairline. Term headings run at 0.95rem.
@@ -205,6 +213,7 @@ Dark is a remap of the same roles, not a new palette: page #0d1520, ground #131e
 - **Numeral** (700, 1.4rem, tabular): stat values; the hero graduation value at 1.7rem in CSUSB Blue.
 
 ### Named Rules
+
 **The Tabular Numbers Rule.** Units, terms, counts, and dates in data use `font-variant-numeric: tabular-nums`.
 
 ## Layout
@@ -220,9 +229,11 @@ Term cards sit in one row per academic year (Fall, Winter, Spring, Summer), each
 Flat with one soft lift. Depth comes from the white-over-gray contrast between content and sidebar boxes and from hairlines; a single diffuse shadow lifts the stats strip and the term cards, echoing the site's quick-link cards.
 
 ### Shadow Vocabulary
+
 - **Card lift** (`box-shadow: 0 2px 8px rgb(0 0 0 / .08)`; dark theme `.35`): stats strip and term cards, always with a 1px hairline border.
 
 ### Named Rules
+
 **The One Shadow Rule.** There is one shadow value. Sidebar boxes, results, inputs, and the map stay flat.
 
 ## Shapes
@@ -232,7 +243,9 @@ Small, even corners: 5px on buttons, inputs, cards, boxes, alerts, and nav pills
 ## Components
 
 ### Buttons
+
 Solid and plain, like the site's buttons.
+
 - **Shape:** 5px corners, 40px tall, weight 600.
 - **Primary:** CSUSB Blue with white text (dark theme: text #06182b); hover Deep Campus Blue. Run what-if, Keep this plan, Ask.
 - **Ghost:** white with a 1px CSUSB Blue border and blue text; hover fills blue. Discard and secondary actions.
@@ -241,6 +254,7 @@ Solid and plain, like the site's buttons.
 - **Icon button (theme toggle):** 40px square, strong-hairline border turning blue on hover, 18px stroked inline SVG sun/moon.
 
 ### Chips and Tags
+
 - **History chips** (banner): pill, 14% white on the banner, 0.8rem: terms completed and units earned, transfer credits, in-progress count (dashed white outline).
 - **Kind tags** (course rows): 0.68rem bold pill. Elective on Elective Green wash; GE and Free elective on Campus Gray.
 - **Risk badge** (course rows): "+N if failed" in Affected Red on its wash; hidden during a what-if preview. **Risk chips** ("Protect these"): white pills with a red-tinted border, bold code, red "+N", and a green "CATCH-UP" mark when a summer/winter term recovers it.
@@ -249,6 +263,7 @@ Solid and plain, like the site's buttons.
 - **Count badges** (tabs): pill on Campus Gray; blue on Blue Wash when the tab is selected.
 
 ### Cards / Containers
+
 - **Sidebar box:** Campus Gray, 5px, 20px padding, title underlined by a strong hairline. Holds What-if, Ask, Alternatives, Plan history.
 - **Result card:** tinted by outcome (Affected Red or Done Green wash with a 35% border of the same hue), 18px 20px padding, rises 4px on entry (0.22s). Head row pairs the event with a bold delta ("+1 term"); a disclosure lists moved courses.
 - **Term card:** white, 1px hairline, card lift, 12px 14px padding; heading carries the term and "used / cap" units over a 3px blue rule. Course rows are full-bleed buttons that wash Blue Wash on hover. Engine notes fold into a "N scheduling notes" disclosure.
@@ -258,19 +273,23 @@ Solid and plain, like the site's buttons.
 - **Stats strip:** one white card split by hairlines, 2fr graduation stat then three equal stats; the graduation cell tints red or green with the result.
 
 ### Inputs / Fields
+
 - **Style:** 40px, 1px strong hairline, 5px, white, 0.95rem; selects carry a stroked chevron. Hover darkens the stroke to Quiet Gray; focus is the global 2px blue outline at 2px offset. Labels sit above at 0.8rem bold.
 - **On the banner:** white fill, no border, dark text.
 
 ### Navigation
+
 - **Section nav:** full-bleed CSUSB Blue bar, sticky at top; white 0.92rem semibold links with 5px corners; hover 14% white; active is a navy pill. A 3px gold bar slides along its bottom edge while loading.
 - **Tabs:** muted text on a hairline baseline; selected turns blue with a 3px blue underline.
 
 ### Prerequisite Map (signature)
+
 A hand-built SVG timeline. Terms are columns (term name and year in uppercase muted labels), alternating columns banded in Campus Gray, and terms with no linked courses shrink to narrow bands. Nodes are 86x30 rounded rects: planned is white with a blue stroke, critical path is solid blue with white text, done is Chalk with a gray stroke, unplanned is dashed gray, affected is the red hatch with a 2px red stroke. Edges are gray 1.3px curves; OR edges dash 4/3; critical edges are 2.2px blue; long edges route through thin reserved lanes so they never pass behind a node. A moved course leaves a dashed red ghost in its old term joined by a dotted red move edge. Hovering or focusing a node lights its whole prerequisite chain and everything it unlocks in blue and dims the rest to 12–20%; click or Enter opens it in the what-if. A legend with text labels sits above the map.
 
 ## Do's and Don'ts
 
-### Do:
+### Do
+
 - **Do** keep the csusb.edu frame: white top bar with the logo, blue gradient banner, blue sticky section nav with a navy active pill, gray sidebar boxes.
 - **Do** use the team-supplied logo as supplied: arc and mountain in CSUSB Blue, wordmark in CSUSB Gray.
 - **Do** place time on the horizontal axis wherever the plan or its dependencies are drawn.
@@ -278,7 +297,8 @@ A hand-built SVG timeline. Terms are columns (term name and year in uppercase mu
 - **Do** keep corners at 5px and borders at 1px hairlines; pills only for chips, tags, and badges.
 - **Do** keep light as the default and ship every new surface in both themes through the existing custom properties.
 
-### Don't:
+### Don't
+
 - **Don't** recolor or redraw the CSUSB logo, or set the product name in a second typeface.
 - **Don't** fill surfaces with color for decoration; blue belongs to the banner, the nav, actions, and state.
 - **Don't** use Coyote Gold for anything but synthetic-data tags and loading.

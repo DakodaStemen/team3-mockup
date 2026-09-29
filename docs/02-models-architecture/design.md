@@ -1,5 +1,9 @@
 # Models, Architecture, and Design Decisions
 
+> [Docs index](../README.md) · [Design and ADRs](design.md) · [UML diagrams](uml-diagrams.md)
+
+**Contents:** [1 ADRs](#1-architecture-decision-records) · [2 System models](#2-system-models) · [3 Architectural views](#3-architectural-views-41-sommerville-62) · [4 Patterns](#4-architectural-patterns) · [5 Component specs](#5-component-specifications-sommerville-fig-413-form) · [6 API contract](#6-interface-specification-if-02) · [7 Implementation notes](#7-implementation-notes-ch-7)
+
 This covers system models (Sommerville Ch 5), architectural design (Ch 6), and design and implementation (Ch 7). Requirement IDs refer to the authoritative SRS v0.1 and the proposed [CH-02](../01-product-requirements/srs-change-proposal-CH-02.md). The status of each ID is in the [requirements register](../01-product-requirements/requirements-register.md).
 
 ## 1. Architecture Decision Records
@@ -10,15 +14,17 @@ Each ADR states the requirement, evidence, or risk that motivated it (course rul
 |---|---|---|---|
 | ADR-01 | Python planning service, TypeScript/React client, REST between them | SRS LIM-05 (team decision D-01) | FastAPI + Pydantic; the OpenAPI contract is generated (§6) |
 | ADR-02 | The **catalog** is authoritative for units and prerequisites. **Roadmaps** are authoritative for sequence and offerings. Disagreements are stored and flagged, never resolved. | DR-08, FR-20; EV-09 findings | 11 discrepancies surfaced; advisors review them |
-| ADR-03 | **Generative AI never schedules.** The LLM only classifies a query into a typed `ScenarioEvent`; the deterministic engine does all planning. | FR-19, NFR-12, SRS LIM-03; EV-08; risk R-4 | The AI can be removed with no loss of planning function |
 | ADR-04 | **Constrained greedy topological sort** instead of joint optimization | FR-05, NFR-04, PR-02 | Fast (~1 ms) and explainable, but not optimal: it packs GE slots late (EV-07). MILP (PuLP, REF-18) is the upgrade path. |
-| ADR-05 | **Self-hosted LLM (Ollama) via Instructor + Pydantic**; the Jev vendor option was dropped | IF-04 ("no planner data sent to external … AI tools"), COM-03; EV-08 | Calibration needs a local model (R-3) |
-| ADR-06 | **Stateless API:** the client sends the plan with each scenario | FR-15, NFR-03 | No persistence yet (DR-06 not implemented) |
+| ADR-06 | **Stateless API:** the client sends the plan with each scenario. The one exception is uploaded transcripts (ADR-15). | FR-15, NFR-03 | No persistence yet (DR-06 not implemented) |
 | ADR-07 | When roadmaps disagree on offering, plan with the **most restrictive** pattern | FR-08; EV-09 §2; CH-02 C-6 | May overstate delays; each conflict is flagged |
 | ADR-08 | Prerequisites below program entry (CSE 1250, MATH 1401/1403) are **placement assumptions** | FR-03; EV-02 roadmap assumes calculus-ready freshmen | Listed in `catalog.json` `entry_assumed` |
 | ADR-09 | Program data stored as **committed JSON built from committed raw sources** | DR-07, NFR-09 | Reproducible and diffable; single-program scale |
 | ADR-10 | A prerequisite **cycle rejects the edge, not the load** | DR-03 (conflict CH-02 C-1); EV-08 | Planning continues; the error is reported |
 | ADR-11 | Recalculation re-places the **downstream set plus standing-gated courses** | FR-10, NFR-11; defect found in testing (CSE 4880 senior standing) | Covered by a test |
+| ADR-12 | A **lab is always placed in its lecture's term** and moves with it (`Catalog.lab_for`). A passed half stays put; its partner is retaken alone. | FR-23; EV-02 (catalog lists the lecture as a corequisite, which alone would allow a later term) | The validator flags a split pair |
+| ADR-13 | **Summer and Winter are opt-in** and planned lighter than their maximums (summer 7 of 14, winter 4 of 4; fall/spring maximum 18). Only courses offered in both regular terms are candidates, and every placement is flagged unconfirmed. | FR-07, FR-22; EV-12 (Registrar limits); CH-03 §C-1 | Real intersession offerings are unpublished, so these placements are an assumption |
+| ADR-14 | **Catch-up search is greedy with pair lookahead** (`recover()`), built from ordinary what-if events. Risk is measured by failing one course at a time (`course_risk()`). | FR-24, FR-25; CH-03 §C-4 | Fast (< 0.5 s), but can miss a combination of three or more terms that only works together |
+| ADR-15 | **Uploaded transcripts live in process memory only** (newest 200), never on disk and never logged. | FR-26; CH-04 §C-1, §C-2; COM-03 | Restarting the API clears them. Real-record use still needs a team decision (CH-04 §C-1). |
 
 ## 2. System models
 
@@ -31,15 +37,16 @@ flowchart LR
   subgraph Planner [Adaptive Degree Pathway Planner]
     UI[Web client IF-01] --> API[Planning service IF-02]
     API --> ENG[Planning engine]
-    API --> GR[AI guardrail]
+    API --> TR[Transcript parser]
+    TR -.-> MEM[(Upload store: memory only)]
     ING[Ingestion pipeline] --> DATA[(catalog.json IF-05)]
     ENG --> DATA
   end
   Student((Student)) --> UI
+  Student -->|unofficial transcript, FR-26| UI
   Advisor((Advisor)) --> UI
   CAT[catalog.csusb.edu] -->|public HTML| ING
   RM[csusb.edu roadmap PDFs] -->|public PDF| ING
-  GR -->|localhost only, IF-04| OLL[Ollama LLM]
   SIS[SIS / PAWS / myCAP / real records]:::out
   classDef out stroke-dasharray: 5 5
 ```
@@ -52,46 +59,16 @@ Official systems and real records are outside the boundary (SRS §1.3, COM-03).
 flowchart LR
   S([Student]) --- UC1(Generate pathway: FR-05)
   S --- UC2(Run what-if: FR-09..FR-12, FR-15)
-  S --- UC3(Ask in plain language: FR-19)
   S --- UC4(Compare alternatives: FR-17)
+  S --- UC8(Upload a transcript: FR-26)
+  S --- UC9(See bottlenecks and catch-up: FR-24, FR-25)
   A([Advisor]) --- UC5(Review discrepancies: FR-20)
-  A --- UC6(Review AI audit trail: FR-21)
   C([Coordinator / team]) --- UC7(Ingest program data: DR-07)
-  UC3 -. includes .-> UC2
+  UC2 -. includes .-> UC10(Recover with Summer / Winter: FR-24)
+  UC8 -. feeds .-> UC1
 ```
 
 ### 2.3 Interaction models
-
-**Plain-language what-if** (FR-19, FR-21, FR-10):
-
-```mermaid
-sequenceDiagram
-  actor S as Student
-  participant UI
-  participant API
-  participant G as Guardrail
-  participant L as Ollama
-  participant E as Engine
-  S->>UI: "what if I fail CSE 2020 in Spring 2027"
-  UI->>API: POST /query {text, plan}
-  API->>G: classify(text, plan)
-  alt breaker open
-    G-->>API: escalated (breaker)
-  else
-    G->>L: Instructor call (schema = ScenarioQueryClassification)
-    L-->>G: {intent, event, confidence}
-    G->>G: calibrate + deterministic validate + threshold
-  end
-  G->>G: append audit line
-  alt escalated
-    API-->>UI: {guardrail, result: null}
-  else accepted
-    API->>E: apply_scenario(profile, plan, event)
-    E-->>API: {plan', delta, explanation, invalidated}
-    API-->>UI: {guardrail, result}
-    UI-->>S: preview + Keep / Discard (FR-15)
-  end
-```
 
 **Recalculation** (FR-04, FR-10, NFR-11):
 
@@ -101,11 +78,37 @@ sequenceDiagram
   participant G as Catalog DAG
   participant P as place()
   E->>G: descendants(course) ∩ planned from event term
-  E->>E: remove that set; keep everything else in place
+  E->>E: add the lecture of any moved lab and what it gates (FR-23)
+  E->>E: remove that set, keep everything else in place, Pass keeps the course in its term and records it as credited
   E->>E: drop kept courses whose standing no longer holds (+ descendants)
   E->>P: re-place the removed courses from the next term
-  P-->>E: new terms
+  P-->>E: new terms (ValueError if a course cannot be placed)
   E->>E: timeline before/after → delta + templated explanation (FR-12)
+```
+
+`apply_scenario` does not call `validate_plan`. Validity comes from `place()` applying the rules as it builds terms, and tests plus the fuzz harness check the output with the independent validator (NFR-07). `POST /validate` is a separate endpoint for hand-edited plans and roadmaps.
+
+**Transcript upload** (FR-26):
+
+```mermaid
+sequenceDiagram
+  actor S as Student
+  participant UI
+  participant API
+  participant T as transcript.py
+  participant M as Upload store (memory)
+  S->>UI: choose PDF / text / CSV (or the sample)
+  UI->>API: POST /transcript?filename=… (raw body, ≤ 1 MB)
+  API->>T: extract_text, then parse
+  alt unreadable, empty, or no CSUSB terms found
+    T-->>API: ValueError
+    API-->>UI: 422 (contents never echoed)
+  else parsed
+    T-->>API: profile (history, transfer units, in progress) + report of unread lines
+    API->>M: store as upload-<random id> (newest 200)
+    API-->>UI: {student, report}
+    UI->>API: POST /plan {student_id: upload-…}
+  end
 ```
 
 ### 2.4 Structural model (DR-01, DR-02)
@@ -114,27 +117,30 @@ sequenceDiagram
 classDiagram
   class Course {
     id; title; catalog_units; roadmap_units
-    discrepancy_flag; term_offered
+    discrepancy_flag; term_offered; offering_confidence
     requirement_groups; min_standing_units; placeholder
+    satisfied_by; satisfied_by_min_grade
   }
   class PrerequisiteEdge {
     from_course; to_course; condition AND|OR
     group; grade_minimum; concurrent_ok
   }
   class StudentProfile {
-    completed_courses{id:grade}; in_progress_courses
+    completed_courses dict; in_progress_courses; history
     choices; transfer_units; unit_load_preference; start_term
   }
-  class Plan { student_id; unit_cap; summers; credited }
-  class TermPlan { term_label; courses; total_units; warnings }
+  class PastTerm { term_label; grades dict }
+  class Plan { student_id; unit_cap; summers; winters; credited dict }
+  class TermPlan { term_label; courses; total_units; warnings; unit_cap }
   class ScenarioEvent { event_type; course_id; term_label; unit_load }
-  class Catalog { courses; g: DiGraph; program; roadmaps; priority; required(profile) }
-  class ScenarioQueryClassification { intent; event; confidence }
+  class Catalog { courses; g: DiGraph; program; roadmaps; priority; lab_for; entry_assumed; required(profile) }
   Catalog "1" o-- "*" Course
   Catalog "1" o-- "*" PrerequisiteEdge
+  StudentProfile "1" *-- "*" PastTerm
   Plan "1" *-- "*" TermPlan
-  ScenarioQueryClassification --> ScenarioEvent
 ```
+
+`event_type` is one of Pass, Fail, Withdraw, Add Summer, Add Winter, Change Unit Load. The SRS calls Fail "Not passed". `unit_cap` on a `TermPlan` is the cap the engine used for that term (summer 7, winter 4). `Catalog.discrepancies` holds the logged catalog/roadmap disagreements and rejected cycle edges.
 
 This follows the "Option 3: Hybrid" schema in EV-09 (Data Schema Ideas): the graph is the source of truth, and requirement groups are a view over it.
 
@@ -145,25 +151,13 @@ This follows the "Option 3: Hybrid" schema in EV-09 (Data Schema Ideas): the gra
 ```mermaid
 stateDiagram-v2
   [*] --> Saved: POST /plan
-  Saved --> Scenario: run what-if / accepted query
+  Saved --> Scenario: run what-if
   Scenario --> Saved: Keep (adopt)
   Scenario --> Saved: Discard
   Saved --> Saved: choose alternative (FR-17)
 ```
 
-**Guardrail circuit breaker** (NFR-12):
-
-```mermaid
-stateDiagram-v2
-  [*] --> Closed
-  Closed --> Closed: success (fails = 0)
-  Closed --> Closed: failure (fails < 3)
-  Closed --> Open: 3rd consecutive failure
-  Open --> Open: request within 60 s → escalate, no LLM call
-  Open --> Trial: request after 60 s
-  Trial --> Closed: success
-  Trial --> Open: failure
-```
+Keep pushes the previewed plan onto the client's history, so Undo last and Reset to baseline walk it back. Nothing is stored server-side.
 
 **Ingestion** is pipe-and-filter (DR-07, FR-20):
 
@@ -181,24 +175,23 @@ flowchart LR
 | Data model | `backend/planner/models.py` | DR-01, DR-02, DR-04 |
 | Catalog / DAG / requirement groups | `backend/planner/graph.py` | FR-01, FR-03, DR-03, DR-08 |
 | Scheduler and recalculation | `backend/planner/engine.py` | FR-02..FR-15, FR-17, NFR-04, NFR-07, NFR-08, NFR-11 |
-| AI guardrail | `backend/planner/guardrail.py` | FR-19, FR-21, NFR-12, NFR-13 |
 | Planning service API | `backend/planner/api.py` | IF-02, NFR-03, FR-13, FR-14 |
-| Web client | `frontend/src/App.tsx` | IF-01, FR-12, FR-15, NFR-06, NFR-10 |
-| Ingestion | `backend/scripts/ingest.py` | DR-07, FR-20, COM-04 |
-| Evaluation | `backend/scripts/results.py`, `calibrate.py` | NFR-07, NFR-13 (EV-07) |
+| Transcript parser | `backend/planner/transcript.py` | FR-26, DR-04 |
+| Web client | `frontend/src/App.tsx`, `PrereqMap.tsx` (SVG map), `Logo.tsx` | IF-01, FR-12, FR-15, FR-25, NFR-06, NFR-10 |
+| Ingestion | `backend/scripts/ingest.py` (BS CS catalog), `ingest_all.py` (every subject, 84 subjects, `data/all_courses.json`), `outliers.py` (screens it) | DR-07, FR-20, COM-04 |
+| Evaluation | `backend/scripts/results.py` | NFR-07 (EV-07) |
 
 **Process view:**
 
 | Process | Lifetime | Talks to |
 |---|---|---|
 | Browser (React) | Interactive | API via the Vite proxy `/api` |
-| `uvicorn planner.api:app` | Long-running, single worker (breaker state is in-process) | Ollama; audit file |
-| `ollama serve` | Optional | none |
-| `ingest.py`, `results.py`, `calibrate.py` | Batch | Network (ingest only), Ollama (calibrate only) |
+| `uvicorn planner.api:app` | Long-running, single worker (the transcript upload store is in-process) | none |
+| `ingest.py`, `ingest_all.py`, `outliers.py`, `results.py` | Batch | Network (the two ingest scripts only) |
 
 **Development view:** the repository layout is in the [README](../../README.md#repository-layout); area owners are in the [agile engineering plan §2](../03-planning-risk/agile-engineering-plan.md#2-team-organization).
 
-**Physical view:** a single developer machine. UI on `:5173`, API on `:8000`, Ollama on `:11434`. CI runs on GitHub-hosted Linux. No production deployment is in scope (SRS §2.6).
+**Physical view:** a single developer machine. UI on `:5173`, API on `:8000`. CI runs on GitHub-hosted Linux. No production deployment is in scope (SRS §2.6).
 
 **+1 Scenarios:** the use cases in §2.2, each exercised by the release-test scenarios in the [verification strategy §4](../04-quality-security-testing/verification-strategy.md#4-release-testing-83).
 
@@ -206,7 +199,7 @@ flowchart LR
 
 | Pattern (Sommerville §6.3) | Where | Why |
 |---|---|---|
-| Layered | UI → API → engine/guardrail → data | Swap the UI or the LLM without touching planning (ADR-03) |
+| Layered | UI → API → engine → data | Swap the UI without touching planning |
 | Repository | `catalog.json` shared by engine, API, results | One authoritative dataset (ADR-02, ADR-09) |
 | Pipe and filter | Ingestion | Each stage testable in isolation |
 | Client–server | Browser ↔ FastAPI | Stateless server (ADR-06) |
@@ -218,31 +211,19 @@ flowchart LR
 | Field | Content |
 |---|---|
 | Inputs | StudentProfile; unit cap (default: the profile's preference) |
-| Outputs | `Plan{terms[TermPlan{term_label, courses, total_units, warnings}]}` |
-| Action | Each term from `start_term`: (1) candidates = remaining courses with standing met, prerequisites met (groups ANDed, alternatives ORed, grade minimum on the +/- scale, corequisites may share the term), offered this term; (2) sort by priority (out-degree + longest downstream chain + 1 if once-a-year), then ID; (3) add while under cap, pulling corequisite partners in right after their lecture; repeat until nothing fits. Summer terms only if selected (cap 8, "Both" courses only). |
-| Precondition | Every required course is reachable; otherwise `ValueError` → `422` naming the courses (FR-13, partial) |
+| Outputs | `Plan{terms[TermPlan{term_label, courses, total_units, warnings, unit_cap}]}` |
+| Action | Each term from `start_term`: (1) candidates = remaining courses with standing met and prerequisites met (groups ANDed, alternatives ORed, grade minimum on the +/- scale, corequisites may share the term); (2) sort by priority (out-degree + longest downstream chain + 1 if once-a-year), then ID; (3) add a course only if it is offered this term and fits under the cap, together with its lab (a lab goes in only with its lecture) and any corequisite partner; repeat until nothing fits. Summer (planned cap 7) and Winter (cap 4) terms exist only if selected and take only "Both" courses. Stops with an error after 30 terms. |
+| Precondition | Every required course is reachable and no course exceeds the cap; otherwise `ValueError` → `422` naming each blocking course and constraint (FR-13) |
 | Postcondition | `validate_plan(plan) == []`; same inputs give the same plan (NFR-08) |
 
 **Apply scenario:** `engine.apply_scenario(profile, plan, event)` (FR-09..FR-12, FR-15)
 
 | Field | Content |
 |---|---|
-| Action | Not passed/Withdrawn: remove the course and its planned descendants from the event term on; re-place from the next term. Passed: credit it; re-place descendants. Add Summer: insert the term; re-place later courses. Change Unit Load: new cap from the event term. Then re-place any kept course whose standing no longer holds (ADR-11). |
-| Outputs | `{plan, timeline, invalidated, delta_terms, moved, explanation}`. `moved` lists each course whose term changed (`course`, `from`, `to`); for Pass, `invalidated` is the moved set. The explanation is templated, never LLM-generated. |
+| Action | Fail/Withdraw: remove the course and its planned descendants from the event term on (a moved lab takes its lecture along, ADR-12); re-place from the next term; a retake revokes any earlier Pass of the course or its dependents. Pass: credit the course in its term; re-place descendants. Add Summer / Add Winter: insert the opted-in term; re-place later courses. Change Unit Load: new cap from the event term (3–21). Then re-place any kept course whose standing no longer holds (ADR-11). |
+| Outputs | `{plan, timeline, invalidated, delta_terms, moved, explanation}`. `moved` lists each course whose term changed (`course`, `from`, `to`); for Pass, `invalidated` is the moved set. The explanation is templated (FR-12). The API adds `recovery` when graduation slips (ADR-14). |
+| Errors | `ValueError` for an unknown course, a term not in the plan, a course not planned in that term, or an unplaceable course → `400` |
 | Postcondition | The input plan is unchanged (FR-15); courses outside the removed set keep their term (NFR-11) |
-
-**Classify query:** `guardrail.classify(text, plan)` (FR-19, FR-21, NFR-12)
-
-| Condition | Outcome |
-|---|---|
-| Breaker open (≥ 3 consecutive failures, < 60 s ago) | escalated |
-| LLM error, timeout, retries exhausted | escalated (failure counted) |
-| Intent unsupported, or deterministic validation fails (unknown course, course not in that term, term not in plan, unit load outside 3–21) | escalated |
-| Calibrated confidence < 0.60 | escalated |
-| 0.60 ≤ confidence < 0.90 | accepted_low_confidence → engine runs, flagged |
-| ≥ 0.90 | auto_accepted → engine runs |
-
-Every row writes one audit line (FR-21).
 
 ## 6. Interface specification (IF-02)
 
@@ -250,21 +231,22 @@ The machine-readable contract is served at `GET /openapi.json` (FastAPI). All bo
 
 | Method, path | Request | Response |
 |---|---|---|
-| `GET /health` | none | `{engine, ollama, model, unit_load_range}`: whether the optional LLM parser is reachable (NFR-12) |
+| `GET /health` | none | `{engine, unit_load_range}` |
 | `GET /catalog` | none | `{courses[], edges[], priority{}, discrepancies[]}` |
 | `GET /students` | none | `StudentProfile[]` (synthetic) |
-| `POST /plan` | `{"student_id": "alex", "unit_cap": 15}` | `{plan, timeline, alternatives{fastest, balanced}}`; 404 unknown student; 422 if `unit_cap` is outside 3–21 or the plan is unschedulable (names each blocking course and why, FR-13) |
-| `POST /scenario` | `{"plan": Plan, "event": {"event_type": "Fail", "course_id": "CSE 2020", "term_label": "Spring 2027"}}` | `{plan, timeline, invalidated[], delta_terms, moved[], explanation}`; 400 if the event doesn't fit the plan or the unit load is outside 3–21 |
+| `POST /plan` | `{"student_id": "alex", "unit_cap": 15}` | `{plan, timeline, alternatives{fastest, balanced, "with summer & winter"}}` (the last only when intersessions help); 404 unknown student; 422 if `unit_cap` is outside 3–21 or the plan is unschedulable (names each blocking course and why, FR-13) |
+| `POST /scenario` | `{"plan": Plan, "event": {"event_type": "Fail", "course_id": "CSE 2020", "term_label": "Spring 2027"}}` | `{plan, timeline, invalidated[], delta_terms, moved[], explanation, recovery?}`; `recovery` (FR-24) appears when graduation slips and holds `{adds[], plan, timeline, explanation, moved, delta_terms}`; 400 if the event doesn't fit the plan or the unit load is outside 3–21; 422 if the plan body is malformed |
+| `POST /risk` | `{"plan": Plan}` | `{course: {term, delay, catch_up[], after_catch_up}}` for every planned course that is not a GE/free-elective slot (FR-25) |
 | `POST /validate` | `{"plan": Plan}` | `{"problems": [...]}`: empty if valid (FR-14) |
-| `POST /query` | `{"text": "...", "plan": Plan}` | `{guardrail{outcome, confidence, reason, parsed_event}, result or null}` |
-| `GET /audit?limit=50` | none | audit lines, newest first |
+| `POST /transcript?filename=` | raw PDF, text, or CSV body (≤ 1 MB, PDF ≤ 30 pages) | `{student, report}`; the student id is `upload-…` and is accepted by every endpoint above; 400 empty; 422 unreadable or no CSUSB courses found (FR-26) |
+| `GET /transcript/sample` | none | a synthetic transcript as plain text |
+
+Every response carries `X-Content-Type-Options`, `X-Frame-Options`, and `Referrer-Policy` headers. A body over 1,000,000 bytes gets `413`, and a non-numeric `Content-Length` gets `400`.
 
 ## 7. Implementation notes (Ch 7)
 
 - **Design patterns:**
-  - *Circuit Breaker*: the guardrail.
-  - *Dependency injection*: `classify(text, plan, llm=...)`, so tests run with no network.
-  - *Template method* for explanations: FR-12 text is never LLM-generated.
-- **Reuse:** NetworkX, Pydantic, FastAPI, Instructor, scikit-learn, structlog, pdfplumber, BeautifulSoup, Reagraph. Only the per-term greedy packing is hand-written.
+  - *Template method* for explanations (FR-12).
+- **Reuse:** NetworkX, Pydantic, FastAPI, pdfplumber, BeautifulSoup. Hand-written: the per-term greedy packing, the catch-up search, the transcript parser, and the SVG prerequisite map (it replaced Reagraph in v0.6).
 - **Host–target:** develop on Windows, CI on Linux. `pathlib` and explicit UTF-8 throughout.
 - **Licensing:** all dependencies are permissive (MIT/BSD/Apache). CSUSB content is used for coursework in a private repo, not redistributed.

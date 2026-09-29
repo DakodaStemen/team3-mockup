@@ -1,5 +1,7 @@
 # SRS change proposal CH-03 (for SRS v0.2)
 
+> [Docs index](../README.md) · [Register](requirements-register.md) · [Traceability](traceability.md) · [Change proposals](srs-change-proposal-CH-02.md) · [References](references.md)
+
 | Field | Entry |
 |---|---|
 | Change ID | CH-03 (continues SRS v0.1 Appendix A, after [CH-02](srs-change-proposal-CH-02.md)) |
@@ -40,8 +42,7 @@ FR-07 and FR-11 extend to Winter unchanged: no Winter term unless selected, and 
 
 - **Scope:** adds FR-22, FR-23, FR-24; extends FR-07 and FR-11. All three are implemented and tested.
 - **Design:** `SEASON_ORDER` gains Winter (Winter YYYY is January, before Spring YYYY). `Plan` gains `winters`. Labs pair through `Catalog.lab_for`. `recover()` chains ordinary what-if events, so it reuses every existing rule.
-- **API:** `/scenario` and `/query` add `recovery` when graduation slips; `/plan` alternatives add `with summer & winter`. Both are additive.
-- **Data:** three labeled queries in `backend/data/queries.json` were re-pointed to the terms their courses now occupy after lab pairing moved PHYS 2500 to Fall 2027.
+- **API:** `/scenario` adds `recovery` when graduation slips; `/plan` alternatives add `with summer & winter`. Both are additive.
 - **Results:** the scenario sweep covers Add Winter and recovery. On the current data, opt-in terms fully recover 128 of 160 delayed Fail/Withdraw runs, and every recovered plan passes validation. These numbers rest on the unconfirmed assumptions in §C.
 - **Risk:** R-9 (data accuracy) increases until EV-11 and EV-12 exist, because the planner suggests intersessions that may not run. Mitigated by the "unconfirmed" warnings and the "To confirm" list.
 - **Tests:** tagged FR-22/23/24; see [traceability.md](traceability.md).

@@ -1,5 +1,7 @@
 # AI Engineering Log
 
+> [Docs index](../README.md) · [AI Engineering Log](ai-engineering-log.md)
+
 This is the AI Assistance and Provenance record required by course policy (SRS COM-02; Engineering Dossier area 5). Course rule: *AI-generated content is not automatically project evidence; the team must verify important outputs.* Entries are append-only. Correct a mistake by adding an entry, not by editing an old one.
 
 ## Summary record (SRS §13 form)
@@ -141,3 +143,11 @@ This is the AI Assistance and Provenance record required by course policy (SRS C
 - **Validation:** 221 backend tests (fuzz: 54 random chains, all invariants hold), 22 e2e tests. The fuzz test found the lab-pinning bug; a parser test found the "Calculus I" grade bug. Both are fixed.
 - **Known limitations:** the parser has never seen a real CSUSB unofficial transcript. Uploading a real record conflicts with SRS non-goals and DR-05 until the team decides (CH-04 §C-1). Risk is measured by failing one course at a time, not combinations.
 
+### AIL-11: Documentation and diagram audit (2026-09-29)
+
+- **Decisions (human):** Dakoda asked for all documentation and diagrams to be checked against the current code, and supplied the team roster.
+- **Method:** AI read `engine.py`, `api.py`, `models.py`, `graph.py`, `guardrail.py`, the CI workflow, and the UI's state handling, then compared each claim in the docs and diagrams with them. It ran the backend tests and recounted the catalog.
+- **Output:** the UML set (`uml-diagrams.md`); `design.md` brought up to date (ADR-12..15, API table, sequence and class diagrams, component specs); README, PRODUCT, threat analysis, risk register (R-15, R-16), verification strategy, quality and CM plan, agile plan, CH-02 note, and the team table corrected.
+- **Validation:** 234 backend tests passed before the removal below. The diagrams have not been rendered; the Mermaid and PlantUML syntax is unchecked.
+- **LLM removal (human decision):** Dakoda asked for the demo build to run without the LLM. AI removed the guardrail module, `/query`, `/audit`, calibration, the UI's question box, AI status chip, and audit tab, the four LLM requirements, and the related docs on branch `feat/remove-llm`. After it: 199 backend tests and 21 e2e tests pass, lint and build are clean. Earlier log entries are left as written because they record what happened. The pre-removal state is tagged `with-llm`.
+- **Known limitations:** the AI's first UML draft was wrong in several places (event names, a `validate_plan` call that `apply_scenario` never makes, HTTP status codes); the audit corrected them. Unreleased CHANGELOG items (all-subject catalog) are described from the CHANGELOG and file contents, not from a code read.

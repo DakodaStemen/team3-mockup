@@ -1,5 +1,7 @@
 # Agile Engineering Plan
 
+> [Docs index](../README.md) · [Agile plan](agile-engineering-plan.md) · [Risk register](risk-register.md)
+
 This plan carries the useful parts of a traditional SPMP, per the course dossier guidance ("relevant SPMP elements may appear in the Agile Engineering Plan"). Sections follow Sommerville §23.2.1. The process is Scrum (Ch 3.3), combined with plan-driven milestones, the "sensible mixture" Sommerville recommends for fixed-length projects.
 
 ## 1. Objectives and constraints
@@ -12,9 +14,9 @@ This plan carries the useful parts of a traditional SPMP, per the course dossier
 |---|---|---|
 | Duration | Remaining course weeks (currently Week 5 of the course plan) | SRS LIM-01 |
 | Team | 5 people | SRS LIM-01 |
-| Budget | $0: open-source tools, self-hosted LLM, GitHub private repo | ADR-05 |
+| Budget | $0: open-source tools, GitHub private repo | Team decision |
 | Data | Synthetic students; public CSUSB program data | COM-03; CH-02 C-2 |
-| Starting point | v0.3: working prototype on real program data, test suite, dossier structure | [CHANGELOG](../../CHANGELOG.md) |
+| Starting point | v0.7.0: working prototype on real program data (what-ifs, Summer/Winter catch-up, transcript upload), test suite, dossier structure | [CHANGELOG](../../CHANGELOG.md) |
 
 ## 2. Team organization
 
@@ -33,7 +35,6 @@ Names are assigned at the team meeting. Current responsibilities are also listed
 |---|---|---|---|
 | Planning engine (audit, graph, scheduler, scenarios) | `backend/planner/engine.py`, `graph.py` | TBD | TBD |
 | Data (ingestion, datasets, data rules) | `backend/scripts/ingest.py`, `backend/data/` | TBD | TBD |
-| AI guardrail and calibration | `backend/planner/guardrail.py`, `scripts/calibrate.py` | TBD | TBD |
 | API and web client | `backend/planner/api.py`, `frontend/` | TBD | TBD |
 | Quality, release, dossier | `docs/`, `scripts/results.py`, `.github/` | TBD | TBD |
 
@@ -47,8 +48,8 @@ See the [risk register](risk-register.md). The ScrumMaster reviews it at each sp
 
 | Resource | Need | Notes |
 |---|---|---|
-| Laptops | 5; ≥ 16 GB RAM on at least one to run Ollama `llama3.1` 8B (~4.7 GB) | Everything except NL queries runs without it (NFR-12) |
-| Software | Python ≥ 3.12 + uv, Node ≥ 20, Git, Ollama (optional) | Pinned in `uv.lock` and `package-lock.json` |
+| Laptops | One per team member | Any laptop that runs Python and Node |
+| Software | Python ≥ 3.12 + uv, Node ≥ 20, Git | Pinned in `uv.lock` and `package-lock.json` |
 | Hosting | Private GitHub repo: Issues, Projects, Actions | Free-plan Actions minutes are sufficient |
 
 ## 5. Backlog and increments
@@ -58,11 +59,12 @@ The **product backlog** is GitHub Issues (label `backlog`, *Backlog item* form).
 | Sprint | Course weeks | Goal | Milestone / deliverable |
 |---|---|---|---|
 | 1 | 5–6 | SRS v0.1 baseline; team review of CH-02; system models | **SRS v0.1** baselined (snapshot `ADPP_SRS_v0.1_<date>.pdf` in `docs/01-product-requirements/`); models reviewed |
-| 2 | 7–8 | MVP gaps: FR-01 group status, FR-12 moved-course diff, FR-13 blocking constraint, NFR-06 accessibility; PR-01 usability wireframe test | Increment demo; EV-04/EV-05 interviews |
-| 3 | 9–10 | Later-release features: FR-16 graduation-by-term, FR-17 third alternative; calibration run (NFR-13); release testing | **Release candidate**; SRS v1.0; final review and oral defense |
+| 2 | 7–8 | MVP gaps: FR-01 group status, FR-16 graduation-by-term, FR-18 advisor view, NFR-06 accessibility; PR-01 usability wireframe test (FR-12 and FR-13 are done) | Increment demo; EV-04/EV-05 interviews |
+| 3 | 9–10 | Later-release features: FR-17 third alternative, sign-in and persistence (NFR-01, DR-06); release testing | **Release candidate**; SRS v1.0; final review and oral defense |
 
 **Definition of Done** (course dossier "quality gates"):
-- CI green: ruff, pytest (including the traceability check), frontend build.
+
+- CI green: ruff, pytest (including the traceability check), frontend lint and build, and the Playwright e2e job.
 - Every changed requirement is updated in the SRS first, and the register and change log agree.
 - Reviewed by a non-author using the PR checklist.
 - CHANGELOG updated.
@@ -71,6 +73,7 @@ The **product backlog** is GitHub Issues (label `backlog`, *Backlog item* form).
 ## 6. Schedule and ceremonies
 
 Two-week sprints:
+
 - **Planning** (day 1): choose backlog items by priority and velocity.
 - **Weekly stand-up:** course requirement. Reports artifact *status*, not content; recorded in `docs/03-planning-risk/standups/` once they begin.
 - **Sprint review:** demo the increment; review risks.
