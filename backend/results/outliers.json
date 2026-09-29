@@ -1,0 +1,844 @@
+{
+ "courses": 4042,
+ "subjects": 84,
+ "failed_subjects": [],
+ "units_histogram": {
+  "0": 75,
+  "1": 483,
+  "2": 398,
+  "3": 2629,
+  "4": 323,
+  "5": 72,
+  "6": 58,
+  "7": 2,
+  "8": 2
+ },
+ "outliers": {
+  "corequisite_pair": [
+   {
+    "course": "ART 5750",
+    "why": "ART 5750 -> ART 5751 -> ART 5750"
+   },
+   {
+    "course": "ART 5750",
+    "why": "ART 5750 -> ART 5752 -> ART 5750"
+   },
+   {
+    "course": "ART 5750",
+    "why": "ART 5750 -> ART 5753 -> ART 5750"
+   },
+   {
+    "course": "EADM 6682",
+    "why": "EADM 6682 -> EADM 6686 -> EADM 6682"
+   },
+   {
+    "course": "EADM 6683",
+    "why": "EADM 6683 -> EADM 6687 -> EADM 6683"
+   },
+   {
+    "course": "EADM 6684",
+    "why": "EADM 6684 -> EADM 6688 -> EADM 6684"
+   },
+   {
+    "course": "EDMS 4107B",
+    "why": "EDMS 4107B -> EDMS 4111 -> EDMS 4107B"
+   },
+   {
+    "course": "ESPE 6633",
+    "why": "ESPE 6633 -> ESPE 6634 -> ESPE 6633"
+   },
+   {
+    "course": "ESPE 6636",
+    "why": "ESPE 6636 -> ESPE 6635 -> ESPE 6636"
+   },
+   {
+    "course": "ESPE 6637",
+    "why": "ESPE 6637 -> ESPE 6638 -> ESPE 6637"
+   },
+   {
+    "course": "GEOG 1030",
+    "why": "GEOG 1030 -> GEOG 1030L -> GEOG 1030"
+   },
+   {
+    "course": "HSCI 3602",
+    "why": "HSCI 3602 -> HSCI 3607L -> HSCI 3602"
+   },
+   {
+    "course": "HSCI 4621",
+    "why": "HSCI 4621 -> HSCI 4621L -> HSCI 4621"
+   },
+   {
+    "course": "MATH 6900",
+    "why": "MATH 6900 -> MATH 6916 -> MATH 6900"
+   },
+   {
+    "course": "MATH 6900",
+    "why": "MATH 6900 -> MATH 6916 -> MATH 6918 -> MATH 6900"
+   },
+   {
+    "course": "MATH 6916",
+    "why": "MATH 6916 -> MATH 6918 -> MATH 6916"
+   },
+   {
+    "course": "MUS 2120",
+    "why": "MUS 2120 -> MUS 2125 -> MUS 2120"
+   },
+   {
+    "course": "MUS 2130",
+    "why": "MUS 2130 -> MUS 2135 -> MUS 2130"
+   },
+   {
+    "course": "MUS 2140",
+    "why": "MUS 2140 -> MUS 2145 -> MUS 2140"
+   },
+   {
+    "course": "MUS 2150",
+    "why": "MUS 2150 -> MUS 2155 -> MUS 2150"
+   },
+   {
+    "course": "NURS 6320",
+    "why": "NURS 6320 -> NURS 6335 -> NURS 6320"
+   },
+   {
+    "course": "NURS 6320",
+    "why": "NURS 6320 -> NURS 6335 -> NURS 6902 -> NURS 6320"
+   },
+   {
+    "course": "NURS 6335",
+    "why": "NURS 6335 -> NURS 6902 -> NURS 6335"
+   },
+   {
+    "course": "NURS 7450",
+    "why": "NURS 7450 -> NURS 7450C -> NURS 7450"
+   },
+   {
+    "course": "NURS 7450",
+    "why": "NURS 7450 -> NURS 7450C -> NURS 7450L -> NURS 7450"
+   },
+   {
+    "course": "NURS 7450C",
+    "why": "NURS 7450C -> NURS 7450L -> NURS 7450C"
+   },
+   {
+    "course": "PSYC 6671",
+    "why": "PSYC 6671 -> PSYC 6871 -> PSYC 6671"
+   },
+   {
+    "course": "PSYC 6672",
+    "why": "PSYC 6672 -> PSYC 6872 -> PSYC 6672"
+   },
+   {
+    "course": "SW 6021",
+    "why": "SW 6021 -> SW 6081 -> SW 6021"
+   },
+   {
+    "course": "SW 6023",
+    "why": "SW 6023 -> SW 6083 -> SW 6023"
+   },
+   {
+    "course": "SW 6024",
+    "why": "SW 6024 -> SW 6084 -> SW 6024"
+   }
+  ],
+  "dangling_prereq": [
+   {
+    "course": "ACCT 5360",
+    "why": "ACCT 4260"
+   },
+   {
+    "course": "ACCT 5470",
+    "why": "ACCT 3470"
+   },
+   {
+    "course": "ACCT 5560",
+    "why": "ACCT 4260"
+   },
+   {
+    "course": "ARAB 3160",
+    "why": "ARAB 1150"
+   },
+   {
+    "course": "ASTR 3300",
+    "why": "ASTR 1000R"
+   },
+   {
+    "course": "ASTR 3300",
+    "why": "ASTR 1010R"
+   },
+   {
+    "course": "ASTR 4000",
+    "why": "ASTR 1000R"
+   },
+   {
+    "course": "ASTR 4000",
+    "why": "ASTR 1010R"
+   },
+   {
+    "course": "BIOL 4650",
+    "why": "BIOL 3000"
+   },
+   {
+    "course": "BIOL 5550",
+    "why": "BIOL 3480"
+   },
+   {
+    "course": "BIOL 5860",
+    "why": "BIOL 4510"
+   },
+   {
+    "course": "BIOL 5910",
+    "why": "BIOL 4510"
+   },
+   {
+    "course": "CAFS 5674",
+    "why": "CAFS 3310"
+   },
+   {
+    "course": "CAHU 2111",
+    "why": "CAHU 1112R"
+   },
+   {
+    "course": "CAHU 2112",
+    "why": "CAHU 2111R"
+   },
+   {
+    "course": "COUN 6233",
+    "why": "COUN 6244"
+   },
+   {
+    "course": "DES 3600",
+    "why": "DES 2405"
+   },
+   {
+    "course": "EADM 6602",
+    "why": "EADM 6603"
+   },
+   {
+    "course": "ECON 3100",
+    "why": "MATH 1603"
+   },
+   {
+    "course": "ECON 3200",
+    "why": "MATH 1603"
+   },
+   {
+    "course": "ECON 3500",
+    "why": "MATH 1603"
+   },
+   {
+    "course": "ECON 3800",
+    "why": "MATH 1603"
+   },
+   {
+    "course": "ECON 4412",
+    "why": "MATH 1603"
+   },
+   {
+    "course": "ECON 4414",
+    "why": "MATH 1603"
+   },
+   {
+    "course": "ECON 4416",
+    "why": "MATH 1603"
+   },
+   {
+    "course": "ECON 4418",
+    "why": "MATH 1603"
+   },
+   {
+    "course": "ECON 4900",
+    "why": "ECON 3312"
+   },
+   {
+    "course": "ECON 4900",
+    "why": "ECON 3314"
+   },
+   {
+    "course": "ECON 4900",
+    "why": "ECON 3316"
+   },
+   {
+    "course": "ECON 4900",
+    "why": "ECON 3318"
+   },
+   {
+    "course": "EESL 6400",
+    "why": "EESL 5100"
+   },
+   {
+    "course": "EESL 6980",
+    "why": "EESL 6100"
+   },
+   {
+    "course": "ENG 3530",
+    "why": "ENG 3110"
+   },
+   {
+    "course": "ENG 5230",
+    "why": "ENG 3110"
+   },
+   {
+    "course": "ENG 5240",
+    "why": "ENG 3110"
+   },
+   {
+    "course": "ENG 5310",
+    "why": "ENG 3110"
+   },
+   {
+    "course": "ENG 5320",
+    "why": "ENG 3110"
+   },
+   {
+    "course": "ES 5250",
+    "why": "ES 5000"
+   },
+   {
+    "course": "ES 5753",
+    "why": "ES 5000"
+   },
+   {
+    "course": "ESPE 6620",
+    "why": "ESPE 2018"
+   },
+   {
+    "course": "ESPE 6620",
+    "why": "ESPE 6614"
+   },
+   {
+    "course": "ESPE 6621",
+    "why": "ESPE 2018"
+   },
+   {
+    "course": "ESPE 6621",
+    "why": "ESPE 6614"
+   },
+   {
+    "course": "ESPE 6635",
+    "why": "ESPE 5514"
+   },
+   {
+    "course": "ESPE 6635",
+    "why": "ESPE 6611"
+   },
+   {
+    "course": "ESPE 6635",
+    "why": "ESPE 6614"
+   },
+   {
+    "course": "ESPE 6636",
+    "why": "ESPE 5514"
+   },
+   {
+    "course": "ESPE 6636",
+    "why": "ESPE 6611"
+   },
+   {
+    "course": "ESPE 6636",
+    "why": "ESPE 6613"
+   },
+   {
+    "course": "ESPE 6637",
+    "why": "ESPE 6616"
+   },
+   {
+    "course": "ESPE 6638",
+    "why": "ESPE 6611"
+   },
+   {
+    "course": "ESPE 6638",
+    "why": "ESPE 6612"
+   },
+   {
+    "course": "ESPE 6638",
+    "why": "ESPE 6615"
+   },
+   {
+    "course": "ESPE 6639",
+    "why": "ESPE 6611"
+   },
+   {
+    "course": "ESPE 6639",
+    "why": "ESPE 6612"
+   },
+   {
+    "course": "ESPE 6672",
+    "why": "ESPE 6611"
+   },
+   {
+    "course": "ESPE 6672",
+    "why": "ESPE 6612"
+   },
+   {
+    "course": "ESPE 6673",
+    "why": "ESPE 6611"
+   },
+   {
+    "course": "ESPE 6673",
+    "why": "ESPE 6612"
+   },
+   {
+    "course": "FIN 5350",
+    "why": "FIN 4300"
+   },
+   {
+    "course": "HSCI 5010",
+    "why": "PSYC 3020"
+   },
+   {
+    "course": "IST 5050",
+    "why": "IST 3050"
+   },
+   {
+    "course": "KOR 3314",
+    "why": "KOR 2202"
+   },
+   {
+    "course": "KOR 3370",
+    "why": "KOR 1101"
+   },
+   {
+    "course": "LBST 5900",
+    "why": "CAL 2970"
+   },
+   {
+    "course": "LUIS 2112",
+    "why": "LUIS 2111Q"
+   },
+   {
+    "course": "MATH 3012",
+    "why": "MATH 3011"
+   },
+   {
+    "course": "MUS 3480",
+    "why": "MUS 4160"
+   },
+   {
+    "course": "MUS 3480",
+    "why": "MUS 4270"
+   },
+   {
+    "course": "MUS 4260",
+    "why": "MUS 3340"
+   },
+   {
+    "course": "MUS 4260",
+    "why": "MUS 3350"
+   },
+   {
+    "course": "MUS 4260",
+    "why": "MUS 3360"
+   },
+   {
+    "course": "NURS 6575",
+    "why": "NURS 6525"
+   },
+   {
+    "course": "NURS 7410L",
+    "why": "NURS 7140"
+   },
+   {
+    "course": "PHYS 3050L",
+    "why": "PHYS 3040"
+   },
+   {
+    "course": "PSYC 3303",
+    "why": "CD 2240"
+   },
+   {
+    "course": "PSYC 3305",
+    "why": "CD 2240"
+   },
+   {
+    "course": "PSYC 3358",
+    "why": "CD 2240"
+   },
+   {
+    "course": "PSYC 3384",
+    "why": "CD 2240"
+   },
+   {
+    "course": "PSYC 3391",
+    "why": "CD 2240"
+   },
+   {
+    "course": "PSYC 4442",
+    "why": "PSYC 3324"
+   },
+   {
+    "course": "PSYC 5538",
+    "why": "HD 3324"
+   },
+   {
+    "course": "PSYC 5598",
+    "why": "CD 5597"
+   },
+   {
+    "course": "PSYC 6971",
+    "why": "PYSC 6971"
+   },
+   {
+    "course": "PSYC 6972",
+    "why": "PYSC 6971"
+   },
+   {
+    "course": "SCM 5050",
+    "why": "IST 3050"
+   },
+   {
+    "course": "SERR 2111",
+    "why": "SERR 1112S"
+   },
+   {
+    "course": "SERR 2112",
+    "why": "SERR 2111S"
+   },
+   {
+    "course": "SPAN 2111",
+    "why": "SPAN 1113"
+   },
+   {
+    "course": "SPAN 2251",
+    "why": "SPAN 1113"
+   },
+   {
+    "course": "SPAN 2261",
+    "why": "SPAN 1113"
+   },
+   {
+    "course": "SW 5973",
+    "why": "SW 3010"
+   },
+   {
+    "course": "SW 6022",
+    "why": "SW 6082"
+   },
+   {
+    "course": "SW 6083",
+    "why": "SW 6082"
+   },
+   {
+    "course": "SW 6183",
+    "why": "SW 6082"
+   }
+  ],
+  "prereq_cycle": [
+   {
+    "course": "ESPE 6609",
+    "why": "ESPE 6609 -> ESPE 6610 -> ESPE 6609"
+   }
+  ],
+  "variable_units": [
+   {
+    "course": "HSCI 6753A",
+    "why": ""
+   },
+   {
+    "course": "HSCI 6753B",
+    "why": ""
+   }
+  ],
+  "zero_units": [
+   {
+    "course": "ACCT 5980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ACCT 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ADMN 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ADMN 6981",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ADMN 9992",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ADMN 9993",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ANTH 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ART 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "AS 5001",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "BIOL 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "CAFS 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "CHEM 5990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "CHEM 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "CJUS 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "CJUS 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "COMM 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "COMM 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "COUN 6960",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "COUN 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "CSE 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "CSE 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "DES 3100",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "EADM 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ECTS 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "EDDL 7980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "EDSP 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "EDUC 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "EELB 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "EESL 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "EMAT 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ENG 6550",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ENG 6970",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ENG 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ENG 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ENTR 5980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ENTR 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ENTR 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ERDG 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "EREH 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ESPE 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ESTM 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ESTM 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "ETEC 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "FIN 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "FIN 6985",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "FIN 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "GEOG 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "GEOL 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "HIST 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "HSCI 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "HSCI 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "IS 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "IST 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "IST 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "MATH 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "MATH 6981",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "MATH 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "MGMT 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "MKTG 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "MSPA 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "NURS 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "NURS 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "PA 6750",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "PA 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "PA 6985",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "PA 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "PSCI 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "PSCI 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "PSYC 6980",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "PSYC 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "SCM 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "SPAN 6698",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "SSCI 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "SW 6990",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   },
+   {
+    "course": "USTD 3000",
+    "why": "catalog lists Units: 0 (thesis/continuation/prep courses)"
+   }
+  ]
+ }
+}

@@ -124,3 +124,20 @@ This is the AI Assistance and Provenance record required by course policy (SRS C
 - **Output:** per-term unit caps; credit revocation on retakes; strict API input models; LLM output validated like typed input; audit, calibration, and breaker hardening; stale-response and stale-form fixes in the UI; WCAG AA contrast; hardened ingest and CI.
 - **Validation:** 135 backend tests, 16 e2e tests, 280/280 valid scenario runs, fuzz harness with 0 over-cap or validator problems. New regression tests failed before their fixes.
 - **Known limitations:** no authentication, and `/audit` is readable by any client; audit log has no retention policy (fine for synthetic students, not for real records); body-size limit relies on Content-Length; circuit breaker is per process.
+
+### AIL-09: UI redesign, winter terms, lab pairing, and catch-up search (2026-09-28)
+
+- **Decisions (human):** Dakoda asked for a better DAG and UI, then pinned "modern and minimal, matching the CSUSB site", supplied the CSUSB logo, and asked for light-by-default with a dark toggle. Dakoda identified missing summer/winter logic, the lab scheduled after its lecture, and asked for summer/winter to be used to catch up after setbacks.
+- **Method:** AI built the UI with the Impeccable design skill (direction roll, then the user's pinned theme), a separate finish-review agent (two fix rounds), and a documenter agent for DESIGN.md. Engine changes were made directly and verified with new requirement-tagged tests and the results sweep.
+- **Output:** CH-03 (FR-22, FR-23, FR-24); `Add Winter`; `Catalog.lab_for`; `recover()`; SVG prerequisite map; csusb.edu-style layout.
+- **Validation:** 154 backend tests, 19 e2e tests, 285/285 valid scenario runs; 128/128 recovered plans valid.
+- **Known limitations:** which courses run in summer/winter is an assumption, not evidence (CH-03 §C-1). The caps were first assumed (summer 8) and then corrected to the Registrar's published limits (summer 14, winter 4) after a research agent verified them. `recover()` is greedy with pair lookahead. Figtree substitutes for the licensed Proxima Nova and loads from Google Fonts. The CSUSB logo is used at the team's request in a planning aid that says it is not official.
+
+### AIL-10: Layout, history, measured risk, transcript upload, fuzzing (2026-09-28)
+
+- **Decisions (human):** Dakoda asked for a tidier layout, past terms for students with history, bottlenecks surfaced and used, electives in a distinct color, a transcript upload with parsing, and the math "fully wired in including edge cases".
+- **Method:** layout via the Impeccable layout playbook. A research agent verified CSUSB session limits and public schedule sources. Synthetic histories generated with the engine's own placement. The parser was built against a synthetic transcript. A seeded fuzz test chains random events across all profiles.
+- **Output:** CH-04 (DR-04 revised, FR-25, FR-26); `course_risk()`, `/risk`; `planner/transcript.py`, `/transcript`; `StudentProfile.history`; lab/lecture pinning on rebuild.
+- **Validation:** 221 backend tests (fuzz: 54 random chains, all invariants hold), 22 e2e tests. The fuzz test found the lab-pinning bug; a parser test found the "Calculus I" grade bug. Both are fixed.
+- **Known limitations:** the parser has never seen a real CSUSB unofficial transcript. Uploading a real record conflicts with SRS non-goals and DR-05 until the team decides (CH-04 §C-1). Risk is measured by failing one course at a time, not combinations.
+

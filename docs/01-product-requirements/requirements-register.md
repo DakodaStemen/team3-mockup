@@ -2,7 +2,7 @@
 
 **The authoritative requirement text is the SRS**, not this file:
 - **SRS v0.1** (Google Doc, team working copy): [TeamName_AdaptiveDegreePathwayPlanner_SRS_v0_1](https://docs.google.com/document/d/1h-cgCt8wF0NcHRoyRzOdYJiq81ip6GJhvYBi4g2LHtY/edit)
-- **Proposed changes:** [srs-change-proposal-CH-02.md](srs-change-proposal-CH-02.md)
+- **Proposed changes:** [srs-change-proposal-CH-02.md](srs-change-proposal-CH-02.md), [srs-change-proposal-CH-03.md](srs-change-proposal-CH-03.md), [srs-change-proposal-CH-04.md](srs-change-proposal-CH-04.md)
 
 This register is the SRS §5.3 attribute register that the template allows. It holds each ID's one-line summary, verification method, baseline, and **implementation status**. `backend/scripts/trace.py` reads it to build [traceability.md](traceability.md), and CI fails when an `Implemented` or `Partial` requirement verified by Test has no tagged test.
 
@@ -16,7 +16,7 @@ Change a requirement's *text* in the SRS first, then update its summary here.
 | FR-04 | On Not passed or Withdrawn, identify every directly or transitively dependent planned course | EV-01 | Test | SRS v0.1 | Implemented |
 | FR-05 | Assign every remaining required course to a future term | EV-01 | Test | SRS v0.1 | Implemented: default electives sum to exactly 12 units; a chosen elective's supporting prerequisite (e.g. CSE 3350) is added automatically |
 | FR-06 | Never exceed the term's target unit load | EV-01; AS-03 | Test | SRS v0.1 | Implemented |
-| FR-07 | No Summer term unless summer enrollment is selected | EV-01 | Test | SRS v0.1 | Implemented: summer placements flagged *unconfirmed* (no published summer offerings) |
+| FR-07 | No Summer term unless summer enrollment is selected | EV-01 | Test | SRS v0.1 | Implemented: summer placements flagged *unconfirmed* (no published summer offerings); Winter follows the same rule (FR-22) |
 | FR-08 | Place a course only in a term its offering pattern includes | EV-01; AS-04 | Test | SRS v0.1 | Implemented: offerings from all 12 CSE-department roadmaps with confidence (high/low/unknown); low and unknown are warned (CH-02 §C-4, C-6) |
 | FR-09 | Recalculate when a planned course is recorded Passed | EV-01 | Test | SRS v0.1 | Implemented |
 | FR-10 | Reschedule a Not passed or Withdrawn course and its downstream courses | EV-01 | Test | SRS v0.1 | Implemented: also re-places courses whose class standing no longer holds |
@@ -31,10 +31,15 @@ Change a requirement's *text* in the SRS first, then update its summary here.
 | FR-19 | Convert a plain-language what-if into one typed scenario; apply it only if validated and confidence ≥ 0.60 | EV-08 | Test | CH-02 (proposed) | Implemented |
 | FR-20 | Record and display every catalog–roadmap disagreement; never resolve silently | EV-02; EV-09 | Test | CH-02 (proposed) | Implemented |
 | FR-21 | Log every AI decision with input, parsed event, raw and calibrated confidence, thresholds, and outcome | EV-08 | Test | CH-02 (proposed) | Implemented |
+| FR-22 | Plan a Winter intersession only when the student selects it; cap it and flag every winter placement unconfirmed | Team request 2026-09-28 | Test | CH-03 (proposed) | Implemented: `Add Winter` event, 4-unit placeholder cap, only Fall-and-Spring courses; cap and offerings await department data (CH-03 §C) |
+| FR-23 | Place a lab in the same term as its lecture; moving either moves both | EV-02 (catalog corequisite); team review | Test | CH-03 (proposed) | Implemented: `XXXX nnnnL` pairs with `XXXX nnnn`; the validator flags a split pair |
+| FR-24 | When a what-if delays graduation, propose the fewest opt-in Summer/Winter terms that recover the date, and offer an intersession alternative pathway | Team request 2026-09-28 | Test | CH-03 (proposed) | Implemented: greedy search with pair lookahead (`recover()`); returned as `recovery` on /scenario and /query, and as the "with summer & winter" alternative |
+| FR-25 | Measure each planned course's risk: the graduation delay if it is failed, and the Summer/Winter catch-up that recovers it; show the riskiest courses | Team request 2026-09-28 | Test | CH-04 (proposed) | Implemented: `course_risk()`, `POST /risk`; "Protect these" strip, per-course badges, and bottleneck-table columns |
+| FR-26 | Accept an unofficial transcript (PDF, text, CSV) and build a temporary profile with term history, transfer credit, and in-progress courses; report what could not be read; never store it | Team request 2026-09-28 | Test | CH-04 (proposed) | Implemented: `planner/transcript.py`, `POST /transcript`; in-memory only (200 most recent), not logged |
 | DR-01 | Program, course, prerequisite, student, and plan data with stable IDs and referential integrity | EV-01 | Test; Inspection | SRS v0.1 | Partial: every prerequisite endpoint resolves to a catalog course; no separate Offering or CourseAttempt entities |
 | DR-02 | Prerequisites as Boolean AND/OR expressions | EV-02; OQ-02 | Test | SRS v0.1 | Implemented: groups ANDed, alternatives ORed, with grade minimum and corequisite flag |
 | DR-03 | Reject a load containing a cycle, undefined course, or missing field, reporting each record | EV-01 | Test | SRS v0.1 | Partial: cycle edges are rejected and logged but the load continues (tech-spec ADR; CH-02 §C-1); missing fields fail validation |
-| DR-04 | Record each attempt with course, term, and outcome | EV-01 | Test | SRS v0.1 | Partial: letter grades per course; W/NC/F are not passes; CR/P/TR count as C pending advisor confirmation (CH-02 C-8); no term per attempt |
+| DR-04 | Record each attempt with course, term, and outcome | EV-01 | Test | SRS v0.1 | Implemented: `StudentProfile.history` keeps every attempt by term (including D/F/W/NC); the latest grade drives planning; W/NC/F are not passes; CR/P/TR count as C pending advisor confirmation (CH-02 C-8) |
 | DR-05 | Load only datasets labeled synthetic | EV-01; EV-06 | Test; Inspection | SRS v0.1 | Not implemented: public catalog data is real, not synthetic (CH-02 §C-2) |
 | DR-06 | Store program-data version and generation date with each saved pathway | EV-01 | Inspection | SRS v0.1 | Not implemented: no persistence yet |
 | DR-07 | Rebuild program data reproducibly from cached public sources | EV-02 | Test | CH-02 (proposed) | Implemented |
@@ -48,7 +53,7 @@ Change a requirement's *text* in the SRS first, then update its summary here.
 | NFR-06 | Keyboard operable; status never conveyed by color alone | EV-06 | Test; Inspection | SRS v0.1 | Unverified: native controls and text labels, but the DAG view uses color only |
 | NFR-07 | Every pathway in a ≥ 30-case scenario suite passes the independent validator | EV-01 | Test; Analysis | SRS v0.1 | Implemented: 280-run sweep in `results/`, plus tests |
 | NFR-08 | Identical inputs give an identical pathway | EV-01 | Test | SRS v0.1 | Implemented |
-| NFR-09 | Groups, prerequisites, offerings, and unit limits defined in data files | EV-01 | Inspection; Demonstration | SRS v0.1 | Partial: `catalog.json`; summer cap and guardrail thresholds are still code constants |
+| NFR-09 | Groups, prerequisites, offerings, and unit limits defined in data files | EV-01 | Inspection; Demonstration | SRS v0.1 | Partial: `catalog.json`; summer and winter caps and guardrail thresholds are still code constants |
 | NFR-10 | Every pathway screen states it is a planning aid, not an official audit or advising decision | EV-01 | Inspection | SRS v0.1 | Implemented |
 | NFR-11 | After Not passed or Withdrawn, 100% of courses outside the affected set keep their term | EV-08 | Test | CH-02 (proposed) | Implemented |
 | NFR-12 | If the LLM is unavailable, deterministic functions stay available; NL requests escalate; breaker opens after 3 failures for 60 s | EV-08 | Test | CH-02 (proposed) | Implemented |

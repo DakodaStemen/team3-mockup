@@ -12,8 +12,7 @@
   },
   "dependencies": {
     "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "reagraph": "^4.32.0"
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",

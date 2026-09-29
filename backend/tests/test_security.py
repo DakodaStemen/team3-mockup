@@ -199,12 +199,15 @@ def test_plan_text_cannot_smuggle_instructions_into_the_prompt(monkeypatch):
 
 
 @pytest.mark.req("NFR-03", "FR-06")
-@pytest.mark.parametrize("term,cap", [(0, 40), (0, 2), ("summer", 12)])
+@pytest.mark.parametrize("term,cap", [(0, 40), (0, 2), ("summer", 15), ("winter", 5)])
 def test_term_caps_are_bounded(term, cap):
     p = copy.deepcopy(PLAN)
     if term == "summer":
         p["summers"] = ["Summer 2027"]
         p["terms"].insert(2, {"term_label": "Summer 2027", "courses": [], "unit_cap": cap})
+    elif term == "winter":
+        p["winters"] = ["Winter 2027"]
+        p["terms"].insert(1, {"term_label": "Winter 2027", "courses": [], "unit_cap": cap})
     else:
         p["terms"][term]["unit_cap"] = cap
     assert client.post("/validate", json={"plan": p}).status_code == 422

@@ -86,9 +86,10 @@ def llm_classify(text: str, plan: Plan) -> ScenarioQueryClassification:
     terms = "\n".join(f"- {t.term_label}: {', '.join(t.courses)}" for t in plan.terms)
     system = (
         "You convert a student's what-if question about their degree plan into ONE structured scenario event. "
-        "event_type is one of Pass, Fail, Withdraw, Add Summer, Change Unit Load. "
+        "event_type is one of Pass, Fail, Withdraw, Add Summer, Add Winter, Change Unit Load. "
         "course_id must be a course in the plan, written like 'CSE 2020'. term_label must be a term from the plan, "
-        "except Add Summer which uses 'Summer YYYY'. Change Unit Load sets unit_load. "
+        "except Add Summer which uses 'Summer YYYY' and Add Winter which uses 'Winter YYYY' "
+        "(the January intersession: Winter 2028 falls between Fall 2027 and Spring 2028). Change Unit Load sets unit_load. "
         "If the question is not a scenario, set intent=unsupported. Be honest in confidence.\n"
         f"Current plan:\n{terms}"
     )
@@ -103,8 +104,9 @@ def validate(event: ScenarioEvent | None, plan: Plan) -> str | None:
     if event is None:
         return "no event produced"
     labels = {t.term_label for t in plan.terms}
-    if event.event_type == "Add Summer":
-        return None if re.fullmatch(r"Summer (19|20|21)\d{2}", event.term_label) else "summer term label invalid"
+    if event.event_type in ("Add Summer", "Add Winter"):
+        season = event.event_type.split()[1]
+        return None if re.fullmatch(rf"{season} (19|20|21)\d{{2}}", event.term_label) else f"{season.lower()} term label invalid"
     if event.term_label not in labels:
         return f"term {event.term_label} not in plan"
     if event.event_type == "Change Unit Load":

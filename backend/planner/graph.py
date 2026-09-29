@@ -38,6 +38,9 @@ class Catalog:
         self.priority = {n: self.g.out_degree(n) + depth[n]
                          + (n in self.courses and self.courses[n].term_offered in ("Fall", "Spring"))
                          for n in self.g}
+        # A lab ("PHYS 2500L") is taken in the same term as its lecture ("PHYS 2500"). The catalog calls the
+        # lecture a corequisite, which alone would also allow the lab a term later.
+        self.lab_for = {c[:-1]: c for c in self.courses if c.endswith("L") and c[:-1] in self.courses}
 
     def prereqs(self, course_id: str) -> list[PrerequisiteEdge]:
         return [d["edge"] for _, _, d in self.g.in_edges(course_id, data=True)]
