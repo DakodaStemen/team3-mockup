@@ -247,7 +247,7 @@ Small, even corners: 5px on buttons, inputs, cards, boxes, alerts, and nav pills
 Solid and plain, like the site's buttons.
 
 - **Shape:** 5px corners, 40px tall, weight 600.
-- **Primary:** CSUSB Blue with white text (dark theme: text #06182b); hover Deep Campus Blue. Run what-if, Keep this plan, Ask.
+- **Primary:** CSUSB Blue with white text (dark theme: text #06182b); hover Deep Campus Blue. Run what-if, Keep this plan.
 - **Ghost:** white with a 1px CSUSB Blue border and blue text; hover fills blue. Discard and secondary actions.
 - **Small:** 32px tall, 12px padding, 0.85rem.
 - **Disabled:** 45% opacity. Color transitions 0.15s.
