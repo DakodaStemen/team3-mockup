@@ -22,7 +22,7 @@ test('after keeping a what-if, the form never points at a course that moved away
 })
 
 test('undo to a shorter plan keeps the selected term valid', async ({ page }) => {
-  await page.getByLabel('Event').selectOption('Change Unit Load')
+  await page.getByRole('radio', { name: 'Change Unit Load' }).click()
   await page.getByLabel('New unit load').selectOption('12')
   await page.getByRole('button', { name: 'Run what-if' }).click()
   await page.getByRole('button', { name: 'Keep this plan' }).click()
@@ -34,7 +34,7 @@ test('undo to a shorter plan keeps the selected term valid', async ({ page }) =>
 })
 
 test('switching student with Add Summer selected offers the new plan\'s summers', async ({ page }) => {
-  await page.getByLabel('Event').selectOption('Add Summer')
+  await page.getByRole('radio', { name: 'Add Summer' }).click()
   await page.getByLabel('Student').selectOption('morgan')
   await expect(stat(page, 'Graduation')).toHaveText('Fall 2027')
   await expect(page.getByLabel('Summer term')).toHaveValue(/^Summer \d{4}$/)
@@ -103,7 +103,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.goto('/')
     await expect(stat(page, 'Graduation')).toHaveText('Spring 2030')
     for (const ev of ['Fail', 'Pass', 'Add Summer', 'Change Unit Load']) {
-      await page.getByLabel('Event').selectOption(ev)
+      await page.getByRole('radio', { name: ev, exact: true }).click()
       await page.getByRole('button', { name: 'Run what-if' }).click()
       await expect(page.getByTestId('whatif')).toBeVisible()
       await page.getByRole('button', { name: 'Keep this plan' }).click()

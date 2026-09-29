@@ -97,6 +97,8 @@ export default function App() {
   const busy = actionBusy || loadedKey !== planKey || !catalog
   const generation = useRef(0)  // bumped whenever the saved plan is replaced; late answers for an older plan are dropped
   const scenarioRef = useRef<HTMLElement>(null)
+  const resultRef = useRef<HTMLElement>(null)
+  useEffect(() => { if (preview) resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }) }, [preview])
   const [showUnplanned, setShowUnplanned] = useState(false)
   const [section, setSection] = useState('overview')
   const [view, setView] = useState<'terms' | 'map'>('terms')
@@ -414,14 +416,17 @@ export default function App() {
 
         <aside className="panel">
           <section className="block" ref={scenarioRef}>
-            <h2>What-if</h2>
-            <p className="muted hint">Pick an event, or click any course in the plan.</p>
+            <h2>What if…</h2>
+            <p className="muted hint">Pick what happens, or click a course in the plan.</p>
             <div className="fields">
-              <label className="field">Event
-                <select aria-label="Event" value={form.event_type} onChange={e => setEv({ ...form, event_type: e.target.value })}>
-                  {EVENTS.map(x => <option key={x}>{x}</option>)}
-                </select>
-              </label>
+              <div className="field" role="radiogroup" aria-label="Event">
+                <span>What happens?</span>
+                <div className="chips">
+                  {EVENTS.map(x => <button key={x} type="button" role="radio" aria-checked={form.event_type === x} className="chip"
+                    onClick={() => setEv({ ...form, event_type: x })}>{x}</button>)}
+                </div>
+              </div>
+              <div className="pair">
               {offSeason
                 ? offOptions.length
                   ? <label className="field">{offSeason} term
@@ -448,11 +453,12 @@ export default function App() {
                     {CAPS.map(c => <option key={c} value={c}>{c} units</option>)}
                   </select>
                 </label>}
+              </div>
             </div>
             <button className="primary wide" disabled={busy || !plan || !form.term_label || (COURSE_EVENTS.includes(form.event_type) && !form.course_id)} onClick={whatIf}>Run what-if</button>
           </section>
 
-          {preview && <section className={`result ${delta > 0 ? 'bad' : 'ok'}`} data-testid="whatif" aria-live="polite">
+          {preview && <section className={`result ${delta > 0 ? 'bad' : 'ok'}`} data-testid="whatif" ref={resultRef} aria-live="polite">
             <p className="result-head">
               <strong>{preview.label}</strong>
               <span className="delta">{delta > 0 ? `+${delta} term${delta === 1 ? '' : 's'}` : delta < 0 ? `${delta} term${delta === -1 ? '' : 's'}` : 'No delay'}</span>
@@ -474,7 +480,6 @@ export default function App() {
               </button>
             </div>}
           </section>}
-
         </aside>
 
         <section className="plancard" id="plan">

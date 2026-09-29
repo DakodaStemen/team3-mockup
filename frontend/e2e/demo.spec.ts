@@ -4,7 +4,7 @@ import { expect, test, type Page } from '@playwright/test'
 const stat = (page: Page, label: string) => page.locator('.stat', { hasText: label }).locator('span').last()
 
 async function whatIf(page: Page, event: string, term: string, course?: string) {
-  await page.getByLabel('Event').selectOption(event)
+  await page.getByRole('radio', { name: event, exact: true }).click()
   await page.getByLabel(event === 'Add Summer' ? 'Summer term' : event === 'Add Winter' ? 'Winter term' : 'Term').selectOption(term)
   if (course) await page.getByLabel('Course').selectOption(course)
   await page.getByRole('button', { name: 'Run what-if' }).click()
