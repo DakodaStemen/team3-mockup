@@ -1,0 +1,336 @@
+[
+ {
+  "id": "alex",
+  "name": "Alex (first-time freshman)",
+  "start_term": "Fall 2026",
+  "unit_load_preference": 16,
+  "notes": "Clean start; compare against the freshman roadmap.",
+  "completed_courses": {}
+ },
+ {
+  "id": "taylor",
+  "name": "Taylor (transfer, lower division done)",
+  "start_term": "Fall 2026",
+  "unit_load_preference": 17,
+  "completed_courses": {
+   "CSE 2010": "B",
+   "CSE 2020": "B",
+   "CSE 2130": "B",
+   "MATH 2210": "B",
+   "MATH 2220": "B",
+   "MATH 2265": "B",
+   "MATH 2310": "B",
+   "MATH 2372": "B",
+   "PHYS 2500": "B",
+   "PHYS 2500L": "B",
+   "PHYS 2510": "B",
+   "PHYS 2510L": "B",
+   "FREE 1": "A",
+   "ENG 1070A": "B",
+   "COMM 1006": "B",
+   "ART 1200": "B",
+   "ARAB 1112": "B",
+   "ES 1000": "B",
+   "HIST 1460": "B",
+   "PSCI 2030": "B"
+  },
+  "transfer_units": 0,
+  "notes": "Transfer with lower division done; GE recorded as real catalog courses. Compare against the transfer roadmap."
+ },
+ {
+  "id": "jordan",
+  "name": "Jordan (D in CSE 2010, must retake)",
+  "start_term": "Fall 2027",
+  "unit_load_preference": 15,
+  "completed_courses": {
+   "CSE 2010": "D",
+   "MATH 2210": "B",
+   "MATH 2372": "B+",
+   "GE 1A": "A-",
+   "CSE 2020": "W",
+   "MATH 2220": "C+",
+   "FREE 1": "A",
+   "GE 1C": "B+"
+  },
+  "notes": "D is below the C minimum CSE 2020 requires; W is not a pass.",
+  "history": [
+   {
+    "term_label": "Fall 2026",
+    "grades": {
+     "MATH 2210": "B",
+     "CSE 2010": "D",
+     "MATH 2372": "B+",
+     "FREE 1": "A"
+    }
+   },
+   {
+    "term_label": "Spring 2027",
+    "grades": {
+     "CSE 2020": "W",
+     "MATH 2220": "C+",
+     "GE 1A": "A-",
+     "GE 1C": "B+"
+    }
+   }
+  ]
+ },
+ {
+  "id": "sam",
+  "name": "Sam (junior, missed Spring-only physics)",
+  "start_term": "Fall 2028",
+  "unit_load_preference": 15,
+  "completed_courses": {
+   "CSE 2010": "B",
+   "MATH 2210": "B",
+   "MATH 2372": "B+",
+   "GE 1A": "A-",
+   "CSE 2020": "B",
+   "MATH 2220": "C+",
+   "FREE 1": "A",
+   "GE 1C": "B+",
+   "CSE 2130": "B",
+   "MATH 2310": "B-",
+   "PHYS 2500": "C+",
+   "PHYS 2500L": "A",
+   "GE 3A": "A",
+   "CSE 3100": "B",
+   "CSE 4310": "B",
+   "MATH 2265": "B+",
+   "GE 3B": "A-",
+   "CSE 4010": "B",
+   "CSE 4550": "A-",
+   "CSE 4600": "B",
+   "GE 6": "A",
+   "GE AI-HIST": "B+"
+  },
+  "notes": "PHYS 2510/2510L are Spring-only; a Fall start must wait.",
+  "history": [
+   {
+    "term_label": "Spring 2026",
+    "grades": {
+     "MATH 2210": "B",
+     "MATH 2265": "B+",
+     "CSE 2010": "B",
+     "MATH 2372": "B+"
+    }
+   },
+   {
+    "term_label": "Fall 2026",
+    "grades": {
+     "CSE 2020": "B",
+     "MATH 2220": "C+",
+     "MATH 2310": "B-",
+     "CSE 2130": "B"
+    }
+   },
+   {
+    "term_label": "Spring 2027",
+    "grades": {
+     "CSE 3100": "B",
+     "PHYS 2500": "C+",
+     "PHYS 2500L": "A",
+     "CSE 4310": "B",
+     "CSE 4600": "B"
+    }
+   },
+   {
+    "term_label": "Fall 2027",
+    "grades": {
+     "CSE 4010": "B",
+     "CSE 4550": "A-",
+     "FREE 1": "A",
+     "GE 1A": "A-"
+    }
+   },
+   {
+    "term_label": "Spring 2028",
+    "grades": {
+     "GE 1C": "B+",
+     "GE 3A": "A",
+     "GE 3B": "A-",
+     "GE 6": "A",
+     "GE AI-HIST": "B+"
+    }
+   }
+  ]
+ },
+ {
+  "id": "riley",
+  "name": "Riley (part-time, 9 units)",
+  "start_term": "Fall 2027",
+  "unit_load_preference": 9,
+  "completed_courses": {
+   "CSE 2010": "B",
+   "MATH 2210": "B",
+   "MATH 2372": "B+",
+   "GE 1A": "A-",
+   "CSE 2020": "B",
+   "MATH 2220": "C+",
+   "FREE 1": "A",
+   "GE 1C": "B+"
+  },
+  "notes": "Working student; long timeline.",
+  "history": [
+   {
+    "term_label": "Fall 2025",
+    "grades": {
+     "MATH 2210": "B",
+     "CSE 2010": "B"
+    }
+   },
+   {
+    "term_label": "Spring 2026",
+    "grades": {
+     "MATH 2220": "C+",
+     "MATH 2372": "B+"
+    }
+   },
+   {
+    "term_label": "Fall 2026",
+    "grades": {
+     "CSE 2020": "B",
+     "FREE 1": "A"
+    }
+   },
+   {
+    "term_label": "Spring 2027",
+    "grades": {
+     "GE 1A": "A-",
+     "GE 1C": "B+"
+    }
+   }
+  ]
+ },
+ {
+  "id": "morgan",
+  "name": "Morgan (senior, Fall-only capstone chain left)",
+  "start_term": "Spring 2027",
+  "unit_load_preference": 15,
+  "completed_courses": {
+   "CSE 2010": "B",
+   "MATH 2210": "B",
+   "MATH 2372": "B+",
+   "GE 1A": "A-",
+   "CSE 2020": "B",
+   "MATH 2220": "C+",
+   "FREE 1": "A",
+   "GE 1C": "B+",
+   "CSE 2130": "B",
+   "MATH 2310": "B-",
+   "PHYS 2500": "C+",
+   "PHYS 2500L": "A",
+   "GE 3A": "A",
+   "CSE 3100": "B",
+   "CSE 4310": "B",
+   "MATH 2265": "B+",
+   "PHYS 2510": "C",
+   "PHYS 2510L": "B+",
+   "GE 3B": "A-",
+   "CSE 4010": "B",
+   "CSE 4550": "B",
+   "CSE 4600": "B",
+   "CSE 4100": "B+",
+   "CSE 5000": "B",
+   "CSE 5250": "B-",
+   "CSE 5160": "A",
+   "CSE 4050": "A",
+   "CSE 4400": "B",
+   "GE 6": "A",
+   "GE AI-HIST": "A",
+   "GE AI-GOV": "A",
+   "GE UD-3": "A",
+   "GE UD-4": "A"
+  },
+  "in_progress_courses": [
+   "CSE 5430"
+  ],
+  "choices": {
+   "CSE 5120 / CSE 5140 / CSE 5160": [
+    "CSE 5160"
+   ],
+   "CSE Elective": [
+    "CSE 4050",
+    "CSE 4400",
+    "CSE 5430",
+    "CSE 5460"
+   ]
+  },
+  "notes": "Remaining: CSE 5700 and 5720 (Fall-only), CSE 4880 (senior standing; also satisfies GE UD-2/5), one elective.",
+  "history": [
+   {
+    "term_label": "Spring 2023",
+    "grades": {
+     "MATH 2210": "B",
+     "MATH 2265": "B+",
+     "CSE 2010": "B",
+     "MATH 2372": "B+"
+    }
+   },
+   {
+    "term_label": "Fall 2023",
+    "grades": {
+     "CSE 2020": "B",
+     "MATH 2220": "C+",
+     "MATH 2310": "B-",
+     "CSE 2130": "B"
+    }
+   },
+   {
+    "term_label": "Spring 2024",
+    "grades": {
+     "CSE 3100": "B",
+     "PHYS 2500": "C+",
+     "PHYS 2500L": "A",
+     "CSE 4310": "B",
+     "CSE 4600": "B"
+    }
+   },
+   {
+    "term_label": "Fall 2024",
+    "grades": {
+     "CSE 4010": "B",
+     "CSE 5000": "B",
+     "CSE 4050": "A",
+     "CSE 4400": "B"
+    }
+   },
+   {
+    "term_label": "Spring 2025",
+    "grades": {
+     "PHYS 2510": "C",
+     "PHYS 2510L": "B+",
+     "CSE 4100": "B+",
+     "CSE 5250": "B-",
+     "CSE 4550": "B"
+    }
+   },
+   {
+    "term_label": "Fall 2025",
+    "grades": {
+     "CSE 5160": "A",
+     "FREE 1": "A",
+     "GE 1A": "A-"
+    }
+   },
+   {
+    "term_label": "Spring 2026",
+    "grades": {
+     "GE 1C": "B+",
+     "GE 3A": "A",
+     "GE 3B": "A-",
+     "GE 6": "A",
+     "GE AI-GOV": "A"
+    }
+   },
+   {
+    "term_label": "Fall 2026",
+    "grades": {
+     "GE AI-HIST": "A",
+     "GE UD-3": "A",
+     "GE UD-4": "A",
+     "CSE 5430": "IP"
+    }
+   }
+  ]
+ }
+]

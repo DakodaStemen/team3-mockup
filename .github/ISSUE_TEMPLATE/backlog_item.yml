@@ -1,0 +1,18 @@
+name: Backlog item
+description: User story or task for the product backlog (Scrum)
+labels: [backlog]
+body:
+  - type: textarea
+    id: story
+    attributes: { label: Story, placeholder: "As a <student/advisor/maintainer>, I want <goal> so that <benefit>." }
+    validations: { required: true }
+  - type: textarea
+    id: acceptance
+    attributes: { label: Acceptance criteria, description: Testable conditions }
+    validations: { required: true }
+  - type: input
+    id: reqs
+    attributes: { label: SRS IDs touched }
+  - type: input
+    id: points
+    attributes: { label: Estimate (points) }

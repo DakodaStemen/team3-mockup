@@ -1,0 +1,30 @@
+[project]
+name = "planner"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "pydantic>=2",
+  "networkx",
+  "pdfplumber>=0.11.10",
+  "beautifulsoup4>=4.15.0",
+  "requests>=2.34.2",
+]
+
+[dependency-groups]
+dev = ["pytest", "httpx", "ruff"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+addopts = "--strict-markers"
+markers = ["req(*ids): SRS requirement IDs this test verifies (docs/01-product-requirements/traceability.md)"]
+
+[tool.ruff]
+line-length = 150
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]

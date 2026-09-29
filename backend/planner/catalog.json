@@ -1,0 +1,2749 @@
+{
+ "_source": "Ingested by scripts/ingest.py from public CSUSB catalog, GE, and roadmap pages (2026-27). Raw copies in data/raw/.",
+ "sources": {
+  "courses_cse.html": "https://catalog.csusb.edu/coursesaz/cse/",
+  "courses_math.html": "https://catalog.csusb.edu/coursesaz/math/",
+  "courses_phys.html": "https://catalog.csusb.edu/coursesaz/phys/",
+  "program_bs_cs.html": "https://catalog.csusb.edu/colleges-schools-departments/natural-sciences/computer-science-engineering/computer-science-bs/",
+  "roadmap_bs_cs_freshman.pdf": "https://www.csusb.edu/sites/default/files/upload/file/2026/BS%20-%20Computer%20Science%20-%20First%20Time%20Freshman%20-%20Roadmap_0.pdf",
+  "roadmap_bs_cs_transfer.pdf": "https://www.csusb.edu/sites/default/files/upload/file/2026/BS%20-%20Computer%20Science%20-%20Transfer%20-%20Roadmap_1.pdf",
+  "ge_program.html": "https://catalog.csusb.edu/general-education-program/",
+  "roadmap_bs_ce_freshman.pdf": "https://www.csusb.edu/sites/default/files/upload/file/2026/BS%20-%20Computer%20Engineering%20-%20First%20Time%20Freshman%20-%20Roadmap_0.pdf",
+  "roadmap_bs_ce_transfer.pdf": "https://www.csusb.edu/sites/default/files/upload/file/2026/BS%20-%20Computer%20Engineering%20-%20Transfer%20-%20Roadmap_0.pdf",
+  "roadmap_bs_bioinf_freshman.pdf": "https://www.csusb.edu/sites/default/files/upload/file/2026/BS%20-%20Bioinformatics%20-%20First%20Time%20Freshman%20-%20Roadmap_0.pdf",
+  "roadmap_bs_bioinf_transfer.pdf": "https://www.csusb.edu/sites/default/files/upload/file/2026/BS%20-%20Bioinformatics%20-%20Transfer%20-%20Roadmap_0.pdf",
+  "roadmap_ba_game_freshman.pdf": "https://www.csusb.edu/sites/default/files/upload/file/2026/BA%20-%20Computer%20Systems%20-%20Game%20Development%20Concentration%20-%20First%20Time%20Freshman%20-%20Roadmap.pdf",
+  "roadmap_ba_game_transfer.pdf": "https://www.csusb.edu/sites/default/files/upload/file/2026/BA%20-%20Computer%20Systems%20-%20Game%20Development%20Concentration%20-%20Transfer%20-%20Roadmap.pdf",
+  "roadmap_ba_general_freshman.pdf": "https://www.csusb.edu/sites/default/files/upload/file/2026/BA%20-%20Computer%20Systems%20-%20General%20Interdisciplinary%20Concentration%20-%20First%20Time%20Freshman%20-%20Roadmap.pdf",
+  "roadmap_ba_general_transfer.pdf": "https://www.csusb.edu/sites/default/files/upload/file/2026/BA%20-%20Computer%20Systems%20-%20General%20Interdisciplinary%20Concentration%20-%20Transfer%20-%20Roadmap.pdf",
+  "roadmap_ba_sysadmin_freshman.pdf": "https://www.csusb.edu/sites/default/files/upload/file/2026/BA%20-%20Computer%20Systems%20-%20System%20Administration%20Concentration%20-%20First%20Time%20Freshman%20-%20Roadmap.pdf",
+  "roadmap_ba_sysadmin_transfer.pdf": "https://www.csusb.edu/sites/default/files/upload/file/2026/BA%20-%20Computer%20Systems%20-%20System%20Administration%20Concentration%20-%20Transfer%20-%20Roadmap.pdf"
+ },
+ "program": {
+  "code": "CSCI",
+  "name": "BS Computer Science",
+  "catalog_total_units": 120,
+  "groups": [
+   {
+    "name": "Lower-division requirements",
+    "all": [
+     "CSE 2010",
+     "CSE 2020",
+     "CSE 2130",
+     "MATH 2210",
+     "MATH 2220",
+     "MATH 2265",
+     "MATH 2310",
+     "MATH 2372",
+     "PHYS 2500",
+     "PHYS 2500L",
+     "PHYS 2510",
+     "PHYS 2510L"
+    ]
+   },
+   {
+    "name": "Upper-division requirements",
+    "all": [
+     "CSE 3100",
+     "CSE 4010",
+     "CSE 4100",
+     "CSE 4310",
+     "CSE 4550",
+     "CSE 4600",
+     "CSE 4880",
+     "CSE 5000",
+     "CSE 5250",
+     "CSE 5700",
+     "CSE 5720"
+    ]
+   },
+   {
+    "name": "CSE 5120 / CSE 5140 / CSE 5160",
+    "choose": 1,
+    "from": [
+     "CSE 5120",
+     "CSE 5140",
+     "CSE 5160"
+    ]
+   },
+   {
+    "name": "CSE Elective",
+    "choose_units": 12,
+    "subject": "CSE",
+    "min_level": 4000,
+    "from": [
+     "CSE 4030",
+     "CSE 4050",
+     "CSE 4160",
+     "CSE 4200",
+     "CSE 4400",
+     "CSE 4410",
+     "CSE 4500",
+     "CSE 4560",
+     "CSE 4610",
+     "CSE 5010",
+     "CSE 5100",
+     "CSE 5150",
+     "CSE 5200",
+     "CSE 5208",
+     "CSE 5210",
+     "CSE 5300",
+     "CSE 5350",
+     "CSE 5360",
+     "CSE 5408",
+     "CSE 5410",
+     "CSE 5420",
+     "CSE 5430",
+     "CSE 5460",
+     "CSE 5500",
+     "CSE 5510",
+     "CSE 5800",
+     "CSE 5940"
+    ]
+   },
+   {
+    "name": "General Education & Free Electives",
+    "all": [
+     "GE 1A",
+     "GE 1C",
+     "GE 3A",
+     "GE 3B",
+     "GE 6",
+     "GE AI-HIST",
+     "GE AI-GOV",
+     "GE UD-3",
+     "GE UD-4",
+     "FREE 1"
+    ]
+   }
+  ],
+  "ge_covered_by_major": [
+   {
+    "course": "CSE 4880",
+    "area": "UD-2/5"
+   }
+  ],
+  "program_units": 89
+ },
+ "roadmaps": {
+  "freshman": {
+   "source": "roadmap_bs_cs_freshman.pdf",
+   "terms": [
+    {
+     "season": "Fall",
+     "slots": [
+      {
+       "text": "CSE 2010",
+       "term_offered": "Both",
+       "prereq_text": "CSE 1250 or Instructor Consent",
+       "units": 4,
+       "course": "CSE 2010"
+      },
+      {
+       "text": "MATH 2210 (GE 2)",
+       "term_offered": "Both",
+       "prereq_text": "MATH 1401 or 1403, or Placement Exam",
+       "units": 4,
+       "course": "MATH 2210"
+      },
+      {
+       "text": "MATH 2372",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "course": "MATH 2372"
+      },
+      {
+       "text": "Written Communication (GE 1A)",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "GE 1A"
+      }
+     ]
+    },
+    {
+     "season": "Spring",
+     "slots": [
+      {
+       "text": "CSE 2020",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2010 and MATH 2372 or MATH 2720",
+       "units": 4,
+       "course": "CSE 2020"
+      },
+      {
+       "text": "MATH 2220",
+       "term_offered": "Both",
+       "prereq_text": "MATH 2210",
+       "units": 4,
+       "course": "MATH 2220"
+      },
+      {
+       "text": "Free Elective",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "FREE"
+      },
+      {
+       "text": "Oral Communication (GE 1C)",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "GE 1C"
+      }
+     ]
+    },
+    {
+     "season": "Fall",
+     "slots": [
+      {
+       "text": "CSE 2130",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2010",
+       "units": 3,
+       "course": "CSE 2130"
+      },
+      {
+       "text": "MATH 2310",
+       "term_offered": "Both",
+       "prereq_text": "MATH 2210 and MATH 2220 (Pre/Coreq)",
+       "units": 4,
+       "course": "MATH 2310"
+      },
+      {
+       "text": "PHYS 2500 (GE 5A)",
+       "term_offered": "Both",
+       "prereq_text": "MATH 2210; MATH 2220 (Corequisite)",
+       "units": 4,
+       "course": "PHYS 2500"
+      },
+      {
+       "text": "PHYS 2500L (GE 5C)",
+       "term_offered": "Both",
+       "prereq_text": "PHYS 2500 (Corequisite)",
+       "units": 1,
+       "course": "PHYS 2500L"
+      },
+      {
+       "text": "General Education",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "GE LD"
+      },
+      {
+       "text": "Free Elective",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "FREE"
+      }
+     ]
+    },
+    {
+     "season": "Spring",
+     "slots": [
+      {
+       "text": "CSE 3100",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2010 and MATH 2372",
+       "units": 4,
+       "course": "CSE 3100"
+      },
+      {
+       "text": "CSE 4310",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2020 and MATH 2310",
+       "units": 3,
+       "course": "CSE 4310"
+      },
+      {
+       "text": "MATH 2265",
+       "term_offered": "Both",
+       "prereq_text": "MATH 2210 (Pre/Coreq)",
+       "units": 3,
+       "course": "MATH 2265"
+      },
+      {
+       "text": "PHYS 2510",
+       "term_offered": "Spring",
+       "prereq_text": "MATH 2220 and PHYS 2500",
+       "units": 4,
+       "course": "PHYS 2510"
+      },
+      {
+       "text": "PHYS 2510L",
+       "term_offered": "Spring",
+       "prereq_text": "PHYS 2510 (Corequisite)",
+       "units": 1,
+       "course": "PHYS 2510L"
+      },
+      {
+       "text": "General Education",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "GE LD"
+      }
+     ]
+    },
+    {
+     "season": "Fall",
+     "slots": [
+      {
+       "text": "CSE 4010",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2130 and CSE 3100",
+       "units": 3,
+       "course": "CSE 4010"
+      },
+      {
+       "text": "CSE 4550",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2020",
+       "units": 4,
+       "course": "CSE 4550"
+      },
+      {
+       "text": "CSE 4600",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2130",
+       "units": 3,
+       "course": "CSE 4600"
+      },
+      {
+       "text": "General Education",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "GE LD"
+      },
+      {
+       "text": "General Education",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "GE LD"
+      }
+     ]
+    },
+    {
+     "season": "Spring",
+     "slots": [
+      {
+       "text": "CSE 4100",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2020",
+       "units": 3,
+       "course": "CSE 4100"
+      },
+      {
+       "text": "CSE 5000",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2020",
+       "units": 3,
+       "course": "CSE 5000"
+      },
+      {
+       "text": "CSE 5120, 5140, or 5160",
+       "term_offered": "Unknown",
+       "prereq_text": "Varies",
+       "units": 3,
+       "kind": "CHOICE"
+      },
+      {
+       "text": "CSE Elective (CSE 4000+)",
+       "term_offered": "Both",
+       "prereq_text": "Varies",
+       "units": 3,
+       "kind": "ELECTIVE"
+      },
+      {
+       "text": "General Education",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "GE LD"
+      }
+     ]
+    },
+    {
+     "season": "Fall",
+     "slots": [
+      {
+       "text": "CSE 5700",
+       "term_offered": "Fall",
+       "prereq_text": "CSE 2020 and CSE 2130",
+       "units": 3,
+       "course": "CSE 5700"
+      },
+      {
+       "text": "CSE 5720",
+       "term_offered": "Fall",
+       "prereq_text": "CSE 2020",
+       "units": 3,
+       "course": "CSE 5720"
+      },
+      {
+       "text": "CSE Elective (CSE 4000+)",
+       "term_offered": "Both",
+       "prereq_text": "Varies",
+       "units": 3,
+       "kind": "ELECTIVE"
+      },
+      {
+       "text": "General Education (UD)",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "GE UD"
+      },
+      {
+       "text": "General Education (UD)",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "GE UD"
+      }
+     ]
+    },
+    {
+     "season": "Spring",
+     "slots": [
+      {
+       "text": "CSE 4880 (WI)",
+       "term_offered": "Both",
+       "prereq_text": "Senior standing",
+       "units": 3,
+       "course": "CSE 4880"
+      },
+      {
+       "text": "CSE 5250",
+       "term_offered": "Both",
+       "prereq_text": "CSE 4010",
+       "units": 3,
+       "course": "CSE 5250"
+      },
+      {
+       "text": "CSE Elective (CSE 4000+)",
+       "term_offered": "Both",
+       "prereq_text": "Varies",
+       "units": 3,
+       "kind": "ELECTIVE"
+      },
+      {
+       "text": "CSE Elective (CSE 4000+)",
+       "term_offered": "Both",
+       "prereq_text": "Varies",
+       "units": 3,
+       "kind": "ELECTIVE"
+      },
+      {
+       "text": "General Education (UD)",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "GE UD"
+      }
+     ]
+    }
+   ],
+   "total_units": 125
+  },
+  "transfer": {
+   "source": "roadmap_bs_cs_transfer.pdf",
+   "terms": [
+    {
+     "season": "Fall",
+     "slots": [
+      {
+       "text": "CSE 3100",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2010 and MATH 2372",
+       "units": 4,
+       "course": "CSE 3100"
+      },
+      {
+       "text": "CSE 4550",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2020",
+       "units": 4,
+       "course": "CSE 4550"
+      },
+      {
+       "text": "CSE 4600",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2130",
+       "units": 3,
+       "course": "CSE 4600"
+      },
+      {
+       "text": "CSE Elective (CSE 4000+)",
+       "term_offered": "Both",
+       "prereq_text": "Varies",
+       "units": 3,
+       "kind": "ELECTIVE"
+      },
+      {
+       "text": "General Education (UD)",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "GE UD"
+      }
+     ]
+    },
+    {
+     "season": "Spring",
+     "slots": [
+      {
+       "text": "CSE 4100",
+       "term_offered": "Spring",
+       "prereq_text": "CSE 2020",
+       "units": 3,
+       "course": "CSE 4100"
+      },
+      {
+       "text": "CSE 4010",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2130 and CSE 3100",
+       "units": 3,
+       "course": "CSE 4010"
+      },
+      {
+       "text": "CSE 4310",
+       "term_offered": "Spring",
+       "prereq_text": "CSE 2020 and MATH 2310",
+       "units": 3,
+       "course": "CSE 4310"
+      },
+      {
+       "text": "CSE 5000",
+       "term_offered": "Both",
+       "prereq_text": "CSE 2020",
+       "units": 3,
+       "course": "CSE 5000"
+      },
+      {
+       "text": "General Education (UD)",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "GE UD"
+      }
+     ]
+    },
+    {
+     "season": "Fall",
+     "slots": [
+      {
+       "text": "CSE 5120, 5140, or 5160",
+       "term_offered": "Unknown",
+       "prereq_text": "Varies",
+       "units": 3,
+       "kind": "CHOICE"
+      },
+      {
+       "text": "CSE 5700",
+       "term_offered": "Fall",
+       "prereq_text": "CSE 2020 and CSE 2130",
+       "units": 3,
+       "course": "CSE 5700"
+      },
+      {
+       "text": "CSE 5720",
+       "term_offered": "Fall",
+       "prereq_text": "CSE 2020",
+       "units": 3,
+       "course": "CSE 5720"
+      },
+      {
+       "text": "CSE Elective (CSE 4000+)",
+       "term_offered": "Both",
+       "prereq_text": "Varies",
+       "units": 3,
+       "kind": "ELECTIVE"
+      },
+      {
+       "text": "General Education (UD)",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 3,
+       "kind": "GE UD"
+      }
+     ]
+    },
+    {
+     "season": "Spring",
+     "slots": [
+      {
+       "text": "CSE 4880 (WI)",
+       "term_offered": "Spring",
+       "prereq_text": "Senior standing",
+       "units": 3,
+       "course": "CSE 4880"
+      },
+      {
+       "text": "CSE 5250",
+       "term_offered": "Spring",
+       "prereq_text": "CSE 4010",
+       "units": 3,
+       "course": "CSE 5250"
+      },
+      {
+       "text": "CSE Elective (CSE 4000+)",
+       "term_offered": "Both",
+       "prereq_text": "Varies",
+       "units": 3,
+       "kind": "ELECTIVE"
+      },
+      {
+       "text": "CSE Elective (CSE 4000+)",
+       "term_offered": "Both",
+       "prereq_text": "Varies",
+       "units": 3,
+       "kind": "ELECTIVE"
+      },
+      {
+       "text": "Free Elective",
+       "term_offered": "Both",
+       "prereq_text": "",
+       "units": 1,
+       "kind": "FREE"
+      }
+     ]
+    }
+   ],
+   "total_units": 60
+  }
+ },
+ "offering_roadmaps": [
+  "ba_game_freshman",
+  "ba_game_transfer",
+  "ba_general_freshman",
+  "ba_general_transfer",
+  "ba_sysadmin_freshman",
+  "ba_sysadmin_transfer",
+  "bs_bioinf_freshman",
+  "bs_bioinf_transfer",
+  "bs_ce_freshman",
+  "bs_ce_transfer",
+  "bs_cs_freshman",
+  "bs_cs_transfer"
+ ],
+ "courses": [
+  {
+   "id": "CSE 1250",
+   "title": "Programming Basics",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": []
+  },
+  {
+   "id": "CSE 2010",
+   "title": "Computer Science I",
+   "catalog_units": 4,
+   "roadmap_units": 4,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_ce_freshman": "Both",
+    "bs_bioinf_freshman": "Both",
+    "ba_game_freshman": "Both",
+    "ba_general_freshman": "Both",
+    "ba_sysadmin_freshman": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 1250 or Instructor consent",
+   "coreq_text": "",
+   "notes": [
+    "Instructor consent"
+   ],
+   "requirement_groups": [
+    "Lower-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 2020",
+   "title": "Computer Science II",
+   "catalog_units": 4,
+   "roadmap_units": 4,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_ce_freshman": "Both",
+    "bs_bioinf_freshman": "Both",
+    "ba_game_freshman": "Both",
+    "ba_general_freshman": "Both",
+    "ba_sysadmin_freshman": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2010 with a grade of C or better and MATH 2372",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Lower-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 2130",
+   "title": "Machine Organization",
+   "catalog_units": 3,
+   "roadmap_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_ce_freshman": "Both",
+    "ba_game_freshman": "Both",
+    "ba_general_freshman": "Both",
+    "ba_sysadmin_freshman": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2010",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Lower-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 3100",
+   "title": "Digital Logic",
+   "catalog_units": 4,
+   "roadmap_units": 4,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_cs_transfer": "Both",
+    "bs_ce_freshman": "Both",
+    "bs_ce_transfer": "Both",
+    "ba_sysadmin_freshman": "Both",
+    "ba_sysadmin_transfer": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2010 and MATH 2372",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Upper-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 3350",
+   "title": "Signals and Systems",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Fall",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_ce_freshman": "Fall",
+    "bs_ce_transfer": "Fall"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "MATH 2220 Calculus II and MATH 2310 Linear Algebra",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Supporting prerequisite"
+   ]
+  },
+  {
+   "id": "CSE 4010",
+   "title": "Contemporary Computer Architecture",
+   "catalog_units": 4,
+   "roadmap_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_cs_transfer": "Both",
+    "bs_ce_freshman": "Both",
+    "bs_ce_transfer": "Both",
+    "ba_sysadmin_freshman": "Both",
+    "ba_sysadmin_transfer": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 3100 and CSE 2130",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Upper-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 4030",
+   "title": "Analog Circuit Design and Analysis",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_ce_freshman": "Both",
+    "bs_ce_transfer": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 3100 and CSE 3350",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 4050",
+   "title": "Web Application Development",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Fall",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "ba_game_freshman": "Fall",
+    "ba_game_transfer": "Fall",
+    "ba_general_freshman": "Fall",
+    "ba_general_transfer": "Fall",
+    "ba_sysadmin_freshman": "Fall",
+    "ba_sysadmin_transfer": "Fall"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 4100",
+   "title": "Computer Networking and Security",
+   "catalog_units": 3,
+   "roadmap_units": 3,
+   "term_offered": "Spring",
+   "offering_confidence": "low",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_cs_transfer": "Spring"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Upper-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 4160",
+   "title": "Generative AI and Applications",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2010 and MATH 2210",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 4200",
+   "title": "Computer Graphics",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Spring",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "ba_game_freshman": "Spring",
+    "ba_game_transfer": "Spring"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020 and MATH 2310",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 4310",
+   "title": "Algorithm Analysis",
+   "catalog_units": 3,
+   "roadmap_units": 3,
+   "term_offered": "Spring",
+   "offering_confidence": "low",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_cs_transfer": "Spring",
+    "bs_bioinf_freshman": "Both",
+    "bs_bioinf_transfer": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020 and MATH 2310",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Upper-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 4400",
+   "title": "Game Design",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Fall",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "ba_game_freshman": "Fall",
+    "ba_game_transfer": "Fall"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 4410",
+   "title": "Game Programming",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Spring",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "ba_game_freshman": "Spring",
+    "ba_game_transfer": "Spring"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 4500",
+   "title": "Platform Computing",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Spring",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "ba_game_freshman": "Spring",
+    "ba_game_transfer": "Spring",
+    "ba_general_freshman": "Spring",
+    "ba_general_transfer": "Spring",
+    "ba_sysadmin_freshman": "Spring",
+    "ba_sysadmin_transfer": "Spring"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 4550",
+   "title": "Software Engineering",
+   "catalog_units": 3,
+   "roadmap_units": 4,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_cs_transfer": "Both",
+    "ba_game_freshman": "Both",
+    "ba_game_transfer": "Both",
+    "ba_general_freshman": "Both",
+    "ba_general_transfer": "Both",
+    "ba_sysadmin_transfer": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Upper-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 4560",
+   "title": "Embedded Systems",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_ce_freshman": "Both",
+    "bs_ce_transfer": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 3100 and CSE 2130",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 4600",
+   "title": "Operating Systems",
+   "catalog_units": 3,
+   "roadmap_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_cs_transfer": "Both",
+    "bs_ce_freshman": "Both",
+    "bs_ce_transfer": "Both",
+    "ba_sysadmin_freshman": "Both",
+    "ba_sysadmin_transfer": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020 and CSE 2130",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Upper-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 4610",
+   "title": "Advanced Operating Systems",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 4600",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 4880",
+   "title": "Ethics Senior Seminar",
+   "catalog_units": 3,
+   "roadmap_units": 3,
+   "term_offered": "Spring",
+   "offering_confidence": "low",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_cs_transfer": "Spring",
+    "bs_bioinf_freshman": "Both",
+    "bs_bioinf_transfer": "Both",
+    "ba_game_freshman": "Both",
+    "ba_game_transfer": "Both",
+    "ba_general_freshman": "Both",
+    "ba_general_transfer": "Both",
+    "ba_sysadmin_freshman": "Both",
+    "ba_sysadmin_transfer": "Both"
+   },
+   "min_standing_units": 90,
+   "ge": null,
+   "prereq_text": "Senior Standing",
+   "coreq_text": "",
+   "notes": [
+    "Senior Standing"
+   ],
+   "requirement_groups": [
+    "Upper-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 5000",
+   "title": "Introduction to Formal Languages and Automata Theory",
+   "catalog_units": 3,
+   "roadmap_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_cs_transfer": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Upper-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 5010",
+   "title": "Introduction to Theory of Computation",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 5000 or consent of instructor",
+   "coreq_text": "",
+   "notes": [
+    "consent of instructor"
+   ],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5100",
+   "title": "Advanced Computer Architecture",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 4010",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5120",
+   "title": "Introduction to Artificial Intelligence",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE 5120 / CSE 5140 / CSE 5160"
+   ]
+  },
+  {
+   "id": "CSE 5140",
+   "title": "Computational Intelligence",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "MATH 2210 and CSE 2020",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE 5120 / CSE 5140 / CSE 5160"
+   ]
+  },
+  {
+   "id": "CSE 5150",
+   "title": "Automated Reasoning",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 4310",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5160",
+   "title": "Machine Learning",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Fall",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_bioinf_freshman": "Fall",
+    "bs_bioinf_transfer": "Fall"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020 and MATH 2265",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE 5120 / CSE 5140 / CSE 5160"
+   ]
+  },
+  {
+   "id": "CSE 5200",
+   "title": "Advanced Computer Graphics",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 4200",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5208",
+   "title": "Introduction to Computer Engineering Design",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Fall",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_ce_freshman": "Fall",
+    "bs_ce_transfer": "Fall"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5210",
+   "title": "Digital System Design",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Fall",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_ce_freshman": "Fall",
+    "bs_ce_transfer": "Fall"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 4010",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5250",
+   "title": "Parallel Algorithms and Programming",
+   "catalog_units": 3,
+   "roadmap_units": 3,
+   "term_offered": "Spring",
+   "offering_confidence": "low",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_cs_transfer": "Spring"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 4010",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Upper-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 5300",
+   "title": "Data Communications",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020 and CSE 3350",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5350",
+   "title": "Numerical Computation",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020 and MATH 2310",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5360",
+   "title": "Data Visualization",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2010 or instructor consent",
+   "coreq_text": "",
+   "notes": [
+    "instructor consent"
+   ],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5408",
+   "title": "Sustainable Engineering Design",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Spring",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_ce_freshman": "Spring",
+    "bs_ce_transfer": "Spring"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 5208",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5410",
+   "title": "Robotics and Control",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Fall",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_ce_freshman": "Fall",
+    "bs_ce_transfer": "Fall"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 3100 and MATH 2310",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5420",
+   "title": "Reinforcement Learning",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020 and MATH 2265",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5430",
+   "title": "Deep Learning",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5460",
+   "title": "Natural Language Processing",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5500",
+   "title": "Advanced Bioinformatics I: Sequence Analysis",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Spring",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_bioinf_freshman": "Spring",
+    "bs_bioinf_transfer": "Spring"
+   },
+   "min_standing_units": 90,
+   "ge": null,
+   "prereq_text": "Senior standing or consent of instructor",
+   "coreq_text": "",
+   "notes": [
+    "Senior standing",
+    "consent of instructor"
+   ],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5510",
+   "title": "Advanced Bioinformatics II: Numerical Modeling",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 5350",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5700",
+   "title": "Compilers",
+   "catalog_units": 3,
+   "roadmap_units": 3,
+   "term_offered": "Fall",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Fall",
+    "bs_cs_transfer": "Fall"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020 and CSE 2130",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Upper-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 5720",
+   "title": "Database Systems",
+   "catalog_units": 3,
+   "roadmap_units": 3,
+   "term_offered": "Fall",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Fall",
+    "bs_cs_transfer": "Fall",
+    "bs_bioinf_freshman": "Fall",
+    "bs_bioinf_transfer": "Fall",
+    "ba_sysadmin_freshman": "Fall",
+    "ba_sysadmin_transfer": "Fall"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Upper-division requirements"
+   ]
+  },
+  {
+   "id": "CSE 5800",
+   "title": "Advanced Database Systems",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 5720",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "CSE 5940",
+   "title": "Topics in Computer Science and Engineering",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "CSE 2020 or consent of instructor",
+   "coreq_text": "",
+   "notes": [
+    "consent of instructor"
+   ],
+   "requirement_groups": [
+    "CSE Elective"
+   ]
+  },
+  {
+   "id": "MATH 1401",
+   "title": "Accelerated Preparation for Calculus",
+   "catalog_units": 4,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": "Category B4",
+   "prereq_text": "",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": []
+  },
+  {
+   "id": "MATH 1403",
+   "title": "Preparation for Calculus B",
+   "catalog_units": 3,
+   "roadmap_units": null,
+   "term_offered": "Unknown",
+   "offering_confidence": "unknown",
+   "offering_evidence": {},
+   "min_standing_units": 0,
+   "ge": "B4/2",
+   "prereq_text": "MATH 1402",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": []
+  },
+  {
+   "id": "MATH 2210",
+   "title": "Calculus I",
+   "catalog_units": 4,
+   "roadmap_units": 4,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_ce_freshman": "Both",
+    "bs_bioinf_freshman": "Both",
+    "ba_game_freshman": "Both",
+    "ba_general_freshman": "Both",
+    "ba_sysadmin_freshman": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": "B4/2",
+   "prereq_text": "MATH 1401 or MATH 1403 or satisfactory score on department placement exam",
+   "coreq_text": "",
+   "notes": [
+    "satisfactory score on department placement exam"
+   ],
+   "requirement_groups": [
+    "Lower-division requirements"
+   ]
+  },
+  {
+   "id": "MATH 2220",
+   "title": "Calculus II",
+   "catalog_units": 4,
+   "roadmap_units": 4,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_ce_freshman": "Both",
+    "bs_bioinf_freshman": "Both",
+    "ba_game_freshman": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "MATH 2210 or MATH 2120Q2S with a grade of C- (1.7) or better",
+   "coreq_text": "",
+   "notes": [
+    "MATH 2120Q2S"
+   ],
+   "requirement_groups": [
+    "Lower-division requirements"
+   ]
+  },
+  {
+   "id": "MATH 2265",
+   "title": "Statistics with Applications",
+   "catalog_units": 3,
+   "roadmap_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_ce_freshman": "Both",
+    "bs_bioinf_freshman": "Both",
+    "bs_bioinf_transfer": "Both",
+    "ba_game_freshman": "Both",
+    "ba_general_freshman": "Both",
+    "ba_sysadmin_freshman": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "MATH 2210 as a pre- or co-requisite",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Lower-division requirements"
+   ]
+  },
+  {
+   "id": "MATH 2310",
+   "title": "Applied Linear Algebra",
+   "catalog_units": 4,
+   "roadmap_units": 4,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_ce_freshman": "Both",
+    "bs_bioinf_freshman": "Both",
+    "ba_game_freshman": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "MATH 2210 with a grade of C- or better; and MATH 2220 as a pre- or co-requisite",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Lower-division requirements"
+   ]
+  },
+  {
+   "id": "MATH 2372",
+   "title": "Discrete Mathematics",
+   "catalog_units": 3,
+   "roadmap_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_ce_freshman": "Both",
+    "bs_bioinf_freshman": "Both",
+    "ba_game_freshman": "Both",
+    "ba_general_freshman": "Both",
+    "ba_sysadmin_freshman": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "Completion of the Quantitative Reasoning General Education requirement",
+   "coreq_text": "",
+   "notes": [
+    "Completion of the Quantitative Reasoning General Education requirement"
+   ],
+   "requirement_groups": [
+    "Lower-division requirements"
+   ]
+  },
+  {
+   "id": "PHYS 2500",
+   "title": "General Physics I",
+   "catalog_units": 4,
+   "roadmap_units": 4,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_ce_freshman": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": "B1/5A",
+   "prereq_text": "MATH 2210",
+   "coreq_text": "MATH 2220",
+   "notes": [],
+   "requirement_groups": [
+    "Lower-division requirements"
+   ]
+  },
+  {
+   "id": "PHYS 2500L",
+   "title": "General Physics I Lab",
+   "catalog_units": 1,
+   "roadmap_units": 1,
+   "term_offered": "Both",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Both",
+    "bs_ce_freshman": "Both"
+   },
+   "min_standing_units": 0,
+   "ge": "B3/5C",
+   "prereq_text": "MATH 2210",
+   "coreq_text": "MATH 2220 and PHYS 2500",
+   "notes": [],
+   "requirement_groups": [
+    "Lower-division requirements"
+   ]
+  },
+  {
+   "id": "PHYS 2510",
+   "title": "General Physics II",
+   "catalog_units": 4,
+   "roadmap_units": 4,
+   "term_offered": "Spring",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Spring",
+    "bs_ce_freshman": "Spring"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "MATH 2220 , PHYS 2500",
+   "coreq_text": "",
+   "notes": [],
+   "requirement_groups": [
+    "Lower-division requirements"
+   ]
+  },
+  {
+   "id": "PHYS 2510L",
+   "title": "General Physics II Lab",
+   "catalog_units": 1,
+   "roadmap_units": 1,
+   "term_offered": "Spring",
+   "offering_confidence": "high",
+   "offering_evidence": {
+    "bs_cs_freshman": "Spring",
+    "bs_ce_freshman": "Spring"
+   },
+   "min_standing_units": 0,
+   "ge": null,
+   "prereq_text": "MATH 2220 , PHYS 2500 , PHYS 2500L",
+   "coreq_text": "PHYS 2510",
+   "notes": [],
+   "requirement_groups": [
+    "Lower-division requirements"
+   ]
+  },
+  {
+   "id": "GE 1A",
+   "title": "GE 1A: English Communication",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "unknown",
+   "placeholder": true,
+   "min_standing_units": 0,
+   "satisfied_by": [
+    "ENG 1060A",
+    "ENG 1060B",
+    "ENG 1070A",
+    "ENG 1070B",
+    "HON 1100"
+   ],
+   "satisfied_by_min_grade": "C-",
+   "requirement_groups": [
+    "General Education & Free Electives"
+   ]
+  },
+  {
+   "id": "GE 1C",
+   "title": "GE 1C: Oral Communication",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "unknown",
+   "placeholder": true,
+   "min_standing_units": 0,
+   "satisfied_by": [
+    "COMM 1006",
+    "HON 1300"
+   ],
+   "satisfied_by_min_grade": "C-",
+   "requirement_groups": [
+    "General Education & Free Electives"
+   ]
+  },
+  {
+   "id": "GE 3A",
+   "title": "GE 3A: Arts",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "unknown",
+   "placeholder": true,
+   "min_standing_units": 0,
+   "satisfied_by": [
+    "ART 1200",
+    "ART 2400",
+    "CAL 1500",
+    "CAL 1804",
+    "COMM 1020",
+    "MUS 1800",
+    "MUS 1865",
+    "MUS 1969",
+    "MUS 2266",
+    "TA 2640",
+    "TA 2660"
+   ],
+   "satisfied_by_min_grade": "C-",
+   "requirement_groups": [
+    "General Education & Free Electives"
+   ]
+  },
+  {
+   "id": "GE 3B",
+   "title": "GE 3B: Humanities",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "unknown",
+   "placeholder": true,
+   "min_standing_units": 0,
+   "satisfied_by": [
+    "ARAB 1112",
+    "ARAB 2900",
+    "ASL 1112",
+    "CAHU 1112",
+    "CHIN 1112",
+    "CHIN 2000",
+    "CHIN 2900",
+    "ENG 1120",
+    "ENG 1200",
+    "ENG 1210",
+    "ENG 1700",
+    "ENG 2180",
+    "FREN 1112",
+    "FREN 2900",
+    "HON 1400",
+    "JAPN 1112",
+    "JAPN 2900",
+    "KOR 1112",
+    "KOR 2900",
+    "LUIS 1112",
+    "MUS 1270",
+    "MUS 1880",
+    "PHIL 1011",
+    "PHIL 1011H",
+    "PHIL 1012",
+    "PHIL 1012H",
+    "PHIL 1013",
+    "PHIL 1014",
+    "PHIL 1015",
+    "PHIL 1015H",
+    "PHIL 1016",
+    "PORT 1112",
+    "SERR 1112",
+    "SPAN 1112",
+    "SPAN 2900",
+    "TA 1160",
+    "TA 2612",
+    "WLL 1112"
+   ],
+   "satisfied_by_min_grade": "C-",
+   "requirement_groups": [
+    "General Education & Free Electives"
+   ]
+  },
+  {
+   "id": "GE 6",
+   "title": "GE 6: Ethnic Studies",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "unknown",
+   "placeholder": true,
+   "min_standing_units": 0,
+   "satisfied_by": [
+    "ES 1000",
+    "ES 1000H",
+    "ES 1400",
+    "ES 2200",
+    "ES 3100"
+   ],
+   "satisfied_by_min_grade": "C-",
+   "requirement_groups": [
+    "General Education & Free Electives"
+   ]
+  },
+  {
+   "id": "GE AI-HIST",
+   "title": "GE AI-HIST: U.S. History",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "unknown",
+   "placeholder": true,
+   "min_standing_units": 0,
+   "satisfied_by": [
+    "HIST 1460",
+    "HIST 1460H",
+    "HIST 2000",
+    "HIST 2010",
+    "HIST 5400",
+    "PSCI 3140"
+   ],
+   "satisfied_by_min_grade": "D-",
+   "requirement_groups": [
+    "General Education & Free Electives"
+   ]
+  },
+  {
+   "id": "GE AI-GOV",
+   "title": "GE AI-GOV: California State & Local Government",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "unknown",
+   "placeholder": true,
+   "min_standing_units": 0,
+   "satisfied_by": [
+    "HIST 2700",
+    "HIST 3700",
+    "PSCI 2030",
+    "PSCI 2030H",
+    "PSCI 3300"
+   ],
+   "satisfied_by_min_grade": "D-",
+   "requirement_groups": [
+    "General Education & Free Electives"
+   ]
+  },
+  {
+   "id": "GE UD-3",
+   "title": "GE UD-3: Upper-division Arts or Humanities",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "unknown",
+   "placeholder": true,
+   "min_standing_units": 60,
+   "satisfied_by": [
+    "AH 3210",
+    "AH 3310",
+    "AH 3350",
+    "ARAB 3900",
+    "ARAB 4900",
+    "ART 3000",
+    "CAL 3250",
+    "CAL 3300",
+    "CAL 3350",
+    "CAL 3400",
+    "CAL 3440",
+    "CAL 3550",
+    "CAL 3700",
+    "CAL 3750",
+    "CAL 3888",
+    "COMM 3332",
+    "COMM 3334",
+    "COMM 3336",
+    "DES 3001",
+    "ENG 3000",
+    "ENG 3140",
+    "ENG 3200",
+    "ENG 3400",
+    "ENG 3410",
+    "ENG 3700",
+    "ENTR 3141",
+    "FREN 3900",
+    "HIST 3380",
+    "HIST 3890",
+    "HON 3100",
+    "HON 3300",
+    "HON 3510",
+    "JAPN 3900",
+    "MUS 3080",
+    "MUS 3309",
+    "MUS 3500",
+    "MUS 3510",
+    "MUS 3650",
+    "MUS 3670",
+    "PHIL 3006",
+    "PHIL 3007",
+    "PHIL 3008",
+    "PHIL 3010",
+    "PHIL 3011",
+    "PHIL 3012",
+    "PHIL 3013",
+    "PHIL 3014",
+    "PHIL 3015",
+    "PHIL 3016",
+    "PHIL 3017",
+    "PHIL 3018",
+    "PHIL 3019",
+    "PHIL 3020",
+    "PHIL 3025",
+    "PHIL 3026",
+    "PHIL 3027",
+    "PHIL 3040",
+    "SPAN 3900",
+    "TA 3141",
+    "TA 4663",
+    "WLL 3920",
+    "WLL 3940",
+    "WLL 3950"
+   ],
+   "satisfied_by_min_grade": "D-",
+   "requirement_groups": [
+    "General Education & Free Electives"
+   ]
+  },
+  {
+   "id": "GE UD-4",
+   "title": "GE UD-4: Upper-division Social & Behavioral Sciences",
+   "catalog_units": 3,
+   "term_offered": "Both",
+   "offering_confidence": "unknown",
+   "placeholder": true,
+   "min_standing_units": 60,
+   "satisfied_by": [
+    "ANTH 3500",
+    "ANTH 3603",
+    "ANTH 3703R",
+    "ANTH 3705R",
+    "CJUS 4451",
+    "COMM 3236",
+    "COMM 3305",
+    "ECON 3101",
+    "GEOG 3501",
+    "GEOG 5150",
+    "GSS 4200",
+    "GSS 4500",
+    "HON 3250",
+    "HON 3350",
+    "HON 3530",
+    "KINE 3050",
+    "MUS 3760",
+    "NURS 4417",
+    "NURS 4510",
+    "PA 3150",
+    "SOC 3410",
+    "SOC 4420",
+    "SSCI 3000",
+    "SSCI 3001",
+    "SSCI 3010",
+    "SSCI 3011",
+    "SSCI 3160",
+    "SSCI 3250",
+    "SSCI 3320",
+    "SSCI 3390"
+   ],
+   "satisfied_by_min_grade": "D-",
+   "requirement_groups": [
+    "General Education & Free Electives"
+   ]
+  },
+  {
+   "id": "FREE 1",
+   "title": "Free Elective",
+   "catalog_units": 4,
+   "term_offered": "Both",
+   "offering_confidence": "unknown",
+   "min_standing_units": 0,
+   "placeholder": true,
+   "requirement_groups": [
+    "General Education & Free Electives"
+   ]
+  }
+ ],
+ "edges": [
+  {
+   "from_course": "CSE 1250",
+   "to_course": "CSE 2010",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2010",
+   "to_course": "CSE 2020",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "C",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2372",
+   "to_course": "CSE 2020",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2010",
+   "to_course": "CSE 2130",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2010",
+   "to_course": "CSE 3100",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2372",
+   "to_course": "CSE 3100",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2220",
+   "to_course": "CSE 3350",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2310",
+   "to_course": "CSE 3350",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 3100",
+   "to_course": "CSE 4010",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2130",
+   "to_course": "CSE 4010",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 3100",
+   "to_course": "CSE 4030",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 3350",
+   "to_course": "CSE 4030",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 4050",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 4100",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2010",
+   "to_course": "CSE 4160",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2210",
+   "to_course": "CSE 4160",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 4200",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2310",
+   "to_course": "CSE 4200",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 4310",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2310",
+   "to_course": "CSE 4310",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 4400",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 4410",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 4500",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 4550",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 3100",
+   "to_course": "CSE 4560",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2130",
+   "to_course": "CSE 4560",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 4600",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2130",
+   "to_course": "CSE 4600",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 4600",
+   "to_course": "CSE 4610",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 5000",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 5000",
+   "to_course": "CSE 5010",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 4010",
+   "to_course": "CSE 5100",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 5120",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2210",
+   "to_course": "CSE 5140",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 5140",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 4310",
+   "to_course": "CSE 5150",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 5160",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2265",
+   "to_course": "CSE 5160",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 4200",
+   "to_course": "CSE 5200",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 4010",
+   "to_course": "CSE 5210",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 4010",
+   "to_course": "CSE 5250",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 5300",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 3350",
+   "to_course": "CSE 5300",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 5350",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2310",
+   "to_course": "CSE 5350",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2010",
+   "to_course": "CSE 5360",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 5208",
+   "to_course": "CSE 5408",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 3100",
+   "to_course": "CSE 5410",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2310",
+   "to_course": "CSE 5410",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 5420",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2265",
+   "to_course": "CSE 5420",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 5430",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 5460",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 5350",
+   "to_course": "CSE 5510",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 5700",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2130",
+   "to_course": "CSE 5700",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 5720",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 5720",
+   "to_course": "CSE 5800",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "CSE 2020",
+   "to_course": "CSE 5940",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 1401",
+   "to_course": "MATH 2210",
+   "condition": "OR",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 1403",
+   "to_course": "MATH 2210",
+   "condition": "OR",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2210",
+   "to_course": "MATH 2220",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "C-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2210",
+   "to_course": "MATH 2265",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": true
+  },
+  {
+   "from_course": "MATH 2210",
+   "to_course": "MATH 2310",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "C-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2220",
+   "to_course": "MATH 2310",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": true
+  },
+  {
+   "from_course": "MATH 2210",
+   "to_course": "PHYS 2500",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2220",
+   "to_course": "PHYS 2500",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": true
+  },
+  {
+   "from_course": "MATH 2210",
+   "to_course": "PHYS 2500L",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2220",
+   "to_course": "PHYS 2500L",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": true
+  },
+  {
+   "from_course": "PHYS 2500",
+   "to_course": "PHYS 2500L",
+   "condition": "AND",
+   "group": 2,
+   "grade_minimum": "D-",
+   "concurrent_ok": true
+  },
+  {
+   "from_course": "MATH 2220",
+   "to_course": "PHYS 2510",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "PHYS 2500",
+   "to_course": "PHYS 2510",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "MATH 2220",
+   "to_course": "PHYS 2510L",
+   "condition": "AND",
+   "group": 0,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "PHYS 2500",
+   "to_course": "PHYS 2510L",
+   "condition": "AND",
+   "group": 1,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "PHYS 2500L",
+   "to_course": "PHYS 2510L",
+   "condition": "AND",
+   "group": 2,
+   "grade_minimum": "D-",
+   "concurrent_ok": false
+  },
+  {
+   "from_course": "PHYS 2510",
+   "to_course": "PHYS 2510L",
+   "condition": "AND",
+   "group": 3,
+   "grade_minimum": "D-",
+   "concurrent_ok": true
+  }
+ ],
+ "entry_assumed": [
+  "CSE 1250",
+  "MATH 1401",
+  "MATH 1403"
+ ],
+ "supporting": [
+  "CSE 3350"
+ ],
+ "discrepancies": [
+  "CSE 4100 term offering: roadmaps disagree (Both in bs_cs_freshman; Spring in bs_cs_transfer); planning uses the most restrictive, low confidence.",
+  "CSE 4310 term offering: roadmaps disagree (Both in bs_bioinf_freshman, bs_bioinf_transfer, bs_cs_freshman; Spring in bs_cs_transfer); planning uses the most restrictive, low confidence.",
+  "CSE 4880 term offering: roadmaps disagree (Both in ba_game_freshman, ba_game_transfer, ba_general_freshman, ba_general_transfer, ba_sysadmin_freshman, ba_sysadmin_transfer, bs_bioinf_freshman, bs_bioinf_transfer, bs_cs_freshman; Spring in bs_cs_transfer); planning uses the most restrictive, low confidence.",
+  "CSE 5250 term offering: roadmaps disagree (Both in bs_cs_freshman; Spring in bs_cs_transfer); planning uses the most restrictive, low confidence.",
+  "Freshman roadmap schedules a GE UD slot for GE UD-2/5, but the catalog says CSE 4880 satisfies GE UD-2/5 for this major (catalog wins; slot dropped).",
+  "Program total units: freshman roadmap says 125, catalog says 120 (catalog wins: 89 major + 27 GE + 4 free elective).",
+  "CSE 4010 units: roadmap says 3, catalog says 4 (catalog wins).",
+  "CSE 4550 units: roadmap says 4, catalog says 3 (catalog wins).",
+  "CSE 2020 prerequisites: roadmap lists CSE 2010 / MATH 2372 / MATH 2720, catalog requires CSE 2010 / MATH 2372 (catalog wins).",
+  "CSE 4600 prerequisites: roadmap lists CSE 2130, catalog requires CSE 2020 / CSE 2130 (catalog wins).",
+  "PHYS 2500L prerequisites: roadmap lists PHYS 2500, catalog requires MATH 2210 / MATH 2220 / PHYS 2500 (catalog wins).",
+  "PHYS 2510L prerequisites: roadmap lists PHYS 2510, catalog requires MATH 2220 / PHYS 2500 / PHYS 2500L / PHYS 2510 (catalog wins)."
+ ],
+ "assumptions": [
+  "Upper-division GE requires 60 completed units (junior standing).",
+  "BS CS GE slots map to areas 1A, 1C, 3A, 3B, 6, American Institutions (history; CA government), UD-3, UD-4; inferred from the program page exemptions and the roadmap slot count. The U.S. Constitution part is assumed met by the history or government course (true for HIST 1460 and PSCI 2030).",
+  "Prerequisites outside the program (e.g. CSE 1250, MATH 1401) are entry-level placement assumptions.",
+  "Courses on no roadmap have Unknown offering (allowed with a warning). Summer offerings are never published: summer placements are allowed only when the student adds a summer term, and are flagged unconfirmed.",
+  "Units given as a range use the minimum; variable-unit courses are excluded from the elective pool."
+ ]
+}

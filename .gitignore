@@ -1,0 +1,8 @@
+__pycache__/
+.venv/
+.pytest_cache/
+node_modules/
+dist/
+backend/data/raw/*.part
+.ruff_cache/
+.DS_Store

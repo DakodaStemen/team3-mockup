@@ -1,0 +1,16 @@
+name: Bug report
+description: Something behaves differently from the SRS or crashes
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes: { label: What happened vs expected, description: Cite the SRS ID if you know it }
+    validations: { required: true }
+  - type: textarea
+    id: repro
+    attributes: { label: Steps to reproduce, description: "Student id, plan, scenario event or query" }
+    validations: { required: true }
+  - type: dropdown
+    id: severity
+    attributes: { label: Severity, options: ["high: wrong plan or data loss", "medium: wrong warning/explanation", "low: cosmetic"] }
+    validations: { required: true }
