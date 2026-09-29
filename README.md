@@ -41,6 +41,9 @@ Lanes and backups: [agile engineering plan §2](docs/03-planning-risk/agile-engi
 | Software Requirements Specification | 0.1 | Dakoda Stemen | In review | [Google Doc: SRS v0.1](https://docs.google.com/document/d/1h-cgCt8wF0NcHRoyRzOdYJiq81ip6GJhvYBi4g2LHtY/edit) (snapshot to `docs/01-product-requirements/` when baselined) | 2026-09-27 |
 | Evidence Register | 0.1 | Dakoda Stemen | Drafting | SRS §5.2, plus proposed updates in [CH-02 §A](docs/01-product-requirements/srs-change-proposal-CH-02.md#a-evidence-register-updates-srs-52) | 2026-09-28 |
 | SRS change proposal CH-02 | 0.1 | Dakoda Stemen | In review | [srs-change-proposal-CH-02.md](docs/01-product-requirements/srs-change-proposal-CH-02.md) | 2026-09-28 |
+| SRS change proposal CH-03 (summer/winter, labs, catch-up) | 0.1 | Dakoda Stemen | In review | [srs-change-proposal-CH-03.md](docs/01-product-requirements/srs-change-proposal-CH-03.md) | 2026-09-28 |
+| SRS change proposal CH-04 (history, risk, transcript upload) | 0.1 | Dakoda Stemen | In review | [srs-change-proposal-CH-04.md](docs/01-product-requirements/srs-change-proposal-CH-04.md) | 2026-09-28 |
+| Product context and design system | 0.1 | Dakoda Stemen | Drafting | [PRODUCT.md](PRODUCT.md), [DESIGN.md](DESIGN.md) | 2026-09-28 |
 | Requirement attribute register | 0.3 | Dakoda Stemen | Active | [requirements-register.md](docs/01-product-requirements/requirements-register.md) | 2026-09-28 |
 | Traceability (verification side) | generated | CI | Active | [traceability.md](docs/01-product-requirements/traceability.md) | per commit |
 | Technical spec (design input, EV-08) | 0.1 | Dakoda Stemen | Baselined | [ADPP_TechnicalSpec_v0.1_2026-09-28.docx](docs/01-product-requirements/ADPP_TechnicalSpec_v0.1_2026-09-28.docx) | 2026-09-28 |

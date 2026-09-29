@@ -2,6 +2,40 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Versioning: SemVer (docs/QUALITY_AND_CM.md §2.4).
 
+## [Unreleased]
+### Added
+- All-subject catalog: `scripts/ingest_all.py` reads every subject in the catalog A-Z (84 subjects, 4,042 courses) into `data/all_courses.json`; `scripts/outliers.py` screens it (units, dangling prerequisites, corequisite pairs vs real loops) into `results/outliers.json`.
+- Exhaustive term sweep (`tests/test_term_sweep.py`, 3,715 Fail/Withdraw/Pass scenarios, with and without each Summer/Winter opted in) and tie-out tests between the full dataset and the planner catalog.
+### Changed
+- Unit limits re-read from the Registrar: fall/spring maximum 18 (above needs an approved overload, now flagged), summer 14 and winter 4. Summer and winter are short terms, so the engine now plans a summer to 7 units (one session) and winter to 4; the validator still accepts up to the published maximum.
+- Plan view is quieter: the "if failed" badge shows only for delays of two or more terms (shown as `+2`), "Protect these" lists the top three, the legend is trimmed to what needs explaining, and the duplicate unit-cap stat is gone. Every value is still in the bottleneck table.
+### Fixed
+- A course whose catalog text mentions itself ("may be taken concurrently with COMM 3101") was parsed as its own prerequisite; it is now a note.
+- Not fixable here: 95 dangling prerequisites and one ESPE loop are in the published catalog itself.
+
+## [0.7.0] - 2026-09-28
+### Added
+- Past terms: each student's history (every attempt by term, including D/F/W and retakes) shows before the plan, marked Completed or In progress with grades (DR-04). The map shows them as columns.
+- Transcript upload: PDF, text, or CSV unofficial transcripts become a temporary profile with history, transfer credit, and in-progress courses; unreadable lines and courses outside the catalog are reported; nothing is stored (CH-04 FR-26). A synthetic sample transcript is one click away.
+- Measured bottlenecks: for every planned course, the delay if it's failed and the summer/winter catch-up, shown as a "Protect these" strip, per-course badges, and bottleneck-table columns (FR-25).
+- Major electives in CSUSB green; general education in violet with a "Gen Ed" tag; Fall-only and Spring-only courses carry an amber calendar badge (and a dot on the map).
+- Layout: one Plan section with a Terms / Prerequisite map switch; terms in academic-year rows; scheduling notes folded; alternatives and undo beside the stats; sticky what-if sidebar.
+- Seeded fuzz test over every event type, student, and the sample transcript.
+### Fixed
+- A passed lab (or lecture) could be split from its partner when later terms were rebuilt; a failed lab after a passed lecture now retakes the lab alone.
+- Transcript titles ending in a Roman numeral ("Calculus I") were read as an Incomplete grade.
+- Summer cap is the Registrar's 14 units (was an assumed 8).
+
+## [0.6.0] - 2026-09-28
+### Added
+- Winter intersession: an `Add Winter` what-if places a January term between Fall and Spring, capped at the Registrar's 4 units, with every placement flagged unconfirmed (CH-03 FR-22). Summer cap corrected from an assumed 8 to the published 14.
+- Catch-up search: when a what-if delays graduation, the engine proposes the fewest opt-in Summer/Winter terms that win the time back, returned as `recovery` and previewable in the UI. The alternatives gain "with summer & winter" (FR-24). On current data it fully recovers 128 of 160 delayed Fail/Withdraw runs.
+- UI redesign modeled on csusb.edu: two-tone CSUSB logo (also the tab icon), blue title banner, sticky section nav, gray sidebar boxes; light by default with a remembered dark toggle.
+- Prerequisite map rebuilt as SVG on the plan's timeline: one column per term, long edges routed through lanes, ghosts where moved courses were, hover to trace a chain. Replaces reagraph.
+- `PRODUCT.md` and `DESIGN.md`.
+### Fixed
+- A lab could be scheduled a term after its lecture (PHYS 2500L after PHYS 2500). Labs now always share their lecture's term, move with it, and the validator flags a split (FR-23).
+
 ## [0.5.0] - 2026-09-28
 ### Fixed
 - A Pass event could schedule a course in the same term as its own prerequisite, and the validator missed it because it shared the engine's assumption. The Pass course now stays in its term, and a DAG-based test checks order independently.

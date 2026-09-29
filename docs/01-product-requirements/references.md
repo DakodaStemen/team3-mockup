@@ -39,7 +39,7 @@ These are leads; add a link and verification when used as evidence.
 
 - Instructor (567-labs/instructor on GitHub). *Used in code.*
 - scikit-learn probability calibration docs (CalibratedClassifierCV). *Used in code.*
-- Reagraph (reaviz/reagraph on GitHub). *Used in code.*
+- Reagraph (reaviz/reagraph on GitHub). *Used in code until v0.6; replaced by a hand-built SVG map.*
 - NetworkX, Pydantic, FastAPI, SQLite, PyMuPDF, pdfplumber. Named from general knowledge, not researched. *All but SQLite and PyMuPDF are used in code.*
 - structlog guides
 - MLflow vs. Weights and Biases comparisons
